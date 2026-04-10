@@ -508,6 +508,68 @@ thead { display:table-header-group; }
 tr { page-break-inside:avoid; }
 }
 
+/* NAVIGATION & SCROLL */
+html { scroll-behavior: smooth; }
+nav {
+  position: sticky;
+  top: 64px; /* below the 64px header */
+  z-index: 45;
+}
+/* Inventory subtabs stay visible while scrolling item lists */
+.subtabs {
+  position: sticky;
+  top: 112px; /* 64 header + 48 nav */
+  z-index: 40;
+  background: var(--bg);
+  padding-top: 2px;
+  margin-bottom: 0;
+}
+/* Filter/search bar stays visible in each inventory section */
+#tab-inventory .sec-header {
+  position: sticky;
+  top: 154px; /* 64 header + 48 nav + 42 subtabs */
+  z-index: 35;
+  background: var(--bg);
+  padding: 10px 0;
+  margin-bottom: 10px;
+}
+/* BACK TO TOP */
+#back-to-top {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 44px;
+  height: 44px;
+  background: var(--gold);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 90;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#back-to-top.visible { opacity: 1; pointer-events: auto; }
+#back-to-top:hover { background: var(--gold2); transform: translateY(-3px); }
+/* Keyboard shortcut hint tooltip */
+.nav-shortcut {
+  font-size: 9px;
+  opacity: 0.45;
+  font-family: 'DM Mono', monospace;
+  margin-left: 2px;
+}
+@media (max-width: 768px) {
+  nav button { padding: 0 14px; height: 52px; font-size: 10px; }
+  .nav-shortcut { display: none; }
+}
+
 /* CLOUD SYNC */
 .sync-pill {
   display: inline-flex; align-items: center; gap: 6px;
@@ -546,14 +608,16 @@ tr { page-break-inside:avoid; }
 </header>
 
 <nav>
-  <button class="active" onclick="showTab('analytics')"><span class="nav-icon">📊</span> Analytics</button>
-  <button onclick="showTab('inventory')"><span class="nav-icon">📦</span> Inventory</button>
-  <button onclick="showTab('invoices')"><span class="nav-icon">🧾</span> Invoices</button>
-  <button onclick="showTab('orders')"><span class="nav-icon">📋</span> Order List</button>
-  <button onclick="showTab('recipes')"><span class="nav-icon">🍽</span> Recipes</button>
-  <button onclick="showTab('suppliers')"><span class="nav-icon">🚚</span> Suppliers</button>
-  <button onclick="showTab('reports')"><span class="nav-icon">🖨</span> Reports</button>
+  <button class="active" onclick="showTab('analytics')"><span class="nav-icon">📊</span> Analytics<span class="nav-shortcut">1</span></button>
+  <button onclick="showTab('inventory')"><span class="nav-icon">📦</span> Inventory<span class="nav-shortcut">2</span></button>
+  <button onclick="showTab('invoices')"><span class="nav-icon">🧾</span> Invoices<span class="nav-shortcut">3</span></button>
+  <button onclick="showTab('orders')"><span class="nav-icon">📋</span> Order List<span class="nav-shortcut">4</span></button>
+  <button onclick="showTab('recipes')"><span class="nav-icon">🍽</span> Recipes<span class="nav-shortcut">5</span></button>
+  <button onclick="showTab('suppliers')"><span class="nav-icon">🚚</span> Suppliers<span class="nav-shortcut">6</span></button>
+  <button onclick="showTab('reports')"><span class="nav-icon">🖨</span> Reports<span class="nav-shortcut">7</span></button>
 </nav>
+
+<button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
 
 <main>
 
@@ -1240,6 +1304,7 @@ function showTab(name){
   document.querySelector(`nav button[onclick="showTab('${name}')"]`).classList.add('active');
   const fns={analytics:renderAnalytics,inventory:renderInvPage,invoices:renderInvoices,orders:renderOrders,recipes:renderRecipes,suppliers:renderSuppliers,reports:renderReports};
   fns[name]();
+  window.scrollTo({top:0, behavior:'smooth'});
 }
 
 function switchSubpanel(name, btn){
@@ -2318,6 +2383,28 @@ function clearSyncSetup() {
   setSyncStatus('off');
   closeModal('modal-sync');
 }
+
+// =============================================================
+// NAVIGATION HELPERS
+// =============================================================
+
+// Back-to-top button visibility
+window.addEventListener('scroll', () => {
+  const btn = $('back-to-top');
+  if (btn) btn.classList.toggle('visible', window.scrollY > 320);
+}, { passive: true });
+
+// Keyboard shortcuts: 1-7 for tabs, Escape to close modals
+const _tabKeys = ['analytics','inventory','invoices','orders','recipes','suppliers','reports'];
+document.addEventListener('keydown', e => {
+  // Ignore when typing in an input / textarea / select
+  if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+  const idx = parseInt(e.key) - 1;
+  if (idx >= 0 && idx < _tabKeys.length) { showTab(_tabKeys[idx]); return; }
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+  }
+});
 
 // =============================================================
 // INIT
