@@ -6,9 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Keith's Deli Manager Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
 :root {
   /* Tan/cream backgrounds */
@@ -540,7 +537,7 @@ tr { page-break-inside:avoid; }
   <span class="header-badge">Manager Dashboard</span>
   <div class="header-right">
     <span class="week-display" id="header-week"></span>
-    <button class="sync-pull-btn" onclick="fbPull()" title="Pull latest data from cloud">↓ Pull</button>
+    <button class="sync-pull-btn" onclick="sbPull()" title="Pull latest data from cloud">↓ Pull</button>
     <button class="sync-pill" onclick="openSyncModal()" title="Cloud Sync Settings">
       <span id="sync-dot"></span>
       <span id="sync-txt">Cloud</span>
@@ -824,22 +821,35 @@ tr { page-break-inside:avoid; }
 
 <div class="modal-overlay" id="modal-sync">
   <div class="modal" style="max-width:640px;">
-    <div class="modal-title">☁ Cloud Sync Setup</div>
+    <div class="modal-title">☁ Cloud Sync — Supabase</div>
     <p id="sync-status-msg" style="font-size:12px;font-family:'DM Mono',monospace;margin-bottom:14px;color:var(--muted);">● Not connected</p>
-    <p style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6;">
-      Connect to <strong>Firebase Realtime Database</strong> (free) to sync all data across devices.<br>
-      <strong>Setup:</strong> Go to <em>console.firebase.google.com</em> → New project → Build → Realtime Database → Start in test mode → Project Settings → copy the config object.
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.6;">
+      Connect to <strong>Supabase</strong> (free) to sync all data across devices. One-time setup:
+      create a project at <em>supabase.com</em>, run the SQL below once, then paste your URL and key.
     </p>
-    <div class="form-group" style="margin-bottom:14px;">
-      <label>Firebase Config JSON <span style="font-weight:400;color:var(--muted)">(paste the firebaseConfig object)</span></label>
-      <textarea id="sync-cfg" rows="6" style="font-family:'DM Mono',monospace;font-size:11px;resize:vertical;" placeholder='{"apiKey":"AIza...","authDomain":"your-app.firebaseapp.com","databaseURL":"https://your-app-default-rtdb.firebaseio.com","projectId":"your-app","storageBucket":"your-app.appspot.com","messagingSenderId":"123...","appId":"1:123..."}'>
-</textarea>
+    <div style="background:#141210;border:1px solid var(--border2);padding:10px 14px;margin-bottom:16px;border-radius:2px;">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:#7bb8e8;margin-bottom:6px;letter-spacing:1px;">SQL EDITOR → RUN ONCE</div>
+      <pre style="font-family:'DM Mono',monospace;font-size:10px;color:#a8e4a0;margin:0;line-height:1.7;white-space:pre-wrap;">CREATE TABLE IF NOT EXISTS deli_stores (
+  store_code TEXT PRIMARY KEY,
+  data       JSONB NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE deli_stores ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "public_access" ON deli_stores
+  FOR ALL USING (true) WITH CHECK (true);</pre>
+    </div>
+    <div class="form-group" style="margin-bottom:12px;">
+      <label>Project URL <span style="font-weight:400;color:var(--muted)">(Settings → API)</span></label>
+      <input type="url" id="sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co" style="font-family:'DM Mono',monospace;font-size:11px;">
+    </div>
+    <div class="form-group" style="margin-bottom:12px;">
+      <label>Anon / Public Key <span style="font-weight:400;color:var(--muted)">(Settings → API → Project API keys)</span></label>
+      <input type="text" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="font-family:'DM Mono',monospace;font-size:11px;">
     </div>
     <div class="form-group" style="margin-bottom:6px;">
-      <label>Store Code <span style="font-weight:400;color:var(--muted)">(any short name — same on every device you want synced)</span></label>
-      <input type="text" id="sync-code" placeholder="e.g. keiths-deli or store-107" style="text-transform:lowercase;">
+      <label>Store Code <span style="font-weight:400;color:var(--muted)">(same short name on every device you want synced)</span></label>
+      <input type="text" id="sb-code" placeholder="e.g. keiths-deli or store-107" style="text-transform:lowercase;">
     </div>
-    <p style="font-size:11px;color:var(--muted);margin-bottom:4px;">The store code acts like a folder in your database — all devices using the same code share the same data.</p>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="clearSyncSetup()" style="color:var(--red);margin-right:auto;">Disconnect</button>
       <button class="btn btn-ghost" onclick="closeModal('modal-sync')">Cancel</button>
@@ -1199,8 +1209,8 @@ function load(){
   if(!brandedInv){ brandedInv=SEED_BRANDED.map(d=>({id:uid(),name:d.name,cat:d.cat,qty:d.qty,unit:d.unit,cost:d.cost,par:d.par,supplier:''})); sv('branded'); }
   // Apply any pending one-time invoice patches
   applyBEK56553783();
-  // Connect to Firebase if previously configured (async; will re-apply patches after pull)
-  loadFbSetup();
+  // Connect to Supabase if previously configured (async; will re-apply patches after pull)
+  loadSbSetup();
 }
 
 function sv(w){
@@ -1212,7 +1222,7 @@ function sv(w){
   if(!w||w==='ord')     localStorage.setItem('dp7_ord',JSON.stringify(orders));
   if(!w||w==='inv')     localStorage.setItem('dp7_inv',JSON.stringify(invoices));
   if(!w||w==='week')    localStorage.setItem('dp7_week',JSON.stringify(weekData));
-  fbPush(); // sync to cloud if configured
+  sbPush(); // sync to cloud if configured
 }
 
 function allInv(){return [...deliInv,...fountainInv,...brandedInv];}
@@ -2154,57 +2164,61 @@ function applyBEK56553783() {
     notes: 'BEK — Cooler $81.75 / Dry $369.99 / Frozen $1,525.89 / Tax $14.58'
   });
 
-  // persist everything (fbPush() is no-op until Firebase is initialized)
+  // persist immediately (sbPush() is a no-op until Supabase is initialized)
   localStorage.setItem('dp7_sup', JSON.stringify(suppliers));
   localStorage.setItem('dp7_deli', JSON.stringify(deliInv));
   localStorage.setItem('dp7_inv', JSON.stringify(invoices));
 }
 
 // =============================================================
-// CLOUD SYNC (Firebase Realtime Database)
+// CLOUD SYNC (Supabase)
 // =============================================================
-let fbDb = null;
-let fbStoreCode = '';
-let _fbReady = false;
+let sbUrl = '';
+let sbKey = '';
+let sbStoreCode = '';
+let _sbReady = false;
 
 function setSyncStatus(state) {
   const dot = $('sync-dot');
   const txt = $('sync-txt');
   if (!dot) return;
-  const colors  = { ok:'#22c55e', syncing:'#f59e0b', err:'#ef4444', off:'#6b7280' };
-  const labels  = { ok:'Synced',  syncing:'Syncing…', err:'Error',   off:'Cloud'   };
+  const colors = { ok:'#22c55e', syncing:'#f59e0b', err:'#ef4444', off:'#6b7280' };
+  const labels = { ok:'Synced',  syncing:'Syncing…', err:'Error',   off:'Cloud'   };
   dot.style.background = colors[state] || colors.off;
   if (txt) txt.textContent = labels[state] || 'Cloud';
 }
 
-function loadFbSetup() {
-  const cfg  = localStorage.getItem('dp7_fb');
-  const code = localStorage.getItem('dp7_fb_store');
-  if (!cfg || !code) return;
-  try {
-    const config = JSON.parse(cfg);
-    fbStoreCode = code;
-    if (!firebase.apps.length) firebase.initializeApp(config);
-    fbDb = firebase.database();
-    _fbReady = true;
-    setSyncStatus('ok');
-    // Auto-pull on load so every device starts with the latest cloud data
-    fbPull(true);
-  } catch(e) {
-    _fbReady = false;
-    setSyncStatus('err');
-    console.error('Firebase init error:', e);
-  }
+function loadSbSetup() {
+  const url  = localStorage.getItem('dp7_sb_url');
+  const key  = localStorage.getItem('dp7_sb_key');
+  const code = localStorage.getItem('dp7_sb_store');
+  if (!url || !key || !code) return;
+  sbUrl = url; sbKey = key; sbStoreCode = code;
+  _sbReady = true;
+  setSyncStatus('ok');
+  sbPull(true); // auto-pull on load so every device starts with the latest data
 }
 
-async function fbPush() {
-  if (!_fbReady || !fbDb) return;
+async function sbPush() {
+  if (!_sbReady) return;
   setSyncStatus('syncing');
   try {
-    await fbDb.ref('stores/' + fbStoreCode).set({
-      sup: suppliers, deli: deliInv, fountain: fountainInv, branded: brandedInv,
-      rec: recipes, ord: orders, inv: invoices, week: weekData, _ts: Date.now()
+    const res = await fetch(sbUrl + '/rest/v1/deli_stores', {
+      method: 'POST',
+      headers: {
+        'apikey': sbKey,
+        'Authorization': 'Bearer ' + sbKey,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({
+        store_code: sbStoreCode,
+        data: { sup: suppliers, deli: deliInv, fountain: fountainInv, branded: brandedInv,
+                rec: recipes, ord: orders, inv: invoices, week: weekData, _ts: Date.now() },
+        updated_at: new Date().toISOString()
+      })
     });
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + await res.text());
     setSyncStatus('ok');
   } catch(e) {
     setSyncStatus('err');
@@ -2212,20 +2226,25 @@ async function fbPush() {
   }
 }
 
-async function fbPull(silent) {
-  if (!_fbReady || !fbDb) {
+async function sbPull(silent) {
+  if (!_sbReady) {
     if (!silent) alert('Cloud sync not configured. Click ☁ Cloud to set up.');
     return;
   }
   setSyncStatus('syncing');
   try {
-    const snap = await fbDb.ref('stores/' + fbStoreCode).once('value');
-    const d = snap.val();
-    if (!d) {
+    const res = await fetch(
+      sbUrl + '/rest/v1/deli_stores?store_code=eq.' + encodeURIComponent(sbStoreCode) + '&select=data',
+      { headers: { 'apikey': sbKey, 'Authorization': 'Bearer ' + sbKey } }
+    );
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + await res.text());
+    const rows = await res.json();
+    if (!rows.length) {
       setSyncStatus('ok');
-      if (!silent) alert('No cloud data found for store code "' + fbStoreCode + '". Save some data first from another device.');
+      if (!silent) alert('No cloud data found for store "' + sbStoreCode + '".\nSave some data from your primary device first.');
       return;
     }
+    const d = rows[0].data;
     if (d.sup)      { suppliers   = d.sup;      localStorage.setItem('dp7_sup',      JSON.stringify(d.sup)); }
     if (d.deli)     { deliInv     = d.deli;     localStorage.setItem('dp7_deli',     JSON.stringify(d.deli)); }
     if (d.fountain) { fountainInv = d.fountain; localStorage.setItem('dp7_fountain', JSON.stringify(d.fountain)); }
@@ -2234,7 +2253,7 @@ async function fbPull(silent) {
     if (d.ord)      { orders      = d.ord;      localStorage.setItem('dp7_ord',      JSON.stringify(d.ord)); }
     if (d.inv)      { invoices    = d.inv;      localStorage.setItem('dp7_inv',      JSON.stringify(d.inv)); }
     if (d.week)     { weekData    = d.week;     localStorage.setItem('dp7_week',     JSON.stringify(d.week)); }
-    applyBEK56553783(); // ensure invoice patches are present in pulled data
+    applyBEK56553783(); // ensure invoice patches are present after pull
     setSyncStatus('ok');
     renderAnalytics();
     if (!silent) alert('Pulled latest data from cloud.');
@@ -2246,11 +2265,12 @@ async function fbPull(silent) {
 }
 
 function openSyncModal() {
-  $('sync-cfg').value  = localStorage.getItem('dp7_fb') || '';
-  $('sync-code').value = localStorage.getItem('dp7_fb_store') || '';
+  $('sb-url').value  = localStorage.getItem('dp7_sb_url')   || '';
+  $('sb-key').value  = localStorage.getItem('dp7_sb_key')   || '';
+  $('sb-code').value = localStorage.getItem('dp7_sb_store') || '';
   const msg = $('sync-status-msg');
-  if (_fbReady) {
-    msg.textContent = '● Connected — store: ' + fbStoreCode;
+  if (_sbReady) {
+    msg.textContent = '● Connected — store: ' + sbStoreCode;
     msg.style.color = '#22c55e';
   } else {
     msg.textContent = '● Not connected';
@@ -2260,37 +2280,31 @@ function openSyncModal() {
 }
 
 function saveSyncSetup() {
-  const cfg  = $('sync-cfg').value.trim();
-  const code = ($('sync-code').value.trim()).toLowerCase().replace(/\s+/g,'-');
-  if (!cfg || !code) { alert('Both fields are required.'); return; }
-  let parsed;
-  try { parsed = JSON.parse(cfg); } catch(e) { alert('Invalid JSON: ' + e.message); return; }
-  if (!parsed.databaseURL) { alert('Firebase config must include "databaseURL". Make sure Realtime Database is enabled in your Firebase project.'); return; }
-  localStorage.setItem('dp7_fb',       JSON.stringify(parsed));
-  localStorage.setItem('dp7_fb_store', code);
-  fbStoreCode = code;
-  try {
-    if (!firebase.apps.length) firebase.initializeApp(parsed);
-    fbDb = firebase.database();
-    _fbReady = true;
-    setSyncStatus('ok');
-    closeModal('modal-sync');
-    if (confirm('Connected to "' + code + '"!\n\nPull latest data from the cloud now? (Recommended on first setup or a new device)')) {
-      fbPull(false);
-    } else {
-      fbPush(); // push local data up on first connect
-    }
-  } catch(e) {
-    setSyncStatus('err');
-    alert('Firebase error: ' + e.message);
+  const url  = $('sb-url').value.trim().replace(/\/$/, '');
+  const key  = $('sb-key').value.trim();
+  const code = $('sb-code').value.trim().toLowerCase().replace(/\s+/g, '-');
+  if (!url || !key || !code) { alert('All three fields are required.'); return; }
+  if (!url.startsWith('https://')) { alert('Project URL must start with https://'); return; }
+  localStorage.setItem('dp7_sb_url',   url);
+  localStorage.setItem('dp7_sb_key',   key);
+  localStorage.setItem('dp7_sb_store', code);
+  sbUrl = url; sbKey = key; sbStoreCode = code;
+  _sbReady = true;
+  setSyncStatus('ok');
+  closeModal('modal-sync');
+  if (confirm('Connected to "' + code + '"!\n\nPull latest data from the cloud now?\n(Choose Pull on a new/secondary device, Push to upload existing local data.)')) {
+    sbPull(false);
+  } else {
+    sbPush();
   }
 }
 
 function clearSyncSetup() {
   if (!confirm('Disconnect from cloud sync?\n\nYour local data will not be affected.')) return;
-  localStorage.removeItem('dp7_fb');
-  localStorage.removeItem('dp7_fb_store');
-  fbDb = null; fbStoreCode = ''; _fbReady = false;
+  localStorage.removeItem('dp7_sb_url');
+  localStorage.removeItem('dp7_sb_key');
+  localStorage.removeItem('dp7_sb_store');
+  sbUrl = ''; sbKey = ''; sbStoreCode = ''; _sbReady = false;
   setSyncStatus('off');
   closeModal('modal-sync');
 }
