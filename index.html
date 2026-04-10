@@ -2173,6 +2173,10 @@ function applyBEK56553783() {
 // =============================================================
 // CLOUD SYNC (Supabase)
 // =============================================================
+const SB_DEFAULT_URL   = 'https://zdbaymktrzsmzimwdeua.supabase.co';
+const SB_DEFAULT_KEY   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpkYmF5bWt0cnpzbXppbXdkZXVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NDAxNTQsImV4cCI6MjA5MTQxNjE1NH0.-NONMuk3lkeL0HTiJtPBNEU3F33Y4dOIb1Iv7_K2Ykw';
+const SB_DEFAULT_STORE = 'keiths-deli';
+
 let sbUrl = '';
 let sbKey = '';
 let sbStoreCode = '';
@@ -2189,10 +2193,16 @@ function setSyncStatus(state) {
 }
 
 function loadSbSetup() {
-  const url  = localStorage.getItem('dp7_sb_url');
-  const key  = localStorage.getItem('dp7_sb_key');
-  const code = localStorage.getItem('dp7_sb_store');
-  if (!url || !key || !code) return;
+  // Use stored values if present, otherwise fall back to hardcoded defaults
+  const url  = localStorage.getItem('dp7_sb_url')   || SB_DEFAULT_URL;
+  const key  = localStorage.getItem('dp7_sb_key')   || SB_DEFAULT_KEY;
+  const code = localStorage.getItem('dp7_sb_store') || SB_DEFAULT_STORE;
+  // Persist defaults so the modal shows them pre-filled
+  if (!localStorage.getItem('dp7_sb_url')) {
+    localStorage.setItem('dp7_sb_url',   url);
+    localStorage.setItem('dp7_sb_key',   key);
+    localStorage.setItem('dp7_sb_store', code);
+  }
   sbUrl = url; sbKey = key; sbStoreCode = code;
   _sbReady = true;
   setSyncStatus('ok');
