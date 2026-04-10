@@ -6,6 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Keith's Deli Manager Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
 :root {
   /* Tan/cream backgrounds */
@@ -507,6 +510,26 @@ body { background:#fff; }
 thead { display:table-header-group; }
 tr { page-break-inside:avoid; }
 }
+
+/* CLOUD SYNC */
+.sync-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 5px 12px; background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15); color: #c8d8f0;
+  cursor: pointer; transition: all 0.15s;
+}
+.sync-pill:hover { background: rgba(255,255,255,0.15); }
+#sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #6b7280; display: inline-block; flex-shrink: 0; }
+.sync-pull-btn {
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 5px 10px; background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12); color: #a0b8d8;
+  cursor: pointer; transition: all 0.15s;
+}
+.sync-pull-btn:hover { background: rgba(255,255,255,0.14); color: #fff; }
 </style>
 
 </head>
@@ -517,6 +540,11 @@ tr { page-break-inside:avoid; }
   <span class="header-badge">Manager Dashboard</span>
   <div class="header-right">
     <span class="week-display" id="header-week"></span>
+    <button class="sync-pull-btn" onclick="fbPull()" title="Pull latest data from cloud">↓ Pull</button>
+    <button class="sync-pill" onclick="openSyncModal()" title="Cloud Sync Settings">
+      <span id="sync-dot"></span>
+      <span id="sync-txt">Cloud</span>
+    </button>
   </div>
 </header>
 
@@ -788,6 +816,34 @@ tr { page-break-inside:avoid; }
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('modal-invoice')">Cancel</button>
       <button class="btn btn-gold" onclick="saveInvoice()">Save Invoice</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cloud Sync Modal -->
+
+<div class="modal-overlay" id="modal-sync">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-title">☁ Cloud Sync Setup</div>
+    <p id="sync-status-msg" style="font-size:12px;font-family:'DM Mono',monospace;margin-bottom:14px;color:var(--muted);">● Not connected</p>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6;">
+      Connect to <strong>Firebase Realtime Database</strong> (free) to sync all data across devices.<br>
+      <strong>Setup:</strong> Go to <em>console.firebase.google.com</em> → New project → Build → Realtime Database → Start in test mode → Project Settings → copy the config object.
+    </p>
+    <div class="form-group" style="margin-bottom:14px;">
+      <label>Firebase Config JSON <span style="font-weight:400;color:var(--muted)">(paste the firebaseConfig object)</span></label>
+      <textarea id="sync-cfg" rows="6" style="font-family:'DM Mono',monospace;font-size:11px;resize:vertical;" placeholder='{"apiKey":"AIza...","authDomain":"your-app.firebaseapp.com","databaseURL":"https://your-app-default-rtdb.firebaseio.com","projectId":"your-app","storageBucket":"your-app.appspot.com","messagingSenderId":"123...","appId":"1:123..."}'>
+</textarea>
+    </div>
+    <div class="form-group" style="margin-bottom:6px;">
+      <label>Store Code <span style="font-weight:400;color:var(--muted)">(any short name — same on every device you want synced)</span></label>
+      <input type="text" id="sync-code" placeholder="e.g. keiths-deli or store-107" style="text-transform:lowercase;">
+    </div>
+    <p style="font-size:11px;color:var(--muted);margin-bottom:4px;">The store code acts like a folder in your database — all devices using the same code share the same data.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="clearSyncSetup()" style="color:var(--red);margin-right:auto;">Disconnect</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-sync')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveSyncSetup()">Connect & Save</button>
     </div>
   </div>
 </div>
@@ -1141,6 +1197,10 @@ function load(){
   }
   if(!fountainInv){ fountainInv=SEED_FOUNTAIN.map(d=>({id:uid(),name:d.name,cat:d.cat,qty:d.qty,unit:d.unit,cost:d.cost,par:d.par,supplier:''})); sv('fountain'); }
   if(!brandedInv){ brandedInv=SEED_BRANDED.map(d=>({id:uid(),name:d.name,cat:d.cat,qty:d.qty,unit:d.unit,cost:d.cost,par:d.par,supplier:''})); sv('branded'); }
+  // Apply any pending one-time invoice patches
+  applyBEK56553783();
+  // Connect to Firebase if previously configured (async; will re-apply patches after pull)
+  loadFbSetup();
 }
 
 function sv(w){
@@ -1152,6 +1212,7 @@ function sv(w){
   if(!w||w==='ord')     localStorage.setItem('dp7_ord',JSON.stringify(orders));
   if(!w||w==='inv')     localStorage.setItem('dp7_inv',JSON.stringify(invoices));
   if(!w||w==='week')    localStorage.setItem('dp7_week',JSON.stringify(weekData));
+  fbPush(); // sync to cloud if configured
 }
 
 function allInv(){return [...deliInv,...fountainInv,...brandedInv];}
@@ -2018,6 +2079,220 @@ function buildExcelOrder(){
   });
   if(!needItems.length) rows.push(['All items at or above par — no orders needed.']);
   return rows;
+}
+
+// =============================================================
+// ONE-TIME INVOICE PATCHES
+// =============================================================
+
+// BEK Invoice #56553783 — 04/05/2026 — $1,992.21
+// Adds/updates items and logs the invoice. Idempotent: skips if invoice already present.
+function applyBEK56553783() {
+  if (invoices.find(i => i.num === '56553783')) return;
+
+  // Ensure Ben E. Keith Foods supplier exists
+  let bek = suppliers.find(s => s.name === 'Ben E. Keith Foods');
+  if (!bek) {
+    bek = {id:uid(), name:'Ben E. Keith Foods', contact:'', phone:'', email:'', lead:'', notes:''};
+    suppliers.push(bek);
+  }
+
+  const items = [
+    // BREAD
+    {name:'Bun Hamburger White 4 In',         cat:'Bread',      cases:1, cost:24.89},
+    {name:'Dough Biscuit 3 In Sliced',         cat:'Bread',      cases:3, cost:62.38},
+    {name:'Dough Apple Turnover',              cat:'Bread',      cases:1, cost:59.30},
+    {name:'Glaze Honey Dip Heat & Ice',        cat:'Bread',      cases:1, cost:58.84},
+    {name:'Brownie Blondie',                   cat:'Bread',      cases:1, cost:46.31},
+    // CONDIMENTS
+    {name:'Dressing Pc Honey Mustard Cup',     cat:'Condiments', cases:1, cost:28.23},
+    {name:'Dressing Pc Ranch Cup',             cat:'Condiments', cases:1, cost:26.60},
+    // DAIRY
+    {name:'Soft Serve Chocolate 6/6 LB',       cat:'Dairy',      cases:1, cost:78.02},
+    // DELI MEAT
+    {name:'Bacon Layout 18/22',                cat:'Deli Meat',  cases:2, cost:57.62},
+    {name:'Beef Patty 3/1 Thick N Tender',     cat:'Deli Meat',  cases:1, cost:84.52},
+    {name:'Beef Steak Fritter Raw Breaded',    cat:'Deli Meat',  cases:1, cost:65.87},
+    {name:'Chicken Breast Flame Grilled 4oz',  cat:'Deli Meat',  cases:1, cost:64.46},
+    {name:'Chicken Breast Fritter Cn 4/1',     cat:'Deli Meat',  cases:1, cost:40.84},
+    {name:'Chicken Breast Hot N Spicy Ckd',    cat:'Deli Meat',  cases:1, cost:40.84},
+    {name:'Sausage Patty 2 Oz Cooked',         cat:'Deli Meat',  cases:3, cost:47.18},
+    {name:'Waffle Stuffed Sausage Egg Cheese', cat:'Deli Meat',  cases:1, cost:83.08},
+    {name:'Egg Patty Homestyle Fried',         cat:'Deli Meat',  cases:2, cost:50.00},
+    // OTHER
+    {name:'Corn Dog Chili Cheese',             cat:'Other',      cases:1, cost:27.50},
+    {name:'Crispito Chicken & Cheese',         cat:'Other',      cases:1, cost:56.11},
+    {name:'Burrito Breakfast Bacon',           cat:'Other',      cases:1, cost:37.33},
+    {name:'Burrito Breakfast Sausage',         cat:'Other',      cases:1, cost:37.33},
+    {name:'Empanada Beef And Cheese',          cat:'Other',      cases:1, cost:31.17},
+    {name:'Empanada Chicken And Cheese',       cat:'Other',      cases:1, cost:31.17},
+    {name:'Meat Pie Original Beef & Pork',     cat:'Other',      cases:1, cost:54.04},
+    {name:'Meat Pie Spicy Bulk',               cat:'Other',      cases:1, cost:54.49},
+    {name:'Nacho Cheese Triangles Breaded',    cat:'Other',      cases:1, cost:58.16},
+    // PACKAGING
+    {name:'Bag Reclosable 2 Gal 13x15.5',     cat:'Packaging',  cases:1, cost:14.55},
+    {name:'Label 2x3 Dissolvable',             cat:'Packaging',  cases:1, cost:27.21},
+    {name:'Tape Register Roll Thermal',        cat:'Packaging',  cases:1, cost:78.24},
+    {name:'Toilet Tissue 2 Ply Jumbo Jr',      cat:'Packaging',  cases:2, cost:44.12},
+    // PRODUCE
+    {name:'Onion Yellow Jumbo Fresh 5lb',      cat:'Produce',    cases:1, cost:10.09},
+    {name:'Pepper Bell Green',                 cat:'Produce',    cases:1, cost:16.83},
+  ];
+
+  items.forEach(item => {
+    const existing = deliInv.find(i => i.name.toLowerCase() === item.name.toLowerCase());
+    if (existing) {
+      existing.qty  = +(existing.qty + item.cases).toFixed(2);
+      existing.cost = item.cost;
+    } else {
+      deliInv.push({id:uid(), name:item.name, cat:item.cat, qty:item.cases, unit:'cases', cost:item.cost, par:1, supplier:bek.id});
+    }
+  });
+
+  invoices.push({
+    id: uid(), supplier: bek.id, date: '2026-04-05', total: 1992.21, num: '56553783',
+    notes: 'BEK — Cooler $81.75 / Dry $369.99 / Frozen $1,525.89 / Tax $14.58'
+  });
+
+  // persist everything (fbPush() is no-op until Firebase is initialized)
+  localStorage.setItem('dp7_sup', JSON.stringify(suppliers));
+  localStorage.setItem('dp7_deli', JSON.stringify(deliInv));
+  localStorage.setItem('dp7_inv', JSON.stringify(invoices));
+}
+
+// =============================================================
+// CLOUD SYNC (Firebase Realtime Database)
+// =============================================================
+let fbDb = null;
+let fbStoreCode = '';
+let _fbReady = false;
+
+function setSyncStatus(state) {
+  const dot = $('sync-dot');
+  const txt = $('sync-txt');
+  if (!dot) return;
+  const colors  = { ok:'#22c55e', syncing:'#f59e0b', err:'#ef4444', off:'#6b7280' };
+  const labels  = { ok:'Synced',  syncing:'Syncing…', err:'Error',   off:'Cloud'   };
+  dot.style.background = colors[state] || colors.off;
+  if (txt) txt.textContent = labels[state] || 'Cloud';
+}
+
+function loadFbSetup() {
+  const cfg  = localStorage.getItem('dp7_fb');
+  const code = localStorage.getItem('dp7_fb_store');
+  if (!cfg || !code) return;
+  try {
+    const config = JSON.parse(cfg);
+    fbStoreCode = code;
+    if (!firebase.apps.length) firebase.initializeApp(config);
+    fbDb = firebase.database();
+    _fbReady = true;
+    setSyncStatus('ok');
+    // Auto-pull on load so every device starts with the latest cloud data
+    fbPull(true);
+  } catch(e) {
+    _fbReady = false;
+    setSyncStatus('err');
+    console.error('Firebase init error:', e);
+  }
+}
+
+async function fbPush() {
+  if (!_fbReady || !fbDb) return;
+  setSyncStatus('syncing');
+  try {
+    await fbDb.ref('stores/' + fbStoreCode).set({
+      sup: suppliers, deli: deliInv, fountain: fountainInv, branded: brandedInv,
+      rec: recipes, ord: orders, inv: invoices, week: weekData, _ts: Date.now()
+    });
+    setSyncStatus('ok');
+  } catch(e) {
+    setSyncStatus('err');
+    console.error('Cloud push failed:', e);
+  }
+}
+
+async function fbPull(silent) {
+  if (!_fbReady || !fbDb) {
+    if (!silent) alert('Cloud sync not configured. Click ☁ Cloud to set up.');
+    return;
+  }
+  setSyncStatus('syncing');
+  try {
+    const snap = await fbDb.ref('stores/' + fbStoreCode).once('value');
+    const d = snap.val();
+    if (!d) {
+      setSyncStatus('ok');
+      if (!silent) alert('No cloud data found for store code "' + fbStoreCode + '". Save some data first from another device.');
+      return;
+    }
+    if (d.sup)      { suppliers   = d.sup;      localStorage.setItem('dp7_sup',      JSON.stringify(d.sup)); }
+    if (d.deli)     { deliInv     = d.deli;     localStorage.setItem('dp7_deli',     JSON.stringify(d.deli)); }
+    if (d.fountain) { fountainInv = d.fountain; localStorage.setItem('dp7_fountain', JSON.stringify(d.fountain)); }
+    if (d.branded)  { brandedInv  = d.branded;  localStorage.setItem('dp7_branded',  JSON.stringify(d.branded)); }
+    if (d.rec)      { recipes     = d.rec;      localStorage.setItem('dp7_rec',      JSON.stringify(d.rec)); }
+    if (d.ord)      { orders      = d.ord;      localStorage.setItem('dp7_ord',      JSON.stringify(d.ord)); }
+    if (d.inv)      { invoices    = d.inv;      localStorage.setItem('dp7_inv',      JSON.stringify(d.inv)); }
+    if (d.week)     { weekData    = d.week;     localStorage.setItem('dp7_week',     JSON.stringify(d.week)); }
+    applyBEK56553783(); // ensure invoice patches are present in pulled data
+    setSyncStatus('ok');
+    renderAnalytics();
+    if (!silent) alert('Pulled latest data from cloud.');
+  } catch(e) {
+    setSyncStatus('err');
+    console.error('Cloud pull failed:', e);
+    if (!silent) alert('Sync error: ' + e.message);
+  }
+}
+
+function openSyncModal() {
+  $('sync-cfg').value  = localStorage.getItem('dp7_fb') || '';
+  $('sync-code').value = localStorage.getItem('dp7_fb_store') || '';
+  const msg = $('sync-status-msg');
+  if (_fbReady) {
+    msg.textContent = '● Connected — store: ' + fbStoreCode;
+    msg.style.color = '#22c55e';
+  } else {
+    msg.textContent = '● Not connected';
+    msg.style.color = 'var(--muted)';
+  }
+  openModal('modal-sync');
+}
+
+function saveSyncSetup() {
+  const cfg  = $('sync-cfg').value.trim();
+  const code = ($('sync-code').value.trim()).toLowerCase().replace(/\s+/g,'-');
+  if (!cfg || !code) { alert('Both fields are required.'); return; }
+  let parsed;
+  try { parsed = JSON.parse(cfg); } catch(e) { alert('Invalid JSON: ' + e.message); return; }
+  if (!parsed.databaseURL) { alert('Firebase config must include "databaseURL". Make sure Realtime Database is enabled in your Firebase project.'); return; }
+  localStorage.setItem('dp7_fb',       JSON.stringify(parsed));
+  localStorage.setItem('dp7_fb_store', code);
+  fbStoreCode = code;
+  try {
+    if (!firebase.apps.length) firebase.initializeApp(parsed);
+    fbDb = firebase.database();
+    _fbReady = true;
+    setSyncStatus('ok');
+    closeModal('modal-sync');
+    if (confirm('Connected to "' + code + '"!\n\nPull latest data from the cloud now? (Recommended on first setup or a new device)')) {
+      fbPull(false);
+    } else {
+      fbPush(); // push local data up on first connect
+    }
+  } catch(e) {
+    setSyncStatus('err');
+    alert('Firebase error: ' + e.message);
+  }
+}
+
+function clearSyncSetup() {
+  if (!confirm('Disconnect from cloud sync?\n\nYour local data will not be affected.')) return;
+  localStorage.removeItem('dp7_fb');
+  localStorage.removeItem('dp7_fb_store');
+  fbDb = null; fbStoreCode = ''; _fbReady = false;
+  setSyncStatus('off');
+  closeModal('modal-sync');
 }
 
 // =============================================================
