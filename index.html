@@ -507,6 +507,26 @@ body { background:#fff; }
 thead { display:table-header-group; }
 tr { page-break-inside:avoid; }
 }
+
+/* CLOUD SYNC */
+.sync-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 5px 12px; background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15); color: #c8d8f0;
+  cursor: pointer; transition: all 0.15s;
+}
+.sync-pill:hover { background: rgba(255,255,255,0.15); }
+#sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #6b7280; display: inline-block; flex-shrink: 0; }
+.sync-pull-btn {
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 5px 10px; background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12); color: #a0b8d8;
+  cursor: pointer; transition: all 0.15s;
+}
+.sync-pull-btn:hover { background: rgba(255,255,255,0.14); color: #fff; }
 </style>
 
 </head>
@@ -517,6 +537,11 @@ tr { page-break-inside:avoid; }
   <span class="header-badge">Manager Dashboard</span>
   <div class="header-right">
     <span class="week-display" id="header-week"></span>
+    <button class="sync-pull-btn" onclick="sbPull()" title="Pull latest data from cloud">↓ Pull</button>
+    <button class="sync-pill" onclick="openSyncModal()" title="Cloud Sync Settings">
+      <span id="sync-dot"></span>
+      <span id="sync-txt">Cloud</span>
+    </button>
   </div>
 </header>
 
@@ -788,6 +813,47 @@ tr { page-break-inside:avoid; }
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('modal-invoice')">Cancel</button>
       <button class="btn btn-gold" onclick="saveInvoice()">Save Invoice</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cloud Sync Modal -->
+
+<div class="modal-overlay" id="modal-sync">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-title">☁ Cloud Sync — Supabase</div>
+    <p id="sync-status-msg" style="font-size:12px;font-family:'DM Mono',monospace;margin-bottom:14px;color:var(--muted);">● Not connected</p>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.6;">
+      Connect to <strong>Supabase</strong> (free) to sync all data across devices. One-time setup:
+      create a project at <em>supabase.com</em>, run the SQL below once, then paste your URL and key.
+    </p>
+    <div style="background:#141210;border:1px solid var(--border2);padding:10px 14px;margin-bottom:16px;border-radius:2px;">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:#7bb8e8;margin-bottom:6px;letter-spacing:1px;">SQL EDITOR → RUN ONCE</div>
+      <pre style="font-family:'DM Mono',monospace;font-size:10px;color:#a8e4a0;margin:0;line-height:1.7;white-space:pre-wrap;">CREATE TABLE IF NOT EXISTS deli_stores (
+  store_code TEXT PRIMARY KEY,
+  data       JSONB NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE deli_stores ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "public_access" ON deli_stores
+  FOR ALL USING (true) WITH CHECK (true);</pre>
+    </div>
+    <div class="form-group" style="margin-bottom:12px;">
+      <label>Project URL <span style="font-weight:400;color:var(--muted)">(Settings → API)</span></label>
+      <input type="url" id="sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co" style="font-family:'DM Mono',monospace;font-size:11px;">
+    </div>
+    <div class="form-group" style="margin-bottom:12px;">
+      <label>Anon / Public Key <span style="font-weight:400;color:var(--muted)">(Settings → API → Project API keys)</span></label>
+      <input type="text" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="font-family:'DM Mono',monospace;font-size:11px;">
+    </div>
+    <div class="form-group" style="margin-bottom:6px;">
+      <label>Store Code <span style="font-weight:400;color:var(--muted)">(same short name on every device you want synced)</span></label>
+      <input type="text" id="sb-code" placeholder="e.g. keiths-deli or store-107" style="text-transform:lowercase;">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="clearSyncSetup()" style="color:var(--red);margin-right:auto;">Disconnect</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-sync')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveSyncSetup()">Connect & Save</button>
     </div>
   </div>
 </div>
@@ -1141,6 +1207,10 @@ function load(){
   }
   if(!fountainInv){ fountainInv=SEED_FOUNTAIN.map(d=>({id:uid(),name:d.name,cat:d.cat,qty:d.qty,unit:d.unit,cost:d.cost,par:d.par,supplier:''})); sv('fountain'); }
   if(!brandedInv){ brandedInv=SEED_BRANDED.map(d=>({id:uid(),name:d.name,cat:d.cat,qty:d.qty,unit:d.unit,cost:d.cost,par:d.par,supplier:''})); sv('branded'); }
+  // Apply any pending one-time invoice patches
+  applyBEK56553783();
+  // Connect to Supabase if previously configured (async; will re-apply patches after pull)
+  loadSbSetup();
 }
 
 function sv(w){
@@ -1152,6 +1222,7 @@ function sv(w){
   if(!w||w==='ord')     localStorage.setItem('dp7_ord',JSON.stringify(orders));
   if(!w||w==='inv')     localStorage.setItem('dp7_inv',JSON.stringify(invoices));
   if(!w||w==='week')    localStorage.setItem('dp7_week',JSON.stringify(weekData));
+  sbPush(); // sync to cloud if configured
 }
 
 function allInv(){return [...deliInv,...fountainInv,...brandedInv];}
@@ -2018,6 +2089,234 @@ function buildExcelOrder(){
   });
   if(!needItems.length) rows.push(['All items at or above par — no orders needed.']);
   return rows;
+}
+
+// =============================================================
+// ONE-TIME INVOICE PATCHES
+// =============================================================
+
+// BEK Invoice #56553783 — 04/05/2026 — $1,992.21
+// Adds/updates items and logs the invoice. Idempotent: skips if invoice already present.
+function applyBEK56553783() {
+  if (invoices.find(i => i.num === '56553783')) return;
+
+  // Ensure Ben E. Keith Foods supplier exists
+  let bek = suppliers.find(s => s.name === 'Ben E. Keith Foods');
+  if (!bek) {
+    bek = {id:uid(), name:'Ben E. Keith Foods', contact:'', phone:'', email:'', lead:'', notes:''};
+    suppliers.push(bek);
+  }
+
+  const items = [
+    // BREAD
+    {name:'Bun Hamburger White 4 In',         cat:'Bread',      cases:1, cost:24.89},
+    {name:'Dough Biscuit 3 In Sliced',         cat:'Bread',      cases:3, cost:62.38},
+    {name:'Dough Apple Turnover',              cat:'Bread',      cases:1, cost:59.30},
+    {name:'Glaze Honey Dip Heat & Ice',        cat:'Bread',      cases:1, cost:58.84},
+    {name:'Brownie Blondie',                   cat:'Bread',      cases:1, cost:46.31},
+    // CONDIMENTS
+    {name:'Dressing Pc Honey Mustard Cup',     cat:'Condiments', cases:1, cost:28.23},
+    {name:'Dressing Pc Ranch Cup',             cat:'Condiments', cases:1, cost:26.60},
+    // DAIRY
+    {name:'Soft Serve Chocolate 6/6 LB',       cat:'Dairy',      cases:1, cost:78.02},
+    // DELI MEAT
+    {name:'Bacon Layout 18/22',                cat:'Deli Meat',  cases:2, cost:57.62},
+    {name:'Beef Patty 3/1 Thick N Tender',     cat:'Deli Meat',  cases:1, cost:84.52},
+    {name:'Beef Steak Fritter Raw Breaded',    cat:'Deli Meat',  cases:1, cost:65.87},
+    {name:'Chicken Breast Flame Grilled 4oz',  cat:'Deli Meat',  cases:1, cost:64.46},
+    {name:'Chicken Breast Fritter Cn 4/1',     cat:'Deli Meat',  cases:1, cost:40.84},
+    {name:'Chicken Breast Hot N Spicy Ckd',    cat:'Deli Meat',  cases:1, cost:40.84},
+    {name:'Sausage Patty 2 Oz Cooked',         cat:'Deli Meat',  cases:3, cost:47.18},
+    {name:'Waffle Stuffed Sausage Egg Cheese', cat:'Deli Meat',  cases:1, cost:83.08},
+    {name:'Egg Patty Homestyle Fried',         cat:'Deli Meat',  cases:2, cost:50.00},
+    // OTHER
+    {name:'Corn Dog Chili Cheese',             cat:'Other',      cases:1, cost:27.50},
+    {name:'Crispito Chicken & Cheese',         cat:'Other',      cases:1, cost:56.11},
+    {name:'Burrito Breakfast Bacon',           cat:'Other',      cases:1, cost:37.33},
+    {name:'Burrito Breakfast Sausage',         cat:'Other',      cases:1, cost:37.33},
+    {name:'Empanada Beef And Cheese',          cat:'Other',      cases:1, cost:31.17},
+    {name:'Empanada Chicken And Cheese',       cat:'Other',      cases:1, cost:31.17},
+    {name:'Meat Pie Original Beef & Pork',     cat:'Other',      cases:1, cost:54.04},
+    {name:'Meat Pie Spicy Bulk',               cat:'Other',      cases:1, cost:54.49},
+    {name:'Nacho Cheese Triangles Breaded',    cat:'Other',      cases:1, cost:58.16},
+    // PACKAGING
+    {name:'Bag Reclosable 2 Gal 13x15.5',     cat:'Packaging',  cases:1, cost:14.55},
+    {name:'Label 2x3 Dissolvable',             cat:'Packaging',  cases:1, cost:27.21},
+    {name:'Tape Register Roll Thermal',        cat:'Packaging',  cases:1, cost:78.24},
+    {name:'Toilet Tissue 2 Ply Jumbo Jr',      cat:'Packaging',  cases:2, cost:44.12},
+    // PRODUCE
+    {name:'Onion Yellow Jumbo Fresh 5lb',      cat:'Produce',    cases:1, cost:10.09},
+    {name:'Pepper Bell Green',                 cat:'Produce',    cases:1, cost:16.83},
+  ];
+
+  items.forEach(item => {
+    const existing = deliInv.find(i => i.name.toLowerCase() === item.name.toLowerCase());
+    if (existing) {
+      existing.qty  = +(existing.qty + item.cases).toFixed(2);
+      existing.cost = item.cost;
+    } else {
+      deliInv.push({id:uid(), name:item.name, cat:item.cat, qty:item.cases, unit:'cases', cost:item.cost, par:1, supplier:bek.id});
+    }
+  });
+
+  invoices.push({
+    id: uid(), supplier: bek.id, date: '2026-04-05', total: 1992.21, num: '56553783',
+    notes: 'BEK — Cooler $81.75 / Dry $369.99 / Frozen $1,525.89 / Tax $14.58'
+  });
+
+  // persist immediately (sbPush() is a no-op until Supabase is initialized)
+  localStorage.setItem('dp7_sup', JSON.stringify(suppliers));
+  localStorage.setItem('dp7_deli', JSON.stringify(deliInv));
+  localStorage.setItem('dp7_inv', JSON.stringify(invoices));
+}
+
+// =============================================================
+// CLOUD SYNC (Supabase)
+// =============================================================
+const SB_DEFAULT_URL   = 'https://zdbaymktrzsmzimwdeua.supabase.co';
+const SB_DEFAULT_KEY   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpkYmF5bWt0cnpzbXppbXdkZXVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NDAxNTQsImV4cCI6MjA5MTQxNjE1NH0.-NONMuk3lkeL0HTiJtPBNEU3F33Y4dOIb1Iv7_K2Ykw';
+const SB_DEFAULT_STORE = 'keiths-deli';
+
+let sbUrl = '';
+let sbKey = '';
+let sbStoreCode = '';
+let _sbReady = false;
+
+function setSyncStatus(state) {
+  const dot = $('sync-dot');
+  const txt = $('sync-txt');
+  if (!dot) return;
+  const colors = { ok:'#22c55e', syncing:'#f59e0b', err:'#ef4444', off:'#6b7280' };
+  const labels = { ok:'Synced',  syncing:'Syncing…', err:'Error',   off:'Cloud'   };
+  dot.style.background = colors[state] || colors.off;
+  if (txt) txt.textContent = labels[state] || 'Cloud';
+}
+
+function loadSbSetup() {
+  // Use stored values if present, otherwise fall back to hardcoded defaults
+  const url  = localStorage.getItem('dp7_sb_url')   || SB_DEFAULT_URL;
+  const key  = localStorage.getItem('dp7_sb_key')   || SB_DEFAULT_KEY;
+  const code = localStorage.getItem('dp7_sb_store') || SB_DEFAULT_STORE;
+  // Persist defaults so the modal shows them pre-filled
+  if (!localStorage.getItem('dp7_sb_url')) {
+    localStorage.setItem('dp7_sb_url',   url);
+    localStorage.setItem('dp7_sb_key',   key);
+    localStorage.setItem('dp7_sb_store', code);
+  }
+  sbUrl = url; sbKey = key; sbStoreCode = code;
+  _sbReady = true;
+  setSyncStatus('ok');
+  sbPull(true); // auto-pull on load so every device starts with the latest data
+}
+
+async function sbPush() {
+  if (!_sbReady) return;
+  setSyncStatus('syncing');
+  try {
+    const res = await fetch(sbUrl + '/rest/v1/deli_stores', {
+      method: 'POST',
+      headers: {
+        'apikey': sbKey,
+        'Authorization': 'Bearer ' + sbKey,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({
+        store_code: sbStoreCode,
+        data: { sup: suppliers, deli: deliInv, fountain: fountainInv, branded: brandedInv,
+                rec: recipes, ord: orders, inv: invoices, week: weekData, _ts: Date.now() },
+        updated_at: new Date().toISOString()
+      })
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + await res.text());
+    setSyncStatus('ok');
+  } catch(e) {
+    setSyncStatus('err');
+    console.error('Cloud push failed:', e);
+  }
+}
+
+async function sbPull(silent) {
+  if (!_sbReady) {
+    if (!silent) alert('Cloud sync not configured. Click ☁ Cloud to set up.');
+    return;
+  }
+  setSyncStatus('syncing');
+  try {
+    const res = await fetch(
+      sbUrl + '/rest/v1/deli_stores?store_code=eq.' + encodeURIComponent(sbStoreCode) + '&select=data',
+      { headers: { 'apikey': sbKey, 'Authorization': 'Bearer ' + sbKey } }
+    );
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + await res.text());
+    const rows = await res.json();
+    if (!rows.length) {
+      setSyncStatus('ok');
+      if (!silent) alert('No cloud data found for store "' + sbStoreCode + '".\nSave some data from your primary device first.');
+      return;
+    }
+    const d = rows[0].data;
+    if (d.sup)      { suppliers   = d.sup;      localStorage.setItem('dp7_sup',      JSON.stringify(d.sup)); }
+    if (d.deli)     { deliInv     = d.deli;     localStorage.setItem('dp7_deli',     JSON.stringify(d.deli)); }
+    if (d.fountain) { fountainInv = d.fountain; localStorage.setItem('dp7_fountain', JSON.stringify(d.fountain)); }
+    if (d.branded)  { brandedInv  = d.branded;  localStorage.setItem('dp7_branded',  JSON.stringify(d.branded)); }
+    if (d.rec)      { recipes     = d.rec;      localStorage.setItem('dp7_rec',      JSON.stringify(d.rec)); }
+    if (d.ord)      { orders      = d.ord;      localStorage.setItem('dp7_ord',      JSON.stringify(d.ord)); }
+    if (d.inv)      { invoices    = d.inv;      localStorage.setItem('dp7_inv',      JSON.stringify(d.inv)); }
+    if (d.week)     { weekData    = d.week;     localStorage.setItem('dp7_week',     JSON.stringify(d.week)); }
+    applyBEK56553783(); // ensure invoice patches are present after pull
+    setSyncStatus('ok');
+    renderAnalytics();
+    if (!silent) alert('Pulled latest data from cloud.');
+  } catch(e) {
+    setSyncStatus('err');
+    console.error('Cloud pull failed:', e);
+    if (!silent) alert('Sync error: ' + e.message);
+  }
+}
+
+function openSyncModal() {
+  $('sb-url').value  = localStorage.getItem('dp7_sb_url')   || '';
+  $('sb-key').value  = localStorage.getItem('dp7_sb_key')   || '';
+  $('sb-code').value = localStorage.getItem('dp7_sb_store') || '';
+  const msg = $('sync-status-msg');
+  if (_sbReady) {
+    msg.textContent = '● Connected — store: ' + sbStoreCode;
+    msg.style.color = '#22c55e';
+  } else {
+    msg.textContent = '● Not connected';
+    msg.style.color = 'var(--muted)';
+  }
+  openModal('modal-sync');
+}
+
+function saveSyncSetup() {
+  const url  = $('sb-url').value.trim().replace(/\/$/, '');
+  const key  = $('sb-key').value.trim();
+  const code = $('sb-code').value.trim().toLowerCase().replace(/\s+/g, '-');
+  if (!url || !key || !code) { alert('All three fields are required.'); return; }
+  if (!url.startsWith('https://')) { alert('Project URL must start with https://'); return; }
+  localStorage.setItem('dp7_sb_url',   url);
+  localStorage.setItem('dp7_sb_key',   key);
+  localStorage.setItem('dp7_sb_store', code);
+  sbUrl = url; sbKey = key; sbStoreCode = code;
+  _sbReady = true;
+  setSyncStatus('ok');
+  closeModal('modal-sync');
+  if (confirm('Connected to "' + code + '"!\n\nPull latest data from the cloud now?\n(Choose Pull on a new/secondary device, Push to upload existing local data.)')) {
+    sbPull(false);
+  } else {
+    sbPush();
+  }
+}
+
+function clearSyncSetup() {
+  if (!confirm('Disconnect from cloud sync?\n\nYour local data will not be affected.')) return;
+  localStorage.removeItem('dp7_sb_url');
+  localStorage.removeItem('dp7_sb_key');
+  localStorage.removeItem('dp7_sb_store');
+  sbUrl = ''; sbKey = ''; sbStoreCode = ''; _sbReady = false;
+  setSyncStatus('off');
+  closeModal('modal-sync');
 }
 
 // =============================================================
