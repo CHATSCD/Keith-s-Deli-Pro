@@ -844,8 +844,8 @@
                   <td>${i.packSize||'—'}</td>
                   <td>${i.storage||'—'}</td>
                   <td>$${(i.price||0).toFixed(2)}</td>
-                  <td><span class="badge ${(i.currentOnHand||0)<(i.par||0)?'b-low':'b-ok'}">${i.currentOnHand||0}</span></td>
-                  <td>${i.par||0}</td>
+                  <td><input type="number" min="0" step="1" value="${i.currentOnHand||0}" onchange="updateOnHand('${i.id}', this.value)" style="width:64px;padding:4px 6px;background:var(--bg2);border:1px solid var(--border2);font-family:'DM Mono',monospace;font-size:12px;text-align:center;"></td>
+                  <td><input type="number" min="0" step="1" value="${i.par||0}" onchange="updatePar('${i.id}', this.value)" style="width:64px;padding:4px 6px;background:var(--bg2);border:1px solid var(--border2);font-family:'DM Mono',monospace;font-size:12px;text-align:center;"></td>
                 </tr>`).join('')}
               </tbody>
             </table>
@@ -853,6 +853,16 @@
         </div>`;
     }).join('');
   }
+
+  window.updateOnHand = function(id, val){
+    const item = inventoryItems.find(i => i.id === id);
+    if(item){ item.currentOnHand = Math.max(0, parseInt(val)||0); persist(); }
+  };
+
+  window.updatePar = function(id, val){
+    const item = inventoryItems.find(i => i.id === id);
+    if(item){ item.par = Math.max(0, parseInt(val)||0); persist(); }
+  };
 
   function renderInvoicePanel(){
     const inv = invoices.find(i=>i.invoiceNumber==='56678756');
