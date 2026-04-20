@@ -1,986 +1,2330 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Keith's Deli Pro · BEK Master + Invoice</title>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #f2ede4; --bg2: #e8e0d2; --surface: #faf7f2; --surface2: #f0ebe0;
-      --border: #d8cfc0; --border2: #bfb49e; --gold: #b52b20; --gold2: #d4382b;
-      --green: #1a4a80; --green2: #1f5ea3; --red: #b52b20; --red2: #d4382b;
-      --blue: #2471a3; --text: #1a1612; --text2: #4a3f32; --muted: #8a7a66; --white: #ffffff;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg2); }
-    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
-    header {
-      background: linear-gradient(135deg, #0d1f3c 0%, #1a3560 50%, #8c1c12 100%);
-      border-bottom: 3px solid var(--gold); padding: 0 28px; display: flex; align-items: center;
-      gap: 20px; height: 64px; position: sticky; top: 0; z-index: 50;
-      box-shadow: 0 2px 20px rgba(0,0,0,0.2);
-    }
-    header h1 { font-family: 'Barlow Condensed', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: #f5f0e8; }
-    .header-badge { background: rgba(181,43,32,0.3); border: 1px solid rgba(181,43,32,0.6); color: #f0b0a8; font-family: 'DM Mono', monospace; font-size: 10px; padding: 3px 10px; letter-spacing: 1px; }
-    .header-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
-    .week-display { font-family: 'DM Mono', monospace; font-size: 11px; color: #c8d8f0; }
-    nav { background: #ffffff; border-bottom: 2px solid var(--border); display: flex; overflow-x: auto; padding: 0 12px; box-shadow: 0 1px 6px rgba(26,70,128,0.07); }
-    nav button {
-      font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 1.5px;
-      padding: 0 20px; height: 48px; background: none; border: none; color: var(--muted);
-      cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
-      white-space: nowrap; text-transform: uppercase; display: flex; align-items: center; gap: 8px;
-    }
-    nav button:hover { color: var(--text); }
-    nav button.active { color: var(--gold); border-bottom-color: var(--gold); }
-    main { flex: 1; padding: 24px 28px; max-width: 1500px; width: 100%; margin: 0 auto; }
-    .section { display: none; animation: fadeIn 0.2s ease; }
-    .section.active { display: block; }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
-    .btn {
-      font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 1px;
-      padding: 9px 18px; border: none; cursor: pointer; text-transform: uppercase;
-      transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px;
-    }
-    .btn-gold { background: var(--gold); color: #fff; } .btn-gold:hover { background: var(--gold2); }
-    .btn-green { background: var(--green); color: #fff; } .btn-green:hover { background: var(--green2); }
-    .btn-danger { background: var(--red); color: #fff; } .btn-danger:hover { background: var(--red2); }
-    .btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
-    .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
-    .btn-sm { padding: 5px 12px; font-size: 10px; }
-    .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
-    .sec-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
-    .sec-title { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
-    .table-wrap { overflow-x: auto; border: 1px solid var(--border); background: var(--surface); }
-    table { width: 100%; border-collapse: collapse; }
-    thead tr { background: var(--surface2); }
-    th { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); padding: 11px 14px; text-align: left; border-bottom: 1px solid var(--border2); white-space: nowrap; }
-    td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
-    tbody tr:hover td { background: rgba(26,70,128,0.04); }
-    .badge { display: inline-block; font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; padding: 2px 8px; letter-spacing: 1px; text-transform: uppercase; }
-    .b-ok { background: rgba(76,175,94,0.12); color: var(--green2); border: 1px solid rgba(76,175,94,0.2); }
-    .b-low { background: rgba(217,79,79,0.12); color: var(--red2); border: 1px solid rgba(217,79,79,0.2); }
-    .b-cat { background: rgba(31,94,163,0.1); color: #2471a3; border: 1px solid rgba(31,94,163,0.25); }
-    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
-    .fsearch, .fsel { background: #fff; border: 1px solid var(--border2); font-family: 'DM Mono', monospace; font-size: 11px; padding: 8px 14px; outline: none; min-width: 140px; }
-    .fsearch:focus, .fsel:focus { border-color: var(--gold); }
-    .toggle-switch { position: relative; display: inline-block; width: 44px; height: 22px; }
-    .toggle-switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .2s; border-radius: 22px; }
-    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 2px; bottom: 2px; background-color: white; transition: .2s; border-radius: 50%; }
-    input:checked + .slider { background-color: var(--green); }
-    input:checked + .slider:before { transform: translateX(22px); }
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
-    .modal-overlay.open { display: flex; }
-    .modal { background: var(--surface); border: 1px solid var(--border2); border-top: 3px solid var(--gold); width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; padding: 28px; animation: slideUp 0.2s; }
-    .modal-title { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 22px; }
-    .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); font-family: 'DM Mono', monospace; }
-    .counter-badge { background: var(--surface2); padding: 6px 14px; border-radius: 20px; font-family: 'DM Mono',monospace; }
-    .an-card { background: var(--surface); border: 1px solid var(--border); padding: 16px; }
-    .stat-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
-    .stat-value { font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 700; }
-    .form-group { margin-bottom: 12px; }
-    label { display: block; font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
-    input, select { width: 100%; background: var(--bg2); border: 1px solid var(--border2); padding: 8px 12px; font-family: 'DM Sans', sans-serif; }
-    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keith's Deli Manager Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Tan/cream backgrounds */
+  --bg: #f2ede4;
+  --bg2: #e8e0d2;
+  --surface: #faf7f2;
+  --surface2: #f0ebe0;
+  --border: #d8cfc0;
+  --border2: #bfb49e;
+  /* Primary accent = deep red */
+  --gold: #b52b20;
+  --gold2: #d4382b;
+  /* Success/positive = navy blue */
+  --green: #1a4a80;
+  --green2: #1f5ea3;
+  /* Danger = red */
+  --red: #b52b20;
+  --red2: #d4382b;
+  /* Info = steel blue */
+  --blue: #2471a3;
+  /* Text */
+  --text: #1a1612;
+  --text2: #4a3f32;
+  --muted: #8a7a66;
+  --white: #ffffff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(–bg2); }
+::-webkit-scrollbar-thumb { background: var(–border2); border-radius: 3px; }
+
+/* HEADER */
+header {
+background: linear-gradient(135deg, #0d1f3c 0%, #1a3560 50%, #8c1c12 100%);
+border-bottom: 3px solid var(–gold);
+padding: 0 28px;
+display: flex;
+align-items: center;
+gap: 20px;
+height: 64px;
+position: sticky;
+top: 0;
+z-index: 50;
+box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+}
+header h1 {
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 26px;
+font-weight: 800;
+letter-spacing: 3px;
+text-transform: uppercase;
+color: #f5f0e8;
+}
+.header-badge {
+background: rgba(181,43,32,0.3);
+border: 1px solid rgba(181,43,32,0.6);
+color: #f0b0a8;
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+font-weight: 500;
+padding: 3px 10px;
+letter-spacing: 1px;
+text-transform: uppercase;
+}
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+.week-display {
+font-family: ‘DM Mono’, monospace;
+font-size: 11px;
+color: #c8d8f0;
+}
+nav {
+background: #ffffff;
+border-bottom: 2px solid var(–border);
+display: flex;
+overflow-x: auto;
+padding: 0 12px;
+box-shadow: 0 1px 6px rgba(26,70,128,0.07);
+}
+nav button {
+font-family: ‘DM Mono’, monospace;
+font-size: 11px;
+font-weight: 500;
+letter-spacing: 1.5px;
+padding: 0 20px;
+height: 48px;
+background: none;
+border: none;
+color: var(–muted);
+cursor: pointer;
+border-bottom: 2px solid transparent;
+transition: all 0.2s;
+white-space: nowrap;
+text-transform: uppercase;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+nav button:hover { color: var(–text); }
+nav button.active { color: var(–gold); border-bottom-color: var(–gold); }
+nav button .nav-icon { font-size: 14px; }
+
+main { flex: 1; padding: 24px 28px; max-width: 1500px; width: 100%; margin: 0 auto; }
+.section { display: none; animation: fadeIn 0.2s ease; }
+.section.active { display: block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
+
+/* BUTTONS */
+.btn {
+font-family: ‘DM Mono’, monospace;
+font-size: 11px;
+font-weight: 500;
+letter-spacing: 1px;
+padding: 9px 18px;
+border: none;
+cursor: pointer;
+text-transform: uppercase;
+transition: all 0.15s;
+display: inline-flex;
+align-items: center;
+gap: 6px;
+}
+.btn-gold { background: var(–gold); color: #ffffff; }
+.btn-gold:hover { background: var(–gold2); }
+.btn-green { background: var(–green); color: #fff; }
+.btn-green:hover { background: var(–green2); }
+.btn-danger { background: var(–red); color: #fff; }
+.btn-danger:hover { background: var(–red2); }
+.btn-ghost { background: transparent; color: var(–text2); border: 1px solid var(–border2); }
+.btn-ghost:hover { color: var(–text); border-color: var(–muted); }
+.btn-sm { padding: 5px 12px; font-size: 10px; }
+.btn-outline { background: transparent; border: 1px solid var(–gold); color: var(–gold); }
+.btn-outline:hover { background: rgba(181,43,32,0.07); }
+.btn-green { background: var(–green); color: #fff; }
+.btn-green:hover { background: var(–green2); }
+
+/* SECTION HEADER */
+.sec-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 20px;
+flex-wrap: wrap;
+gap: 12px;
+}
+.sec-title {
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 20px;
+font-weight: 700;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(–gold);
+}
+
+/* STAT CARDS */
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.stat-card {
+background: var(–surface);
+border: 1px solid var(–border);
+padding: 18px 20px;
+position: relative;
+overflow: hidden;
+transition: border-color 0.2s;
+}
+.stat-card::before {
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 3px;
+background: linear-gradient(90deg, var(–green2), var(–gold));
+}
+.stat-card:hover { border-color: var(–border2); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.stat-label {
+font-family: ‘DM Mono’, monospace;
+font-size: 9px;
+font-weight: 500;
+letter-spacing: 1.5px;
+text-transform: uppercase;
+color: var(–muted);
+margin-bottom: 10px;
+}
+.stat-value {
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 36px;
+font-weight: 700;
+color: var(–gold);
+line-height: 1;
+}
+.stat-value.green { color: var(–green2); }
+.stat-value.red { color: var(–red2); }
+.stat-value.white { color: var(–text); }
+.stat-sub { font-size: 11px; color: var(–text2); margin-top: 5px; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; border: 1px solid var(–border); }
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: var(–surface2); }
+th {
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+font-weight: 500;
+letter-spacing: 1.5px;
+text-transform: uppercase;
+color: var(–muted);
+padding: 11px 14px;
+text-align: left;
+border-bottom: 1px solid var(–border2);
+white-space: nowrap;
+}
+td { padding: 10px 14px; border-bottom: 1px solid var(–border); font-size: 13px; vertical-align: middle; }
+tbody tr:hover td { background: rgba(26,70,128,0.04); }
+tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: ‘DM Mono’, monospace; font-size: 12px; }
+
+/* BADGES */
+.badge {
+display: inline-block;
+font-family: ‘DM Mono’, monospace;
+font-size: 9px;
+font-weight: 500;
+padding: 2px 8px;
+letter-spacing: 1px;
+text-transform: uppercase;
+}
+.b-ok { background: rgba(76,175,94,0.12); color: var(–green2); border: 1px solid rgba(76,175,94,0.2); }
+.b-low { background: rgba(217,79,79,0.12); color: var(–red2); border: 1px solid rgba(217,79,79,0.2); }
+.b-warn { background: rgba(212,168,67,0.12); color: var(–gold); border: 1px solid rgba(212,168,67,0.2); }
+.b-nopar { background: transparent; color: var(–muted); border: 1px solid var(–border2); }
+.b-cat { background: rgba(31,94,163,0.1); color: #2471a3; border: 1px solid rgba(31,94,163,0.25); }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal {
+background: var(–surface);
+border: 1px solid var(–border2);
+border-top: 3px solid var(–gold);
+width: 100%;
+max-width: 540px;
+max-height: 90vh;
+overflow-y: auto;
+padding: 28px;
+animation: slideUp 0.2s ease;
+box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+}
+@keyframes slideUp { from { transform: translateY(16px); opacity:0; } to { transform:none; opacity:1; } }
+.modal-title {
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 20px;
+font-weight: 700;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(–gold);
+margin-bottom: 22px;
+}
+.form-group { margin-bottom: 16px; }
+label {
+display: block;
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+font-weight: 500;
+letter-spacing: 1px;
+text-transform: uppercase;
+color: var(–muted);
+margin-bottom: 6px;
+}
+input, select, textarea {
+width: 100%;
+background: var(–bg2);
+border: 1px solid var(–border2);
+color: var(–text);
+font-family: ‘DM Sans’, sans-serif;
+font-size: 14px;
+padding: 9px 12px;
+outline: none;
+transition: border-color 0.15s;
+}
+input:focus, select:focus, textarea:focus { border-color: var(–gold); box-shadow: 0 0 0 2px rgba(192,57,43,0.1); }
+select option { background: #fff; color: var(–text); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(–border); }
+
+/* QTY input inline */
+.qty-cell {
+background: var(–bg2);
+border: 1px solid var(–border);
+color: var(–text);
+font-family: ‘DM Mono’, monospace;
+font-size: 12px;
+padding: 4px 8px;
+width: 72px;
+outline: none;
+transition: border-color 0.15s;
+}
+.qty-cell:focus { border-color: var(–gold); }
+
+/* ORDER NEEDED pill */
+.need-pill {
+display: inline-block;
+background: rgba(192,57,43,0.1);
+border: 1px solid rgba(181,43,32,0.25);
+color: var(–red2);
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+padding: 2px 8px;
+font-weight: 500;
+}
+
+/* FILTER row */
+.filter-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.fsearch {
+background: #fff;
+border: 1px solid var(–border2);
+color: var(–text);
+font-family: ‘DM Mono’, monospace;
+font-size: 11px;
+padding: 8px 14px;
+outline: none;
+width: 190px;
+}
+.fsearch:focus { border-color: var(–gold); }
+.fsel {
+background: #fff;
+border: 1px solid var(–border2);
+color: var(–text2);
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+padding: 8px 12px;
+outline: none;
+cursor: pointer;
+}
+
+/* INV subtabs */
+.subtabs { display: flex; gap: 0; margin-bottom: 18px; border-bottom: 2px solid var(–border); }
+.subtab {
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+font-weight: 500;
+letter-spacing: 1.5px;
+padding: 10px 18px;
+background: none;
+border: none;
+color: var(–muted);
+cursor: pointer;
+border-bottom: 2px solid transparent;
+margin-bottom: -2px;
+text-transform: uppercase;
+transition: all 0.2s;
+white-space: nowrap;
+}
+.subtab:hover { color: var(–text); }
+.subtab.active { color: var(–gold); border-bottom-color: var(–gold); }
+.subpanel { display: none; } .subpanel.active { display: block; }
+
+/* ANALYTICS */
+.analytics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.an-card {
+background: var(–surface);
+border: 1px solid var(–border);
+padding: 20px;
+box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.an-card.highlight {
+border-color: var(–green2);
+background: rgba(26,70,128,0.04);
+}
+.an-title {
+font-family: ‘DM Mono’, monospace;
+font-size: 9px;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(–muted);
+margin-bottom: 10px;
+}
+.an-big {
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 42px;
+font-weight: 700;
+line-height: 1;
+}
+.an-big.gold { color: var(–gold); }
+.an-big.green { color: var(–green2); }
+.an-big.red { color: var(–red2); }
+.an-sub { font-size: 12px; color: var(–text2); margin-top: 6px; }
+
+/* COST BAR */
+.cost-bar-bg { background: var(–border); height: 5px; margin-top: 8px; }
+.cost-bar-fill { height: 100%; background: var(–blue); transition: width 0.4s; }
+.cost-bar-fill.bad { background: var(–red); }
+
+/* INVOICE LIST */
+.invoice-item {
+background: var(–surface);
+border: 1px solid var(–border);
+border-left: 3px solid var(–gold);
+padding: 14px 18px;
+margin-bottom: 8px;
+display: flex;
+align-items: center;
+gap: 16px;
+flex-wrap: wrap;
+box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.inv-sup { font-family: ‘Barlow Condensed’, sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 1px; }
+.inv-meta { font-family: ‘DM Mono’, monospace; font-size: 11px; color: var(–text2); }
+.inv-amount { font-family: ‘Barlow Condensed’, sans-serif; font-size: 28px; font-weight: 700; color: var(–gold); margin-left: auto; }
+
+/* ORDER LIST */
+.order-card {
+background: var(–surface);
+border: 1px solid var(–border);
+padding: 13px 18px;
+display: flex;
+align-items: center;
+gap: 14px;
+margin-bottom: 6px;
+transition: border-color 0.15s;
+box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.order-card:hover { border-color: var(–gold); }
+.order-card input[type=checkbox] { width: 17px; height: 17px; accent-color: var(–gold); flex-shrink: 0; cursor: pointer; }
+.order-card.done { opacity: 0.5; }
+.order-card.done .o-name { text-decoration: line-through; }
+.o-name { font-weight: 500; flex: 1; }
+.o-meta { font-family: ‘DM Mono’, monospace; font-size: 11px; color: var(–muted); }
+
+/* WEEK SELECTOR */
+.week-nav { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.week-nav span { font-family: ‘DM Mono’, monospace; font-size: 12px; color: var(–text2); }
+
+/* ING LIST in recipe */
+.ing-list { list-style: none; margin-top: 10px; }
+.ing-list li { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(–border); font-size: 13px; }
+.ing-list li:last-child { border-bottom: none; }
+.ing-del { background: none; border: none; color: var(–red2); cursor: pointer; font-size: 16px; padding: 0 4px; }
+
+.empty-state { text-align: center; padding: 60px 20px; color: var(–muted); font-family: ‘DM Mono’, monospace; font-size: 12px; }
+.empty-big { font-family: ‘Barlow Condensed’, sans-serif; font-size: 52px; font-weight: 700; color: var(–border2); letter-spacing: 3px; display: block; margin-bottom: 8px; }
+
+/* divider labels */
+.group-label {
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(–muted);
+padding: 10px 14px 6px;
+border-bottom: 1px solid var(–border);
+background: var(–bg2);
+}
+
+.progress-ring { display: inline-flex; align-items: center; gap: 8px; }
+
+/* REPORT CARDS */
+.rpt-card { background:var(–surface); border:2px solid var(–border); padding:22px 20px; transition:border-color .2s,box-shadow .2s; }
+.rpt-card:hover { border-color:var(–gold); box-shadow:0 2px 12px rgba(181,43,32,.1); }
+.rpt-card.selected { border-color:var(–gold); background:rgba(181,43,32,.04); }
+.rpt-icon { font-size:28px; margin-bottom:10px; }
+.rpt-card-title { font-family:‘Barlow Condensed’,sans-serif; font-size:18px; font-weight:700; letter-spacing:1px; color:var(–text); margin-bottom:6px; }
+.rpt-card-sub { font-size:12px; color:var(–text2); line-height:1.5; }
+
+/* PRINT REPORT STYLES */
+.rpt-doc { background:#fff; border:1px solid var(–border); padding:32px; font-family:‘DM Sans’,sans-serif; }
+.rpt-doc-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; padding-bottom:16px; border-bottom:3px solid #1a1612; }
+.rpt-doc-title { font-family:‘Barlow Condensed’,sans-serif; font-size:28px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:#1a1612; }
+.rpt-doc-subtitle { font-family:‘DM Mono’,monospace; font-size:11px; color:#666; margin-top:4px; }
+.rpt-doc-meta { text-align:right; font-family:‘DM Mono’,monospace; font-size:11px; color:#444; line-height:1.8; }
+.rpt-section-hd { font-family:‘Barlow Condensed’,sans-serif; font-size:15px; font-weight:700; letter-spacing:1px; text-transform:uppercase; background:#1a3560; color:#fff; padding:6px 12px; margin:20px 0 0; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.rpt-table { width:100%; border-collapse:collapse; margin-bottom:4px; }
+.rpt-table th { font-family:‘DM Mono’,monospace; font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; background:#f0ebe0; color:#444; padding:7px 10px; text-align:left; border-bottom:2px solid #bfb49e; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.rpt-table td { padding:7px 10px; border-bottom:1px solid #e0d8cc; font-size:12px; vertical-align:middle; }
+.rpt-table tr:nth-child(even) td { background:#faf7f2; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.rpt-table .num { text-align:right; font-family:‘DM Mono’,monospace; font-size:11px; }
+.rpt-table .blank { border-bottom:1px solid #888; min-width:60px; }
+.rpt-totals td { font-weight:600; font-family:‘DM Mono’,monospace; font-size:12px; background:#e8e0d2 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.rpt-summary-box { background:#1a3560; color:#fff; padding:16px 20px; margin:20px 0; display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:16px; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.rpt-summary-label { font-family:‘DM Mono’,monospace; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; opacity:.7; margin-bottom:4px; }
+.rpt-summary-value { font-family:‘Barlow Condensed’,sans-serif; font-size:26px; font-weight:700; }
+.rpt-summary-value.red { color:#ff8080; }
+.rpt-summary-value.grn { color:#80d4a0; }
+.rpt-cat-row td { background:#e8e0d2 !important; font-family:‘DM Mono’,monospace; font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#4a3f32; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.rpt-fc-row { display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid #e0d8cc; font-size:13px; }
+.rpt-fc-row.total-row { border-top:2px solid #1a1612; border-bottom:none; font-weight:700; font-size:15px; padding-top:12px; margin-top:4px; }
+.rpt-fc-row .lbl { color:#4a3f32; }
+.rpt-fc-row .val { font-family:‘DM Mono’,monospace; }
+.rpt-sig { margin-top:36px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px; }
+.rpt-sig-line { border-top:1px solid #888; padding-top:6px; font-family:‘DM Mono’,monospace; font-size:10px; color:#666; }
+
+@media print {
+header,nav,.rpt-card,#rpt-actions,.sec-header,.stat-grid,.subtabs,button,.btn,.filter-row,.week-nav,#rpt-week-label { display:none !important; }
+main { padding:0 !important; max-width:100% !important; }
+.section { display:none !important; }
+#tab-reports { display:block !important; }
+#rpt-preview { display:block !important; }
+.rpt-doc { border:none; padding:0; }
+body { background:#fff; }
+thead { display:table-header-group; }
+tr { page-break-inside:avoid; }
+}
+
+/* CLOUD SYNC */
+.sync-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 5px 12px; background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15); color: #c8d8f0;
+  cursor: pointer; transition: all 0.15s;
+}
+.sync-pill:hover { background: rgba(255,255,255,0.15); }
+#sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #6b7280; display: inline-block; flex-shrink: 0; }
+.sync-pull-btn {
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 5px 10px; background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12); color: #a0b8d8;
+  cursor: pointer; transition: all 0.15s;
+}
+.sync-pull-btn:hover { background: rgba(255,255,255,0.14); color: #fff; }
+</style>
+
 </head>
 <body>
+
 <header>
   <h1>⬡ Deli Pro</h1>
-  <span class="header-badge">Manager · BEK ready</span>
+  <span class="header-badge">Manager Dashboard</span>
   <div class="header-right">
     <span class="week-display" id="header-week"></span>
+    <button class="sync-pull-btn" onclick="sbPull()" title="Pull latest data from cloud">↓ Pull</button>
+    <button class="sync-pill" onclick="openSyncModal()" title="Cloud Sync Settings">
+      <span id="sync-dot"></span>
+      <span id="sync-txt">Cloud</span>
+    </button>
   </div>
 </header>
 
 <nav>
-  <button class="active" onclick="showTab('analytics')">📊 Analytics</button>
-  <button onclick="showTab('inventory')">📦 Inventory</button>
-  <button onclick="showTab('invoices')">🧾 Invoices</button>
-  <button onclick="showTab('orders')">📋 Order List</button>
-  <button onclick="showTab('recipes')">🍽 Recipes</button>
-  <button onclick="showTab('suppliers')">🚚 Suppliers</button>
-  <button onclick="showTab('itemsMgmt')">🏷️ Items Mgmt</button>
-  <button onclick="showTab('reports')">🖨 Reports</button>
+  <button class="active" onclick="showTab('analytics')"><span class="nav-icon">📊</span> Analytics</button>
+  <button onclick="showTab('inventory')"><span class="nav-icon">📦</span> Inventory</button>
+  <button onclick="showTab('invoices')"><span class="nav-icon">🧾</span> Invoices</button>
+  <button onclick="showTab('orders')"><span class="nav-icon">📋</span> Order List</button>
+  <button onclick="showTab('recipes')"><span class="nav-icon">🍽</span> Recipes</button>
+  <button onclick="showTab('suppliers')"><span class="nav-icon">🚚</span> Suppliers</button>
+  <button onclick="showTab('reports')"><span class="nav-icon">🖨</span> Reports</button>
 </nav>
 
 <main>
-  <!-- ANALYTICS -->
-  <div class="section active" id="tab-analytics">
-    <div class="sec-title">Analytics · Active items only</div>
-    <div id="analytics-panel"></div>
+
+<!-- ========== ANALYTICS ========== -->
+
+<div class="section active" id="tab-analytics">
+  <div class="week-nav">
+    <span class="sec-title">Analytics</span>
+    <button class="btn btn-ghost btn-sm" onclick="prevWeek()">◀ Prev</button>
+    <span id="week-label" style="font-family:'DM Mono',monospace;font-size:12px;color:var(--gold);"></span>
+    <button class="btn btn-ghost btn-sm" onclick="nextWeek()">Next ▶</button>
+    <button class="btn btn-outline btn-sm" onclick="setCurrentWeek()">This Week</button>
+    <button class="btn btn-gold btn-sm" onclick="openWeekSetup()">⚙ Set Week Start Counts</button>
   </div>
 
-  <!-- INVENTORY -->
-  <div class="section" id="tab-inventory">
-    <div class="sec-header"><span class="sec-title">Inventory · Active items only</span></div>
-    <div id="inv-demo"></div>
-  </div>
+  <!-- KPI cards -->
 
-  <!-- INVOICES -->
-  <div class="section" id="tab-invoices">
-    <div class="sec-header"><span class="sec-title">Invoices</span></div>
-    <div id="invoice-panel"></div>
-  </div>
+  <div class="analytics-grid" id="an-kpis"></div>
 
-  <!-- ORDERS -->
-  <div class="section" id="tab-orders"><div class="sec-title">Order list (active items)</div></div>
-  <!-- RECIPES -->
-  <div class="section" id="tab-recipes"><div class="sec-title">Recipes</div></div>
-  <!-- SUPPLIERS -->
-  <div class="section" id="tab-suppliers"><div class="sec-title">Suppliers</div></div>
-  <!-- REPORTS -->
-  <div class="section" id="tab-reports"><div class="sec-title">Reports</div></div>
+  <!-- Food cost breakdown -->
 
-  <!-- ========== ITEMS MANAGEMENT ========== -->
-  <div class="section" id="tab-itemsMgmt">
-    <div class="sec-header">
-      <span class="sec-title">📋 Items Management · BEK Master + Existing</span>
-      <div><span class="counter-badge" id="active-counter">0 of 0 active</span></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+    <div class="an-card">
+      <div class="an-title">Food Cost Formula</div>
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);line-height:2;">
+        <div>Beginning Inventory + Purchases</div>
+        <div style="border-top:1px solid var(--border);margin:6px 0;padding-top:6px;">= Cost of Goods Available</div>
+        <div>− Ending Inventory</div>
+        <div style="border-top:1px solid var(--border);margin:6px 0;padding-top:6px;">= <span style="color:var(--gold)">Cost of Goods Used</span></div>
+        <div style="margin-top:8px;">Food Cost % = COGS ÷ Sales × 100</div>
+      </div>
     </div>
-    
-    <!-- FILTER ROW - FULLY FUNCTIONAL -->
-    <div class="filter-row">
-      <input class="fsearch" id="im-search" placeholder="🔍 Search name / item# / brand" oninput="renderItemsTable()">
-      
-      <select class="fsel" id="im-storage" onchange="renderItemsTable()">
-        <option value="">📦 All Storage</option>
-        <option value="Dry">Dry</option>
-        <option value="Frozen">Frozen</option>
-        <option value="Refrigeration">Refrigeration</option>
-      </select>
-      
-      <select class="fsel" id="im-active" onchange="renderItemsTable()">
-        <option value="">✅ All Status</option>
-        <option value="active">Active only</option>
-        <option value="inactive">Inactive only</option>
-      </select>
-      
-      <select class="fsel" id="im-vendor" onchange="renderItemsTable()">
-        <option value="">🏢 All Vendors</option>
-        <option value="BEK">BEK (Ben E. Keith)</option>
-        <option value="Merchants">Merchants</option>
-        <option value="Imperial">Imperial</option>
-        <option value="Other">Other</option>
-      </select>
-      
-      <select class="fsel" id="im-section" onchange="renderItemsTable()">
-        <option value="">📂 All Sections</option>
-        <option value="Deli">Deli</option>
-        <option value="Fountain">Fountain</option>
-        <option value="Branded Deli">Branded Deli</option>
-      </select>
-      
-      <button class="btn btn-outline btn-sm" onclick="bulkActivate(true)">✅ Activate visible</button>
-      <button class="btn btn-ghost btn-sm" onclick="bulkActivate(false)">❌ Deactivate visible</button>
-      <button class="btn btn-gold btn-sm" onclick="seedBEKMaster()">📥 Seed BEK master (280)</button>
-    </div>
-    
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Section</th>
-            <th>Item#</th>
-            <th>Item Name</th>
-            <th>Brand</th>
-            <th>Pack/Size</th>
-            <th>Storage</th>
-            <th>Price</th>
-            <th>On Hand</th>
-            <th>Par</th>
-            <th>Active</th>
-          </tr>
-        </thead>
-        <tbody id="items-tbody"></tbody>
-      </table>
-    </div>
-    <p style="margin-top:12px;font-size:12px;color:var(--muted);"><i>Toggle switches save instantly. Only active items appear elsewhere.</i></p>
+    <div class="an-card" id="an-food-cost-detail"></div>
   </div>
-</main>
 
-<!-- Receipt summary modal -->
-<div class="modal-overlay" id="modal-summary">
-  <div class="modal">
-    <div class="modal-title">📦 Receipt summary</div>
-    <div id="summary-content" style="font-family:'DM Mono',monospace; font-size:13px; line-height:1.8;"></div>
-    <div class="modal-actions"><button class="btn btn-gold" onclick="closeModal('modal-summary')">OK</button></div>
+  <!-- Per-section breakdown -->
+
+  <div class="an-card" style="margin-bottom:20px;">
+    <div class="an-title">Weekly Food Cost by Section</div>
+    <div id="an-section-breakdown" style="margin-top:12px;"></div>
+  </div>
+
+  <!-- Order needs table -->
+
+  <div class="sec-header">
+    <span class="sec-title">What to Order</span>
+    <button class="btn btn-green btn-sm" onclick="sendToOrderList()">→ Push All to Order List</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Item</th><th>Section</th><th>Par</th><th>On Hand</th><th>Need to Order</th><th>Supplier</th></tr></thead>
+      <tbody id="an-order-tbody"></tbody>
+    </table>
   </div>
 </div>
 
-<!-- Add missing item modal -->
-<div class="modal-overlay" id="modal-addMissing">
+<!-- ========== INVENTORY ========== -->
+
+<div class="section" id="tab-inventory">
+  <div class="stat-grid" id="inv-stat-cards"></div>
+  <div class="subtabs">
+    <button class="subtab active" onclick="switchSubpanel('deli',this)">🥪 Deli</button>
+    <button class="subtab" onclick="switchSubpanel('fountain',this)">🥤 Fountain</button>
+    <button class="subtab" onclick="switchSubpanel('branded',this)">🍕 Branded Deli</button>
+  </div>
+
+  <div class="subpanel active" id="sp-deli">
+    <div class="sec-header">
+      <div class="filter-row">
+        <input class="fsearch" type="text" id="fs-deli" placeholder="Search deli..." oninput="renderTable('deli')">
+        <select class="fsel" id="fcat-deli" onchange="renderTable('deli')">
+          <option value="">All Categories</option>
+          <option>Deli Meat</option><option>Cheese</option><option>Bread</option><option>Produce</option>
+          <option>Condiments</option><option>Packaging</option><option>Dairy</option><option>Beverages</option><option>Other</option>
+        </select>
+        <select class="fsel" id="fsup-deli" onchange="renderTable('deli')"><option value="">All Suppliers</option></select>
+      </div>
+      <button class="btn btn-gold btn-sm" onclick="openItemModal('deli',null)">+ Add Item</button>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>Item</th><th>Category</th><th>On Hand</th><th>Unit</th><th>Cost/Unit</th><th>Par</th><th>Supplier</th><th>Need</th><th>Status</th><th></th></tr></thead><tbody id="tb-deli"></tbody></table></div>
+  </div>
+
+  <div class="subpanel" id="sp-fountain">
+    <div class="sec-header">
+      <div class="filter-row">
+        <input class="fsearch" type="text" id="fs-fountain" placeholder="Search fountain..." oninput="renderTable('fountain')">
+        <select class="fsel" id="fcat-fountain" onchange="renderTable('fountain')">
+          <option value="">All Categories</option>
+          <option>BIB / CO2</option><option>Cups & Lids</option><option>Coffee</option><option>Cafe Tango</option>
+          <option>Creamer & Sweetener</option><option>Syrups & Sauce</option><option>Coffee Beans</option><option>Other</option>
+        </select>
+      </div>
+      <button class="btn btn-gold btn-sm" onclick="openItemModal('fountain',null)">+ Add Item</button>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>Item</th><th>Category</th><th>On Hand</th><th>Unit</th><th>Cost/Unit</th><th>Par</th><th>Value</th><th>Need</th><th>Status</th><th></th></tr></thead><tbody id="tb-fountain"></tbody></table></div>
+  </div>
+
+  <div class="subpanel" id="sp-branded">
+    <div class="sec-header">
+      <div class="filter-row">
+        <input class="fsearch" type="text" id="fs-branded" placeholder="Search branded deli..." oninput="renderTable('branded')">
+        <select class="fsel" id="fcat-branded" onchange="renderTable('branded')">
+          <option value="">All Categories</option>
+          <option>Pizza</option><option>Wings</option><option>Toppings</option><option>Packaging</option><option>Spices</option><option>Other</option>
+        </select>
+      </div>
+      <button class="btn btn-gold btn-sm" onclick="openItemModal('branded',null)">+ Add Item</button>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>Item</th><th>Category</th><th>On Hand</th><th>Unit</th><th>Cost/Unit</th><th>Par</th><th>Value</th><th>Need</th><th>Status</th><th></th></tr></thead><tbody id="tb-branded"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ========== INVOICES ========== -->
+
+<div class="section" id="tab-invoices">
+  <div class="week-nav">
+    <span class="sec-title">Invoices</span>
+    <span id="inv-week-label" style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2);"></span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;" id="inv-totals-cards"></div>
+  <div class="sec-header" style="margin-top:8px;">
+    <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);">Enter invoices received this week</span>
+    <button class="btn btn-gold" onclick="openInvoiceModal()">+ Add Invoice</button>
+  </div>
+  <div id="invoice-list"></div>
+</div>
+
+<!-- ========== ORDERS ========== -->
+
+<div class="section" id="tab-orders">
+  <div class="sec-header">
+    <span class="sec-title">Order List</span>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-ghost btn-sm" onclick="autoOrders()">⚡ Auto from Low Stock</button>
+      <button class="btn btn-gold" onclick="openOrderModal()">+ Add Item</button>
+      <button class="btn btn-danger btn-sm" onclick="clearDone()">Clear Checked</button>
+    </div>
+  </div>
+  <div id="order-list"></div>
+</div>
+
+<!-- ========== RECIPES ========== -->
+
+<div class="section" id="tab-recipes">
+  <div class="sec-header">
+    <span class="sec-title">Recipes & Food Cost</span>
+    <button class="btn btn-gold" onclick="openRecipeModal(null)">+ Add Recipe</button>
+  </div>
+  <div id="recipe-list"></div>
+</div>
+
+<!-- ========== SUPPLIERS ========== -->
+
+<div class="section" id="tab-suppliers">
+  <div class="sec-header">
+    <span class="sec-title">Suppliers</span>
+    <button class="btn btn-gold" onclick="openSupplierModal(null)">+ Add Supplier</button>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Supplier</th><th>Contact</th><th>Phone</th><th>Email</th><th>Lead Time</th><th>Notes</th><th></th></tr></thead>
+    <tbody id="tb-suppliers"></tbody>
+  </table></div>
+</div>
+
+<!-- ========== REPORTS ========== -->
+
+<div class="section" id="tab-reports">
+  <div class="sec-header">
+    <span class="sec-title">Reports & Export</span>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);align-self:center;" id="rpt-week-label"></span>
+    </div>
+  </div>
+
+  <!-- Report selector cards -->
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:28px;">
+    <div class="rpt-card" id="rcard-count" onclick="selectReport('count')" style="cursor:pointer;">
+      <div class="rpt-icon">📋</div>
+      <div class="rpt-card-title">Weekly Count Sheet</div>
+      <div class="rpt-card-sub">Blank count sheet with par levels for each inventory section. Print and fill in.</div>
+    </div>
+    <div class="rpt-card" id="rcard-inv" onclick="selectReport('inv')" style="cursor:pointer;">
+      <div class="rpt-icon">📦</div>
+      <div class="rpt-card-title">Inventory Valuation</div>
+      <div class="rpt-card-sub">Current on-hand quantities × cost = total value by section and category.</div>
+    </div>
+    <div class="rpt-card" id="rcard-foodcost" onclick="selectReport('foodcost')" style="cursor:pointer;">
+      <div class="rpt-icon">💰</div>
+      <div class="rpt-card-title">Food Cost Report</div>
+      <div class="rpt-card-sub">Weekly food cost calculation: beginning + purchases − ending = COGS + food cost %.</div>
+    </div>
+    <div class="rpt-card" id="rcard-order" onclick="selectReport('order')" style="cursor:pointer;">
+      <div class="rpt-icon">🚚</div>
+      <div class="rpt-card-title">Order List Report</div>
+      <div class="rpt-card-sub">All items at or below par with quantities needed, grouped by supplier.</div>
+    </div>
+  </div>
+
+  <!-- Action bar -->
+
+  <div id="rpt-actions" style="display:none;flex-wrap:wrap;gap:10px;margin-bottom:20px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);align-items:center;">
+    <span id="rpt-selected-label" style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;color:var(--gold);flex:1;"></span>
+    <button class="btn btn-gold" onclick="printReport()">🖨 Print / Save PDF</button>
+    <button class="btn btn-green" onclick="exportExcel()">📥 Export Excel</button>
+  </div>
+
+  <!-- Report preview -->
+
+  <div id="rpt-preview"></div>
+</div>
+
+</main>
+
+<!-- ========== MODALS ========== -->
+
+<!-- Item Modal -->
+
+<div class="modal-overlay" id="modal-item">
   <div class="modal">
-    <div class="modal-title">➕ Add missing item to catalog</div>
-    <div id="missing-detail" style="margin-bottom:16px;"></div>
-    <div class="form-group"><label>Item name</label><input id="miss-name"></div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-      <div class="form-group"><label>Item #</label><input id="miss-number"></div>
-      <div class="form-group"><label>Brand</label><input id="miss-brand"></div>
+    <div class="modal-title" id="item-modal-title">Add Item</div>
+    <input type="hidden" id="item-id"><input type="hidden" id="item-section">
+    <div class="form-row">
+      <div class="form-group"><label>Item Name</label><input type="text" id="item-name"></div>
+      <div class="form-group"><label>Category</label><select id="item-cat"></select></div>
     </div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-      <div class="form-group"><label>Pack/Size</label><input id="miss-pack"></div>
-      <div class="form-group"><label>Storage</label><select id="miss-storage"><option>Dry</option><option>Frozen</option><option>Refrigeration</option></select></div>
+    <div class="form-row">
+      <div class="form-group"><label>Qty On Hand</label><input type="number" id="item-qty" placeholder="0" min="0" step="0.01"></div>
+      <div class="form-group"><label>Unit</label>
+        <select id="item-unit"><option>each</option><option>lbs</option><option>oz</option><option>kg</option><option>bags</option><option>cases</option><option>packs</option><option>sl</option><option>bx</option><option>case</option><option>bttl</option><option>bag</option><option>can</option><option>jar</option><option>gallon</option></select>
+      </div>
     </div>
-    <div class="form-group"><label>Price ($)</label><input id="miss-price" type="number" step="0.01"></div>
-    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-addMissing')">Skip</button><button class="btn btn-gold" onclick="confirmAddMissing()">Add & receive</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Cost / Unit ($)</label><input type="number" id="item-cost" placeholder="0.00" min="0" step="0.01"></div>
+      <div class="form-group"><label>Par Level</label><input type="number" id="item-par" placeholder="0" min="0" step="0.01"></div>
+    </div>
+    <div class="form-group" id="item-sup-row"><label>Supplier</label><select id="item-supplier"><option value="">— None —</option></select></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-item')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveItem()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Invoice Modal -->
+
+<div class="modal-overlay" id="modal-invoice">
+  <div class="modal">
+    <div class="modal-title">Add Invoice</div>
+    <div class="form-row">
+      <div class="form-group"><label>Supplier</label><select id="inv-sup-sel"><option value="">— Select —</option></select></div>
+      <div class="form-group"><label>Date</label><input type="date" id="inv-date"></div>
+    </div>
+    <div class="form-group"><label>Invoice Total ($)</label><input type="number" id="inv-total" placeholder="0.00" min="0" step="0.01"></div>
+    <div class="form-group"><label>Invoice # (optional)</label><input type="text" id="inv-num" placeholder="INV-0000"></div>
+    <div class="form-group"><label>Notes</label><input type="text" id="inv-notes" placeholder="e.g. Deli meat order"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-invoice')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveInvoice()">Save Invoice</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cloud Sync Modal -->
+
+<div class="modal-overlay" id="modal-sync">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-title">☁ Cloud Sync — Supabase</div>
+    <p id="sync-status-msg" style="font-size:12px;font-family:'DM Mono',monospace;margin-bottom:14px;color:var(--muted);">● Not connected</p>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.6;">
+      Connect to <strong>Supabase</strong> (free) to sync all data across devices. One-time setup:
+      create a project at <em>supabase.com</em>, run the SQL below once, then paste your URL and key.
+    </p>
+    <div style="background:#141210;border:1px solid var(--border2);padding:10px 14px;margin-bottom:16px;border-radius:2px;">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:#7bb8e8;margin-bottom:6px;letter-spacing:1px;">SQL EDITOR → RUN ONCE</div>
+      <pre style="font-family:'DM Mono',monospace;font-size:10px;color:#a8e4a0;margin:0;line-height:1.7;white-space:pre-wrap;">CREATE TABLE IF NOT EXISTS deli_stores (
+  store_code TEXT PRIMARY KEY,
+  data       JSONB NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE deli_stores ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "public_access" ON deli_stores
+  FOR ALL USING (true) WITH CHECK (true);</pre>
+    </div>
+    <div class="form-group" style="margin-bottom:12px;">
+      <label>Project URL <span style="font-weight:400;color:var(--muted)">(Settings → API)</span></label>
+      <input type="url" id="sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co" style="font-family:'DM Mono',monospace;font-size:11px;">
+    </div>
+    <div class="form-group" style="margin-bottom:12px;">
+      <label>Anon / Public Key <span style="font-weight:400;color:var(--muted)">(Settings → API → Project API keys)</span></label>
+      <input type="text" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="font-family:'DM Mono',monospace;font-size:11px;">
+    </div>
+    <div class="form-group" style="margin-bottom:6px;">
+      <label>Store Code <span style="font-weight:400;color:var(--muted)">(same short name on every device you want synced)</span></label>
+      <input type="text" id="sb-code" placeholder="e.g. keiths-deli or store-107" style="text-transform:lowercase;">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="clearSyncSetup()" style="color:var(--red);margin-right:auto;">Disconnect</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-sync')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveSyncSetup()">Connect & Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Week Setup Modal -->
+
+<div class="modal-overlay" id="modal-week">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-title">Set Week Start Counts</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:16px;">Enter your inventory value at the START of this week and your sales for the week. This powers the food cost calculation.</p>
+    <div class="form-row">
+      <div class="form-group"><label>Week Start Date</label><input type="date" id="ws-date"></div>
+      <div class="form-group"><label>Weekly Sales ($)</label><input type="number" id="ws-sales" placeholder="0.00" min="0" step="0.01"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Beginning Inventory $ (Deli)</label><input type="number" id="ws-deli" placeholder="0.00" min="0" step="0.01"></div>
+      <div class="form-group"><label>Beginning Inventory $ (Fountain)</label><input type="number" id="ws-fountain" placeholder="0.00" min="0" step="0.01"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Beginning Inventory $ (Branded Deli)</label><input type="number" id="ws-branded" placeholder="0.00" min="0" step="0.01"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-week')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveWeekSetup()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Supplier Modal -->
+
+<div class="modal-overlay" id="modal-supplier">
+  <div class="modal">
+    <div class="modal-title" id="sup-modal-title">Add Supplier</div>
+    <input type="hidden" id="sup-id">
+    <div class="form-row">
+      <div class="form-group"><label>Supplier Name</label><input type="text" id="sup-name"></div>
+      <div class="form-group"><label>Contact Person</label><input type="text" id="sup-contact"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Phone</label><input type="text" id="sup-phone"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="sup-email"></div>
+    </div>
+    <div class="form-group"><label>Lead Time</label><input type="text" id="sup-lead" placeholder="e.g. 2 days"></div>
+    <div class="form-group"><label>Notes</label><textarea id="sup-notes" rows="2"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-supplier')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveSupplier()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Order Modal -->
+
+<div class="modal-overlay" id="modal-order">
+  <div class="modal">
+    <div class="modal-title">Add to Order List</div>
+    <div class="form-row">
+      <div class="form-group"><label>Item</label><input type="text" id="ord-name"></div>
+      <div class="form-group"><label>Qty to Order</label><input type="number" id="ord-qty" placeholder="0" min="0" step="0.01"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Unit</label><input type="text" id="ord-unit"></div>
+      <div class="form-group"><label>Supplier</label><select id="ord-sup"><option value="">— None —</option></select></div>
+    </div>
+    <div class="form-group"><label>Notes</label><input type="text" id="ord-notes"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-order')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveOrder()">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- Recipe Modal -->
+
+<div class="modal-overlay" id="modal-recipe">
+  <div class="modal">
+    <div class="modal-title" id="rec-modal-title">Add Recipe</div>
+    <input type="hidden" id="rec-id">
+    <div class="form-row">
+      <div class="form-group"><label>Recipe Name</label><input type="text" id="rec-name"></div>
+      <div class="form-group"><label>Selling Price ($)</label><input type="number" id="rec-price" placeholder="0.00" min="0" step="0.01"></div>
+    </div>
+    <div class="form-group"><label>Servings / Yield</label><input type="number" id="rec-servings" value="1" min="1"></div>
+    <div class="form-group">
+      <label>Add Ingredient</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <select id="rec-ing-item" style="flex:1;min-width:140px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);padding:8px;outline:none;"></select>
+        <input type="number" id="rec-ing-qty" placeholder="Qty" min="0" step="0.01" style="width:80px;">
+        <button class="btn btn-ghost btn-sm" onclick="addIng()">+ Add</button>
+      </div>
+    </div>
+    <ul class="ing-list" id="rec-ing-list"></ul>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-recipe')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveRecipe()">Save Recipe</button>
+    </div>
   </div>
 </div>
 
 <script>
-(function(){
-  "use strict";
+// =============================================================
+// SEED DATA
+// =============================================================
+const SEED_SUP = [
+  {name:"Merchants",contact:"",phone:"",email:"",lead:"",notes:""},
+  {name:"Imperial",contact:"",phone:"",email:"",lead:"",notes:""}
+];
 
-  // ---------- DATA ----------
-  let inventoryItems = [];
-  let suppliers = [];
-  let invoices = [];
-  let pendingMissing = null;
+const SD = { // shorthand seed for deli
+  n:'name',c:'cat',u:'unit',p:'par',s:'sup'
+};
 
-  const BRAND_MAP = {
-    TYSONRED:'Tyson Red Label', 'FRSH/KTH':'Fresh From Keith\'s', GLDHRVST:'Golden Harvest',
-    HOTPOCKT:'Hot Pockets', PILLSBRY:'Pillsbury(r)', EUROPNBK:'European Bakers',
-    NACHITOS:'Natchitoches Meat Pie Co', CHEFEXCL:'Chefs Exclusive', BAKECRAF:'Bake Crafters',
-    SPECIALR:'Special Recipe', SCHREIBR:'Schreiber', PAPETTIS:'Papettis', MCNAIRN:'Mcnairn',
-    TNT:'Tnt', 'TEX PETE':'Texas Pete', MARKON:'Markon', TORNADOS:'Tornados', DOLE:'Dole',
-    HARTLEYS:'Hartleys', FOSTER:'Foster Farms', KELLEY:'Kelley Foods Manufacturing',
-    'DEL SOL':'Del Sol', PACKER:'Packer', ALBANESE:'Albanese', HEINZ:'Heinz', VIP:'Vip'
-  };
-  function mapBrand(abbr){ return BRAND_MAP[abbr] || abbr; }
+const SEED_DELI=[
+  // ---- FROM 107 COUNT SHEET (March 2026) — $5,970.12 total ----
+  // Suppliers: Merchants / Imperial / Boudin / Bavarian Nuts
+  {name:"Appetizer Egg Roll Pork Crispy Frozen",cat:"Other",unit:"cases",qty:1,cost:37.00,par:1,sup:"Merchants"},
+  {name:"Bacon (Double Smoked)",cat:"Deli Meat",unit:"cases",qty:0.25,cost:63.50,par:1,sup:"Merchants"},
+  {name:"Beef Ground Patty 3-1 75/25",cat:"Deli Meat",unit:"cases",qty:1,cost:77.11,par:1,sup:"Merchants"},
+  {name:"Beef Steak Fritter Breaded",cat:"Deli Meat",unit:"cases",qty:0.5,cost:62.52,par:1,sup:"Merchants"},
+  {name:"Bologna Chicken Pork Beef Slices",cat:"Deli Meat",unit:"packs",qty:2,cost:6.80,par:2,sup:"Merchants"},
+  {name:"Brownie Chocolate Chip 24 Slice",cat:"Bread",unit:"cases",qty:3,cost:48.96,par:1,sup:"Merchants"},
+  {name:"Bun Hot Dog 6\" Hinged",cat:"Bread",unit:"packs",qty:9,cost:3.26,par:5,sup:"Merchants"},
+  {name:"Bun Plain 5\"",cat:"Bread",unit:"packs",qty:7,cost:29.01,par:3,sup:"Merchants"},
+  {name:"Burrito Beef And Bean Red Chile",cat:"Other",unit:"cases",qty:0,cost:50.94,par:1,sup:"Merchants"},
+  {name:"Candy Gummy Bear Mini 12 Flavor",cat:"Other",unit:"bags",qty:7,cost:18.42,par:1,sup:"Merchants"},
+  {name:"Cheese American Yellow .5oz",cat:"Dairy",unit:"packs",qty:2.1,cost:13.62,par:2,sup:"Merchants"},
+  {name:"Chicken Breast 4oz Grilled Fully Cooked",cat:"Deli Meat",unit:"bags",qty:2,cost:33.87,par:1,sup:"Merchants"},
+  {name:"Chicken Breast Patty Fritter 3.2oz",cat:"Deli Meat",unit:"cases",qty:1,cost:23.08,par:1,sup:"Merchants"},
+  {name:"Chicken Tender Jumbo Clipped",cat:"Deli Meat",unit:"cases",qty:3,cost:113.27,par:1,sup:"Merchants"},
+  {name:"Cone Cake #30 Dispenser Pack",cat:"Packaging",unit:"boxes",qty:3,cost:12.07,par:1,sup:"Merchants"},
+  {name:"Container Paper 8oz",cat:"Packaging",unit:"packs",qty:1,cost:4.25,par:1,sup:"Merchants"},
+  {name:"Container Paper 12oz",cat:"Packaging",unit:"cases",qty:1,cost:100.18,par:1,sup:"Merchants"},
+  {name:"Cone Waffle Large Bulk",cat:"Packaging",unit:"packs",qty:1.2,cost:5.48,par:1,sup:"Merchants"},
+  {name:"Container Foam 9X6x3 Large Hinged",cat:"Packaging",unit:"packs",qty:3,cost:11.35,par:2,sup:"Merchants"},
+  {name:"Container Foam 7 1/8X3 3/4",cat:"Packaging",unit:"packs",qty:1,cost:2.42,par:1,sup:"Merchants"},
+  {name:"Container Plastic 6X5.75X3 Clear Hinged",cat:"Packaging",unit:"packs",qty:1,cost:11.51,par:1,sup:"Merchants"},
+  {name:"Corn Dog Chicken Honey Crunch On Stick",cat:"Other",unit:"cases",qty:0.75,cost:43.55,par:1,sup:"Merchants"},
+  {name:"Crispito Chicken Cheese Buffalo Style",cat:"Other",unit:"cases",qty:2,cost:56.10,par:1,sup:"Merchants"},
+  {name:"Crumb Cookie Oreo Medium Crunch",cat:"Other",unit:"bags",qty:14,cost:11.09,par:2,sup:"Merchants"},
+  {name:"Donut Apple Fritter",cat:"Bread",unit:"cases",qty:0.75,cost:50.67,par:1,sup:"Merchants"},
+  {name:"Donut Ring Homestyle Fried",cat:"Bread",unit:"cases",qty:5,cost:38.45,par:1,sup:"Merchants"},
+  {name:"Dough Biscuit Southern Style Buttermilk",cat:"Bread",unit:"cases",qty:0,cost:59.61,par:1,sup:"Merchants"},
+  {name:"Dough Cookie Red Velvet",cat:"Bread",unit:"cases",qty:0.5,cost:84.09,par:1,sup:"Merchants"},
+  {name:"Dough Cookie Mac Nut",cat:"Bread",unit:"cases",qty:1,cost:93.49,par:1,sup:"Merchants"},
+  {name:"Dough Cookie Smores",cat:"Bread",unit:"cases",qty:0.5,cost:93.49,par:1,sup:"Merchants"},
+  {name:"Dough Cookie Chocolate Chip",cat:"Bread",unit:"cases",qty:0,cost:62.85,par:1,sup:"Merchants"},
+  {name:"Dough Cookie Peanut Butter",cat:"Bread",unit:"cases",qty:0.5,cost:72.76,par:1,sup:"Merchants"},
+  {name:"Dough Cookie Sugar Preformed",cat:"Bread",unit:"cases",qty:1,cost:67.24,par:1,sup:"Merchants"},
+  {name:"Dough Roll Cinnamon Cinn-Sational",cat:"Bread",unit:"cases",qty:1.5,cost:72.34,par:1,sup:"Merchants"},
+  {name:"Dressing Honey Mustard Portion Cup",cat:"Condiments",unit:"cases",qty:0.47,cost:28.09,par:1,sup:"Merchants"},
+  {name:"Dressing Ranch Portion Control Cup",cat:"Condiments",unit:"cases",qty:0.75,cost:26.35,par:1,sup:"Merchants"},
+  {name:"Eggroll Pork And Vegetable",cat:"Other",unit:"cases",qty:1,cost:53.08,par:1,sup:"Merchants"},
+  {name:"Foil Aluminum Sheet 9X10 Interfold",cat:"Packaging",unit:"boxes",qty:1,cost:12.56,par:1,sup:"Merchants"},
+  {name:"Foil Aluminum Sheet 12X10.75",cat:"Packaging",unit:"boxes",qty:1,cost:14.50,par:1,sup:"Merchants"},
+  {name:"Fork Plastic Heavy Weight Black",cat:"Packaging",unit:"packs",qty:1,cost:4.41,par:1,sup:"Merchants"},
+  {name:"Gravy Mix Biscuit Pepper",cat:"Condiments",unit:"bags",qty:7,cost:7.26,par:2,sup:"Merchants"},
+  {name:"Ham For Biscuit Slice 1.2oz",cat:"Deli Meat",unit:"packs",qty:1,cost:12.16,par:1,sup:"Merchants"},
+  {name:"Jam Strawberry Packet",cat:"Condiments",unit:"cases",qty:1,cost:25.67,par:1,sup:"Merchants"},
+  {name:"Jelly Grape Pouch",cat:"Condiments",unit:"cases",qty:1,cost:20.45,par:1,sup:"Merchants"},
+  {name:"Ketchup Fancy Foil",cat:"Condiments",unit:"cases",qty:1,cost:26.99,par:1,sup:"Merchants"},
+  {name:"Mayonnaise Pouch",cat:"Condiments",unit:"cases",qty:1,cost:32.11,par:1,sup:"Merchants"},
+  {name:"Mix Soft Serve Chocolate",cat:"Dairy",unit:"bags",qty:9.5,cost:18.97,par:2,sup:"Merchants"},
+  {name:"Mustard Yellow Portion Pack",cat:"Condiments",unit:"cases",qty:1,cost:18.45,par:1,sup:"Merchants"},
+  {name:"Onion Granulated (20oz)",cat:"Produce",unit:"each",qty:1,cost:18.50,par:1,sup:"Merchants"},
+  {name:"Onion Powder",cat:"Produce",unit:"each",qty:1,cost:17.25,par:1,sup:"Merchants"},
+  {name:"Onion Yellow Large Fresh",cat:"Produce",unit:"cases",qty:0.75,cost:11.14,par:1,sup:"Merchants"},
+  {name:"Pepper Black Ground .1gm",cat:"Condiments",unit:"bags",qty:0.75,cost:6.68,par:1,sup:"Merchants"},
+  {name:"Pork Chop 4oz Boneless Center Cut",cat:"Deli Meat",unit:"cases",qty:1.25,cost:34.25,par:1,sup:"Merchants"},
+  {name:"Pulled Pork With BBQ Sauce",cat:"Deli Meat",unit:"bags",qty:5.5,cost:19.27,par:3,sup:"Merchants"},
+  {name:"Puff Pastry Taco",cat:"Other",unit:"cases",qty:0.5,cost:73.18,par:1,sup:"Merchants"},
+  {name:"Puff Pastry Pep and Cheese",cat:"Other",unit:"cases",qty:0.25,cost:70.88,par:1,sup:"Merchants"},
+  {name:"Puff Pastry Ham And Cheese",cat:"Other",unit:"cases",qty:1,cost:80.48,par:1,sup:"Merchants"},
+  {name:"Salt Packet .5 Gram",cat:"Condiments",unit:"bags",qty:0.75,cost:3.73,par:1,sup:"Merchants"},
+  {name:"Sauce Barbecue Original Portion Cup",cat:"Condiments",unit:"cases",qty:1,cost:21.90,par:1,sup:"Merchants"},
+  {name:"Sauce Hot Sauce Pouch",cat:"Condiments",unit:"cases",qty:1,cost:34.88,par:1,sup:"Merchants"},
+  {name:"Sausage Patty Special Recipe Fully Cooked",cat:"Deli Meat",unit:"cases",qty:2,cost:49.54,par:1,sup:"Merchants"},
+  {name:"Seasoning Creole Original",cat:"Condiments",unit:"each",qty:1,cost:20.90,par:1,sup:"Merchants"},
+  {name:"Sprinkle Rainbow",cat:"Other",unit:"cases",qty:1,cost:28.46,par:1,sup:"Merchants"},
+  {name:"Syrup Breakfast Maple Imitation 1.4oz",cat:"Condiments",unit:"cases",qty:0.5,cost:16.18,par:1,sup:"Merchants"},
+  {name:"Syrup Chocolate Full Flavor Can",cat:"Condiments",unit:"each",qty:3,cost:12.62,par:1,sup:"Merchants"},
+  {name:"Topping Butterfinger Chopped",cat:"Other",unit:"bags",qty:1,cost:24.51,par:1,sup:"Merchants"},
+  {name:"Topping Candy Rainbow Nerds",cat:"Other",unit:"bags",qty:2,cost:27.28,par:1,sup:"Merchants"},
+  {name:"Topping Caramel",cat:"Other",unit:"each",qty:7,cost:8.00,par:1,sup:"Merchants"},
+  {name:"Topping Marshmallow Ready To Use",cat:"Other",unit:"each",qty:3,cost:7.66,par:1,sup:"Merchants"},
+  {name:"Topping Reeses Pieces Mini Bulk",cat:"Other",unit:"cases",qty:3,cost:122.75,par:1,sup:"Merchants"},
+  {name:"Waffle Stuffed Sausage Egg Cheese",cat:"Deli Meat",unit:"cases",qty:0.25,cost:82.33,par:1,sup:"Merchants"},
+  {name:"Wrap Deli 9X140 Interfolded",cat:"Packaging",unit:"boxes",qty:11,cost:9.72,par:2,sup:"Merchants"},
+  {name:"Wrap Deli 12X10.75 Interfolded",cat:"Packaging",unit:"boxes",qty:7,cost:11.66,par:2,sup:"Merchants"},
+  // Boudin (Imperial)
+  {name:"Boudin Pork",cat:"Other",unit:"packs",qty:9,cost:7.46,par:3,sup:"Imperial"},
+  {name:"Boudin Shrimp",cat:"Other",unit:"packs",qty:14,cost:8.07,par:3,sup:"Imperial"},
+  {name:"Boudin Crawfish",cat:"Other",unit:"packs",qty:12,cost:9.09,par:3,sup:"Imperial"},
+  {name:"Boudin Alligator",cat:"Other",unit:"packs",qty:15,cost:9.88,par:3,sup:"Imperial"},
+  {name:"Peanuts Regular/Cajun",cat:"Other",unit:"each",qty:7,cost:7.74,par:2,sup:"Imperial"},
+  {name:"16oz Peanut Cup",cat:"Packaging",unit:"packs",qty:23,cost:8.01,par:5,sup:"Imperial"},
+  {name:"32oz Peanut Cup",cat:"Packaging",unit:"packs",qty:19.5,cost:10.22,par:5,sup:"Imperial"},
+  {name:"Peanut Cup Lid",cat:"Packaging",unit:"packs",qty:6.3,cost:5.01,par:2,sup:"Imperial"},
+  // Imperial
+  {name:"Brisket",cat:"Deli Meat",unit:"bags",qty:0,cost:29.44,par:1,sup:"Imperial"},
+  {name:"Cream Cheese Icing",cat:"Bread",unit:"packs",qty:11,cost:5.99,par:2,sup:"Imperial"},
+  {name:"Mini Taco Beef",cat:"Other",unit:"cases",qty:0.5,cost:27.91,par:1,sup:"Imperial"},
+  {name:"Mini Taco Chicken",cat:"Other",unit:"cases",qty:0.5,cost:27.91,par:1,sup:"Imperial"},
+  {name:"Stuffed Nachos",cat:"Other",unit:"cases",qty:0,cost:37.28,par:1,sup:"Imperial"},
+  // Bavarian Nuts
+  {name:"Bavarian Almonds",cat:"Other",unit:"bags",qty:20,cost:11.75,par:5,sup:"Merchants"},
+  {name:"Bavarian Cashews",cat:"Other",unit:"bags",qty:15,cost:12.00,par:5,sup:"Merchants"},
+  {name:"Bavarian Pecans",cat:"Other",unit:"bags",qty:18,cost:13.75,par:5,sup:"Merchants"},
+  {name:"Cone Wrap for Nuts",cat:"Packaging",unit:"cases",qty:6,cost:50.00,par:2,sup:"Merchants"},
+  // Jam/Jelly (Wood F supplier — treated as Merchants)
+  {name:"Jam Strawberry (Wood F)",cat:"Condiments",unit:"each",qty:1,cost:25.49,par:1,sup:"Merchants"},
+  {name:"Jelly Grape (Wood F)",cat:"Condiments",unit:"each",qty:1,cost:17.34,par:1,sup:"Merchants"},
+];
 
-  // Seed suppliers
-  const SEED_SUPPLIERS = [
-    {id:'sup_merch', name:'Merchants'},
-    {id:'sup_imperial', name:'Imperial'},
-    {id:'sup_bek', name:'Ben E. Keith Foods'}
-  ];
+const SEED_FOUNTAIN=[
+  {name:"5 Gall. BIB",cat:"BIB / CO2",unit:"each",qty:6,cost:107.90,par:0},
+  {name:"2.5 Gall. BIB",cat:"BIB / CO2",unit:"each",qty:12,cost:56.23,par:0},
+  {name:"CO2",cat:"BIB / CO2",unit:"each",qty:4,cost:150.00,par:0},
+  {name:"Icee 5 Gall. Coke BIB",cat:"BIB / CO2",unit:"each",qty:2,cost:223.88,par:0},
+  {name:"Icee 5 Gall. Flavor BIB",cat:"BIB / CO2",unit:"each",qty:4,cost:223.88,par:0},
+  {name:"32oz Cups (Fountain)",cat:"Cups & Lids",unit:"sl",qty:6,cost:3.25,par:0},
+  {name:"32oz Lids (Fountain)",cat:"Cups & Lids",unit:"sl",qty:10,cost:5.89,par:0},
+  {name:"24oz Cups",cat:"Cups & Lids",unit:"sl",qty:24,cost:5.60,par:0},
+  {name:"24oz Lids",cat:"Cups & Lids",unit:"sl",qty:10,cost:5.61,par:0},
+  {name:"16oz Cups",cat:"Cups & Lids",unit:"sl",qty:9,cost:4.75,par:0},
+  {name:"16oz Lids",cat:"Cups & Lids",unit:"sl",qty:10,cost:5.61,par:0},
+  {name:"Straws",cat:"Cups & Lids",unit:"sl",qty:4,cost:8.63,par:0},
+  {name:"16oz Coffee Cups",cat:"Coffee",unit:"sl",qty:14,cost:6.60,par:0},
+  {name:"24oz Coffee Cups",cat:"Coffee",unit:"sl",qty:25,cost:5.20,par:0},
+  {name:"Coffee Lids",cat:"Coffee",unit:"sl",qty:10,cost:7.55,par:0},
+  {name:"32oz Cups (Hot)",cat:"Cups & Lids",unit:"sl",qty:42,cost:4.22,par:0},
+  {name:"32oz Lids (Hot)",cat:"Cups & Lids",unit:"sl",qty:9,cost:2.88,par:0},
+  {name:"20oz Cups",cat:"Cups & Lids",unit:"sl",qty:34,cost:2.58,par:0},
+  {name:"20oz Lids",cat:"Cups & Lids",unit:"sl",qty:11,cost:1.07,par:0},
+  {name:"Cafe Tango Lids",cat:"Cafe Tango",unit:"case",qty:0.05,cost:25.30,par:0},
+  {name:"Cafe Tango 24oz Cups",cat:"Cafe Tango",unit:"sl",qty:11,cost:8.43,par:0},
+  {name:"Cafe Tango 16oz Cups",cat:"Cafe Tango",unit:"sl",qty:4,cost:6.78,par:0},
+  {name:"Cafe Tango Mocha",cat:"Cafe Tango",unit:"bag",qty:16,cost:13.64,par:0},
+  {name:"Cafe Tango Vanilla",cat:"Cafe Tango",unit:"bag",qty:22,cost:13.64,par:0},
+  {name:"16oz Clear Cups",cat:"Cups & Lids",unit:"case",qty:1,cost:34.98,par:0},
+  {name:"Clear Lids",cat:"Cups & Lids",unit:"case",qty:1,cost:93.34,par:0},
+  {name:"Freal Lids",cat:"Other",unit:"case",qty:7,cost:51.51,par:0},
+  {name:"Freal Straws",cat:"Other",unit:"bx",qty:1,cost:4.65,par:0},
+  {name:"Caramel Creamer Cups",cat:"Creamer & Sweetener",unit:"bx",qty:2,cost:20.27,par:0},
+  {name:"Irish Cups Creamer",cat:"Creamer & Sweetener",unit:"bx",qty:1,cost:30.40,par:0},
+  {name:"Hazelnut Cups Creamer",cat:"Creamer & Sweetener",unit:"bx",qty:2,cost:20.27,par:0},
+  {name:"French Vanilla Cups Creamer",cat:"Creamer & Sweetener",unit:"bx",qty:2,cost:20.27,par:0},
+  {name:"½ & ½ Creamer Cups",cat:"Creamer & Sweetener",unit:"bx",qty:2,cost:16.00,par:0},
+  {name:"Original Creamer Cups",cat:"Creamer & Sweetener",unit:"bx",qty:2,cost:16.00,par:0},
+  {name:"Filters",cat:"Coffee",unit:"each",qty:1,cost:12.85,par:0},
+  {name:"Stir Straws",cat:"Coffee",unit:"bx",qty:1,cost:12.45,par:0},
+  {name:"Sweet Cream",cat:"Creamer & Sweetener",unit:"each",qty:1,cost:30.40,par:0},
+  {name:"Hot Chocolate",cat:"Coffee",unit:"bag",qty:9,cost:7.44,par:0},
+  {name:"French Vanilla Capp.",cat:"Coffee",unit:"bag",qty:3,cost:7.44,par:0},
+  {name:"Sugar Packs",cat:"Creamer & Sweetener",unit:"case",qty:1,cost:18.45,par:0},
+  {name:"Creamer Packs",cat:"Creamer & Sweetener",unit:"case",qty:1,cost:16.00,par:0},
+  {name:"Yellow Sweetener",cat:"Creamer & Sweetener",unit:"case",qty:0,cost:72.65,par:0},
+  {name:"Blue Sweetener",cat:"Creamer & Sweetener",unit:"case",qty:1,cost:50.60,par:0},
+  {name:"Pink Sweetener",cat:"Creamer & Sweetener",unit:"case",qty:1,cost:72.65,par:0},
+  {name:"Sugar Canister",cat:"Creamer & Sweetener",unit:"each",qty:36,cost:2.40,par:0},
+  {name:"Creamer Canister",cat:"Creamer & Sweetener",unit:"each",qty:26,cost:2.10,par:0},
+  {name:"Chocolate Sauce",cat:"Syrups & Sauce",unit:"each",qty:0,cost:18.00,par:0},
+  {name:"Caramel Sauce",cat:"Syrups & Sauce",unit:"each",qty:0,cost:18.00,par:0},
+  {name:"French Vanilla Syrup",cat:"Syrups & Sauce",unit:"bttl",qty:2,cost:7.65,par:0},
+  {name:"Caramel Syrup",cat:"Syrups & Sauce",unit:"bttl",qty:2,cost:7.65,par:0},
+  {name:"Hazelnut Syrup",cat:"Syrups & Sauce",unit:"bttl",qty:2,cost:7.65,par:0},
+  {name:"Pumps",cat:"Other",unit:"each",qty:3,cost:4.00,par:0},
+  {name:"American Classic Coffee",cat:"Coffee Beans",unit:"case",qty:6,cost:30.76,par:0},
+  {name:"Whole Bean Coffee",cat:"Coffee Beans",unit:"case",qty:5,cost:71.04,par:0},
+  {name:"Intense Blend Coffee",cat:"Coffee Beans",unit:"case",qty:4,cost:34.76,par:0},
+  {name:"Pecan Praline Coffee",cat:"Coffee Beans",unit:"case",qty:2,cost:35.76,par:0},
+  {name:"Mardi Gras Coffee",cat:"Coffee Beans",unit:"case",qty:0,cost:36.76,par:0},
+  {name:"Sugar Cookie Coffee",cat:"Coffee Beans",unit:"case",qty:0,cost:37.76,par:0},
+  {name:"9oz Squat Clear Cups",cat:"Cups & Lids",unit:"each",qty:1,cost:0,par:0}
+];
 
-  // Existing items from original Deli Pro (Merchants, Imperial, Boudin, Bavarian, Fountain, Branded)
-  const SEED_DELI_ITEMS = [
-    { itemNumber:'1001', itemName:'Appetizer Egg Roll Pork Crispy Frozen', brand:'Merchants', packSize:'cases', storage:'Frozen', price:37.00, priceUnit:'case', vendor:'Merchants', section:'Deli', category:'Other', par:1, currentOnHand:1 },
-    { itemNumber:'1002', itemName:'Bacon (Double Smoked)', brand:'Merchants', packSize:'cases', storage:'Refrigeration', price:63.50, priceUnit:'case', vendor:'Merchants', section:'Deli', category:'Deli Meat', par:1, currentOnHand:0.25 },
-    { itemNumber:'1003', itemName:'Beef Ground Patty 3-1 75/25', brand:'Merchants', packSize:'cases', storage:'Frozen', price:77.11, priceUnit:'case', vendor:'Merchants', section:'Deli', category:'Deli Meat', par:1, currentOnHand:1 },
-    { itemNumber:'1004', itemName:'Boudin Pork', brand:'Imperial', packSize:'packs', storage:'Frozen', price:7.46, priceUnit:'pack', vendor:'Imperial', section:'Deli', category:'Other', par:3, currentOnHand:9 },
-    { itemNumber:'1005', itemName:'Boudin Shrimp', brand:'Imperial', packSize:'packs', storage:'Frozen', price:8.07, priceUnit:'pack', vendor:'Imperial', section:'Deli', category:'Other', par:3, currentOnHand:14 },
-    { itemNumber:'1006', itemName:'Bavarian Almonds', brand:'Merchants', packSize:'bags', storage:'Dry', price:11.75, priceUnit:'bag', vendor:'Merchants', section:'Deli', category:'Other', par:5, currentOnHand:20 },
-    { itemNumber:'1007', itemName:'Cone Wrap for Nuts', brand:'Merchants', packSize:'cases', storage:'Dry', price:50.00, priceUnit:'case', vendor:'Merchants', section:'Deli', category:'Packaging', par:2, currentOnHand:6 },
-  ];
+const SEED_BRANDED=[
+  // From branded_deli_count_hunts__3_.xls — counted by Shaun D. 03/25/26 — Total: $2,641.52
+  {name:"Breakfast Pizza",cat:"Pizza",unit:"each",qty:22,cost:5.87,par:0},
+  {name:"Regular / Thin Pizza",cat:"Pizza",unit:"each",qty:172,cost:4.64,par:0},
+  {name:"Specialty Pizza",cat:"Pizza",unit:"each",qty:12,cost:5.93,par:0},
+  {name:"Wings",cat:"Wings",unit:"bag",qty:19,cost:31.58,par:0},
+  {name:"Wing Bites",cat:"Wings",unit:"bag",qty:12,cost:25.64,par:0},
+  {name:"Moz Cheese",cat:"Toppings",unit:"bag",qty:5,cost:19.23,par:0},
+  {name:"Sausage (Pizza)",cat:"Toppings",unit:"bag",qty:3,cost:13.93,par:0},
+  {name:"Pepperoni",cat:"Toppings",unit:"bag",qty:5,cost:20.68,par:0},
+  {name:"Beef (Pizza)",cat:"Toppings",unit:"bag",qty:3,cost:13.60,par:0},
+  {name:"Bacon (Pizza)",cat:"Toppings",unit:"bag",qty:2,cost:31.36,par:0},
+  {name:"Just Rite Spice",cat:"Spices",unit:"can",qty:10,cost:3.40,par:0},
+  {name:"Red Pepper",cat:"Spices",unit:"can",qty:3,cost:3.41,par:0},
+  {name:"Mushroom",cat:"Toppings",unit:"can",qty:3,cost:9.83,par:0},
+  {name:"Black Olives",cat:"Toppings",unit:"can",qty:3,cost:9.69,par:0},
+  {name:"Banana Peppers",cat:"Toppings",unit:"jar",qty:3,cost:9.10,par:0},
+  {name:"Jalapeno Peppers",cat:"Toppings",unit:"jar",qty:3,cost:5.58,par:0},
+  {name:"Hunk Boxes",cat:"Packaging",unit:"case",qty:4,cost:22.50,par:0},
+  {name:"Pizza Boxes",cat:"Packaging",unit:"case",qty:4,cost:22.50,par:0},
+  {name:"Wing Boxes",cat:"Packaging",unit:"case",qty:3,cost:21.25,par:0}
+];
 
-  const SEED_FOUNTAIN_ITEMS = [
-    { itemNumber:'2001', itemName:'5 Gall. BIB', brand:'Coke', packSize:'each', storage:'Dry', price:107.90, priceUnit:'each', vendor:'Other', section:'Fountain', category:'BIB / CO2', par:0, currentOnHand:6 },
-    { itemNumber:'2002', itemName:'32oz Cups (Fountain)', brand:'Dart', packSize:'sl', storage:'Dry', price:3.25, priceUnit:'sl', vendor:'Other', section:'Fountain', category:'Cups & Lids', par:0, currentOnHand:6 },
-    { itemNumber:'2003', itemName:'American Classic Coffee', brand:'Community', packSize:'case', storage:'Dry', price:30.76, priceUnit:'case', vendor:'Other', section:'Fountain', category:'Coffee Beans', par:0, currentOnHand:6 },
-  ];
+const CATS = {
+  deli: ["Deli Meat","Cheese","Bread","Produce","Condiments","Packaging","Dairy","Beverages","Other"],
+  fountain: ["BIB / CO2","Cups & Lids","Coffee","Cafe Tango","Creamer & Sweetener","Syrups & Sauce","Coffee Beans","Other"],
+  branded: ["Pizza","Wings","Toppings","Packaging","Spices","Other"]
+};
 
-  const SEED_BRANDED_ITEMS = [
-    { itemNumber:'3001', itemName:'Breakfast Pizza', brand:'Branded', packSize:'each', storage:'Frozen', price:5.87, priceUnit:'each', vendor:'Other', section:'Branded Deli', category:'Pizza', par:0, currentOnHand:22 },
-    { itemNumber:'3002', itemName:'Wings', brand:'Branded', packSize:'bag', storage:'Frozen', price:31.58, priceUnit:'bag', vendor:'Other', section:'Branded Deli', category:'Wings', par:0, currentOnHand:19 },
-  ];
+// =============================================================
+// STATE
+// =============================================================
+let deliInv=[], fountainInv=[], brandedInv=[], suppliers=[], orders=[], recipes=[], invoices=[];
+let weekData = {}; // keyed by week start "YYYY-MM-DD"
+let currentWeek = ''; // "YYYY-MM-DD" of Monday
+let editRecipeIngs=[];
 
-  // BEK Master List (280 items - full list)
-  function getBEKMasterItems() {
-    return [
-      ["126922","Tater Keg Bacon Cheddar Chive","Tater Kegs","1/10 LB","Frozen",false,37.86,"case"],
-      ["530572","Bacon Layout 18/22","Smithfield","1/15 LB","Frozen",false,57.67,"case"],
-      ["191379","Bag French Fry 4.5 X 4.5","Mcnairn","1/2000 CT","Dry",false,41.39,"case"],
-      ["114428","Bag Paper Groc Brn 6#","Duro Bag Mfg Co.","1/500 CT","Dry",false,17.20,"case"],
-      ["114429","Bag Paper Groc Brn 8#","Duro Bag Mfg Co.","1/500 CT","Dry",false,19.99,"case"],
-      ["129707","Bag Reclosable 1 Gal 10.5x10.5","Essentials","1/250 CT","Dry",false,15.60,"case"],
-      ["129708","Bag Reclosable 2 Gal 13x15.5","Essentials","1/100 CT","Dry",false,14.20,"case"],
-      ["875138","Bag Sandwich 6x.75x6.75 1side","Mcnairn","1/2000 CT","Dry",false,44.53,"case"],
-      ["334153","Bean Baby Lima","Markon First Crop","1/20 LB","Frozen",false,35.11,"case"],
-      ["190557","Bean Baked Original","Bush's Best","6/#10 CAN","Dry",false,50.60,"case"],
-      ["650058","Bean Black Low Sodium","Bush's Best","6/#10 CAN","Dry",false,37.80,"case"],
-      ["334302","Bean Green Regular Cut","Markon First Crop","12/2 LB","Frozen",false,32.67,"case"],
-      ["650110","Bean Kidney Dark Red Fancy","Allens","6/#10 CAN","Dry",true,34.74,"case"],
-      ["024055","Bean Light Red Kidney 20#dry","Packer","1/20 LB","Dry",false,32.26,"case"],
-      ["650045","Bean Lima Medium","Allens","6/#10 CAN","Dry",true,40.64,"case"],
-      ["782002","Bean Refried","Allens","6/#10 CAN","Dry",true,49.92,"case"],
-      ["506121","Beef Patty 3/1 Thick N Tender","Tnt","60/5.33 OZ","Frozen",false,84.52,"case"],
-      ["142973","Beef Pot Roast Cooked","Hormel Natural Choice","2/9 LB","Frozen",false,9.37,"LB"],
-      ["188915","Beef Sandwich Steak Philly","Philly","40/4 OZ","Frozen",false,51.52,"case"],
-      ["188849","Beef Steak Fritter Raw Breaded","Chefs Exclusive","40/4 OZ","Frozen",false,65.87,"case"],
-      ["144183","Bleach Keith Ultra","Essentials","6/1 GAL","Dry",false,21.45,"case"],
-      ["228851","Bologna Pork/beef Sl 12 Oz","Kelley Foods Manufacturing","8/12 OZ","Refrigeration",false,27.02,"case"],
-      ["204979","Bologna Smk Thick Slice 4 Oz","Cades","10/16 OZ","Frozen",false,29.67,"case"],
-      ["019275","Box Carry-out Snack 7x4.5x2.75","Southern Champion Tray","1/500 CT","Dry",false,78.12,"case"],
-      ["170610","Box Chicken White 9x6x3","Vox Printing","1/400 CT","Dry",false,65.14,"case"],
-      ["189661","Bread Texas Toast White","Fresh From Keith's","10/24 OZ","Dry",false,25.78,"case"],
-      ["021175","Bread White Pullman 28 Sl 24oz","Flowers Food Specialty Group","10/24 OZ","Frozen",false,34.74,"case"],
-      ["693334","Breading Shrimp Fry","Louisiana Fish Fry Products","1/50 LB","Dry",false,55.38,"case"],
-      ["414312","Brownie Chocolate Chip","David's Cookies","48/4 OZ","Frozen",false,46.31,"case"],
-      ["333105","Brussels Sprouts Medium","Markon First Crop","12/2 LB","Frozen",false,54.67,"case"],
-      ["394690","Bun Hamburger 5 In Sliced","European Bakers","64/3.5 OZ","Frozen",false,31.57,"case"],
-      ["189663","Bun Hamburger White 4 In","Fresh From Keith's","8/12 CT","Dry",false,24.89,"case"],
-      ["189664","Bun Hot Dog 6 In Frozen","Fresh From Keith's","8/12 CT","Frozen",false,24.89,"case"],
-      ["385084","Burrito Beef & Bean","Fernando's","72/4 OZ","Frozen",false,59.89,"case"],
-      ["389120","Butter Unsalted European Style","Plugra","36/1 LB","Refrigeration",false,121.98,"case"],
-      ["300009","Cabbage Fine Diced W/sep Colo","Packer","4/5 LB","Refrigeration",false,19.87,"case"],
-      ["018044","Cake Carrot 2 Layer","Dean's Cake House, Inc","4/46 OZ","Frozen",false,75.28,"case"],
-      ["116574","Cake Italian Lemon Creme","Diannes","2/66 OZ","Frozen",false,74.10,"case"],
-      ["173490","Candy Gummy Worm Mini","Albanese","4/5 LB","Dry",false,53.36,"case"],
-      ["012324","Carrots Sliced Smooth Bulk Iqf","Frost Sweet","1/20 LB","Frozen",false,24.00,"case"],
-      ["143885","Casserole Hashbrown","Savannah Foods","4/4.5 LB","Frozen",false,60.07,"case"],
-      ["372098","Casserole Potato Baked","St Clair","4/4.75 LB","Frozen",false,47.20,"case"],
-      ["372131","Casserole Sweet Potato","St Clair","4/4.75 LB","Frozen",false,53.64,"case"],
-      ["121802","Cheese American Yellow 184 Sl","Schreiber","4/5 LB","Refrigeration",true,55.32,"case"],
-      ["016063","Cheese Cheddar Mild Shrd","Schreiber","4/5 LB","Refrigeration",true,59.91,"case"],
-      ["742002","Cheese Cream Loaf Grade A","Golden Harvest","10/3 LB","Refrigeration",false,71.59,"case"],
-      ["168749","Cheese Mozz Feather Shred Lmwm","Bellacibo","4/5 LB","Refrigeration",false,50.50,"case"],
-      ["151722","Cheese Pepper Jack Slice .73oz","Golden Harvest","12/1 LB","Refrigeration",true,44.18,"case"],
-      ["184643","Cheese Sauce Cheddar","Keith Valley","6/#10 CAN","Dry",false,63.34,"case"],
-      ["184873","Cheese Sauce Monterey Jack","Gran Sabor","6/#10 CAN","Dry",false,74.33,"case"],
-      ["139372","Cheese Swiss American 160 Sl","Golden Harvest","4/5 LB","Refrigeration",true,54.82,"case"],
-      ["186414","Chicken Breast Breaded 5.2 Oz","Tyson Red Label","1/10 LB","Frozen",false,40.83,"case"],
-      ["151017","Chicken Breast Flame Grilled","Brakebush","40/4 OZ","Frozen",false,64.46,"case"],
-      ["122974","Chicken Breast Fritter Cn 4/1","Tyson Red Label","2/5 LB","Frozen",false,40.84,"case"],
-      ["550108","Chicken Breast Random Blsl","Koch Foods","4/10 LB","Refrigeration",false,85.50,"case"],
-      ["165580","Chicken Cut 8pc Mar 3-3.50lb","Marjac Poultry","16/3-3.5 LB","Refrigeration",false,1.60,"LB"],
-      ["106944","Chicken Fajita Strip Cooked","Gran Sabor","2/5 LB","Frozen",false,47.58,"case"],
-      ["159735","Chicken Gizzard Random Fresh","Marjac Poultry","4/5 LB","Refrigeration",false,19.74,"case"],
-      ["159740","Chicken Leg Quarter Cvp","Marjac Poultry","4/10 LB","Refrigeration",false,31.96,"case"],
-      ["228982","Chicken Livers Cvp","Marjac Poultry","8/5 LB","Frozen",false,20.96,"case"],
-      ["550400","Chicken Tenderloin Jumbo","Wayne Farms","4/10 LB","Refrigeration",false,94.02,"case"],
-      ["025513","Chicken With Dumplings","St Clair","4/5 LB","Frozen",false,53.28,"case"],
-      ["774034","Chili Powder Ground Light","Mccormick","1/18 OZ","Dry",false,11.30,"case"],
-      ["774060","Cinnamon Ground","Spice Classics","1/18 OZ","Dry",false,7.44,"case"],
-      ["020175","Cleaner All Prpse W/blch Spray","Quickline","6/32 OZ","Dry",false,36.60,"case"],
-      ["133312","Cleaner Degree Grill Packet","Ssdc","128/2 OZ","Dry",false,124.25,"case"],
-      ["108509","Cleaner Floor & All Purpose","Mr Clean","3/1 GAL","Dry",false,52.41,"case"],
-      ["885134","Cleaner Multisheen Glass Rtu","Ssdc","1/12 LTR","Dry",false,44.93,"case"],
-      ["885090","Cleaner Multisheen Moprite","Ssdc","2/1 GAL","Dry",false,66.66,"case"],
-      ["416047","Cobbler Apple","Good Old Days","4/6 LB","Frozen",false,40.00,"case"],
-      ["416072","Cobbler Cherry","Good Old Days","4/5 LB","Frozen",false,45.56,"case"],
-      ["416094","Cobbler Peach","Good Old Days","4/5 LB","Frozen",false,43.61,"case"],
-      ["416043","Cobbler Pecan","Good Old Days","4/5 LB","Frozen",false,67.52,"case"],
-      ["100007","Cone Cake Cup No Jacket","Joy Cone","6/100 CT","Dry",false,69.16,"case"],
-      ["553241","Cone Waffle Large Classic","Joy Cone","14/16 CT","Dry",false,71.96,"case"],
-      ["870030","Cont Foam 12 Oz Squat","Dart","20/25 CT","Dry",false,34.92,"case"],
-      ["870020","Cont Foam 8 Oz Extra Squat","Dart","20/50 CT","Dry",false,57.75,"case"],
-      ["158734","Cont Foam Hngd 1-c Sand White","Gen Pak","4/125 CT","Dry",false,26.95,"case"],
-      ["218097","Cont Plas Hngd 1-c Clear 9 In","Dart","1/150 CT","Dry",false,48.16,"case"],
-      ["872385","Cont Plas Hngd 1-c Pie Wedge","Dart","2/125 CT","Dry",false,53.96,"case"],
-      ["128656","Cont Plas Hngd 3-c Black Clear","Sabert","2/56 CT","Dry",false,61.62,"case"],
-      ["338480","Corn Cut Fire Roasted","Roastworks","1/20 LB","Frozen",false,41.30,"case"],
-      ["370154","Corn Dog All Meat w/Bags","State Fair","36/2.67 OZ","Frozen",false,27.97,"case"],
-      ["370008","Corn Dog Chicken","Foster Farms","72/4 OZ","Frozen",false,42.80,"case"],
-      ["370013","Corn Dog Chicken Jalapeno","Foster Farms","36/4 OZ","Frozen",false,28.00,"case"],
-      ["370049","Corn Dog Chili Cheese","Foster Farms","36/4 OZ","Frozen",false,27.50,"case"],
-      ["338836","Corn Nugget Sweet Battered","Golden Crisp","6/2 LB","Frozen",true,37.30,"case"],
-      ["110120","Cornbread Mix Deluxe Complete","Pioneer","6/5 LB","Dry",true,42.99,"case"],
-      ["301270","Cornmeal Yellow Self Rising","Packer","1/25 LB","Dry",false,25.12,"case"],
-      ["178740","Crab Claw Fingers Blue","Packer","1/1 LB","Frozen",false,21.20,"case"],
-      ["771510","Cracker Captain Wafer","Lance","500/2 CT","Dry",false,23.99,"case"],
-      ["800070","Craisin Cranberry Dried","Ocean Spray","1/10 LB","Dry",false,31.04,"case"],
-      ["127990","Crispito Buffalo Chkn & Chs","State Fair","72/2.75 OZ","Frozen",false,56.11,"case"],
-      ["385211","Crispito Chicken & Cheese","State Fair","72/2.75 OZ","Frozen",false,56.11,"case"],
-      ["815813","Cup Plas Souffle 1 Oz Trans","Essentials","10/250 CT","Dry",false,25.20,"case"],
-      ["136286","Cutlery Kit K F S Napkin S&p","Amercare","1/250 CT","Dry",false,28.69,"case"],
-      ["160634","Cutlery Knife Blk Mw Refill","Smartstock","24/40 CT","Dry",false,52.75,"case"],
-      ["160632","Cutlery Teaspoon Blk Mw Refill","Smartstock","20/40 CT","Dry",false,53.36,"case"],
-      ["885818","Degreaser Inside Out Moprite","Ssdc","2/1 GAL","Dry",false,69.22,"case"],
-      ["167379","Degreaser Multi Surface","Dawn Professional","4/1 GAL","Dry",false,64.14,"case"],
-      ["190390","Dip Street Corn Mexican Style","Jtm Food Group","4/5 LB","Frozen",false,65.74,"case"],
-      ["225292","Dough Apple Turnover","Pillsbury(r)","60/3.7 OZ","Frozen",false,59.30,"case"],
-      ["412862","Dough Biscuit 3 In Sliced","Pillsbury(r)","168/3.17 OZ","Frozen",false,53.87,"case"],
-      ["155249","Dough Cookie Chaos Decadent","David's Cookies","80/4.5 OZ","Frozen",false,82.03,"case"],
-      ["167145","Dough Cookie Lemon Blubry","David's Cookies","80/4.5 OZ","Frozen",false,86.46,"case"],
-      ["106993","Dough Cookie Red Velvet","David's Cookies","80/4.5 OZ","Frozen",false,80.47,"case"],
-      ["417099","Dough Cookie Reeses Pntbtr Cup","David's Cookies","45/4.5 OZ","Frozen",false,45.51,"case"],
-      ["412997","Dough Cookie Smores","David's Cookies","80/4.5 OZ","Frozen",false,88.88,"case"],
-      ["417098","Dough Cookie Triple Chocolate","David's Cookies","45/4.5 OZ","Frozen",false,45.19,"case"],
-      ["412499","Dough Roll Dinner White","Pennant Foods","240/1 OZ","Frozen",false,36.72,"case"],
-      ["885147","Drain Maintainer Enzyme","Essentials","12/32 OZ","Dry",false,91.18,"case"],
-      ["674189","Dressing Pc Honey Mustard Cup","Ken's","100/1.5 OZ","Refrigeration",false,28.23,"case"],
-      ["674216","Dressing Pc Ranch Cup","Ken's","100/1.5 OZ","Refrigeration",false,26.60,"case"],
-      ["164879","Dressing Pc Thousand Island","Ellington Farms","60/1.5 OZ","Dry",false,18.67,"case"],
-      ["142365","Egg Fresh Shell Med Usda Aa","Ellington Farms","1/30 DZN","Refrigeration",false,25.91,"case"],
-      ["106188","Egg Patty Homestyle Fried","Papettis","168/1.5 OZ","Frozen",false,50.15,"case"],
-      ["155453","Egg Roll Boudin W/ppr Jack Chs","Frenchys Sausage Company Inc","100/2.8 OZ","Frozen",false,67.03,"case"],
-      ["171854","Egg Roll Chicken Sw Style","Vip","100/3 OZ","Frozen",false,77.58,"case"],
-      ["380237","Egg Roll Pork & Vegetable","Minh","72/3 OZ","Frozen",false,54.98,"case"],
-      ["393106","Egg Scrambled Cooked W/butter","Papettis","12/1.85 LB","Refrigeration",false,61.91,"case"],
-      ["190102","Egg Whole Easy Eggs w/Citric","Ellington Farms","15/2 LB","Refrigeration",false,57.06,"case"],
-      ["370434","Empanada Chorizo Egg Jalapeno","Natchitoches Meat Pie Co","48/3.75 OZ","Frozen",false,58.39,"case"],
-      ["777028","Extract Vanilla Imitation","Mccormick","1/32 OZ","Dry",false,7.54,"case"],
-      ["888042","Filter Powder Magnesol","Magnesol","1/40 LB","Dry",false,110.64,"case"],
-      ["119164","Flour Hotel & Restaurant","Ellington Farms","1/25 LB","Dry",false,8.20,"case"],
-      ["119166","Flour Self Rising","Ellington Farms","1/25 LB","Dry",false,11.03,"case"],
-      ["191857","Foil 18 X 1000 Standard","Atx Packaging","1/1 ROLL","Dry",false,62.12,"case"],
-      ["194431","Foil Sand Wrap 10.5x14 Cushion","Western Plastics","4/500 CT","Dry",false,74.60,"case"],
-      ["876013","Foil Sheet 12x10.75 In","Durable Packaging","12/200 CT","Dry",false,162.07,"case"],
-      ["208075","French Fries Cc 3/8 In Seas","Lambs Seasoned","6/5 LB","Frozen",false,64.97,"case"],
-      ["193524","French Fries SC 5/16 in Thin","Crispy Coat","6/5 LB","Frozen",false,59.19,"case"],
-      ["401194","French Toast Stick Wg 1.1 Oz","Bake Crafters","2/5 LB","Frozen",false,24.59,"case"],
-      ["774374","Garlic Chopped In Water","Italian Rose","6/32 OZ","Refrigeration",false,39.73,"case"],
-      ["774024","Garlic Powder","Spice Classics","1/16 OZ","Dry",false,7.68,"case"],
-      ["774229","Garlic Salt No Msg","Spice Classics","1/38 OZ","Dry",false,7.29,"case"],
-      ["766106","Glaze Honey Dip Heat & Ice","Rich's","1/24 LB","Dry",false,58.84,"case"],
-      ["147158","Glove Nitrile Xxl Pf Black","Handgards","10/100 CT","Dry",false,49.55,"case"],
-      ["166859","Glove Vinyl Large Pf","Foodhandler","10/100 CT","Dry",false,34.16,"case"],
-      ["167562","Glove Vinyl Medium Pf","Job Select","10/100 CT","Dry",false,34.16,"case"],
-      ["166860","Glove Vinyl Xl Pf","Job Select","10/100 CT","Dry",false,34.16,"case"],
-      ["157477","Gravy Mix Au Jus","Knorr","12/3.7 OZ","Dry",false,42.70,"case"],
-      ["797032","Gravy Mix Brown","Shawnee Milling Co","6/14 OZ","Dry",false,16.32,"case"],
-      ["797060","Gravy Mix Chicken","Pioneer","6/14 OZ","Dry",true,28.31,"case"],
-      ["797230","Gravy Mix Pepper Biscuit","Pioneer","6/24 OZ","Dry",true,26.79,"case"],
-      ["113975","Greens Turnip Chopped Seasoned","Margaret Holmes","6/#10 CAN","Dry",true,38.24,"case"],
-      ["888071","Grill Pad Heavy Duty Orange","Scotch-brite","1/15 CT","Dry",false,18.86,"case"],
-      ["105991","Guacamole Western Style Frozen","Harvest Fresh","6/3 LB","Frozen",false,13.77,"case"],
-      ["020766","Hair Net Brown 144 Ct","Cellucap","1/144 CT","Dry",false,17.92,"case"],
-      ["002046","Ham Country Cured Boneless","Clifty Farm Country Meats","128/1.25 OZ","Refrigeration",false,73.37,"case"],
-      ["206112","Ham Sliced Smoked .67 Oz","Ellington Farms","4/2.5 LB","Frozen",false,48.91,"case"],
-      ["002117","Ham Slices Smoked Center Cut","D. L. Lee & Sons, Llc","12/1 LB","Refrigeration",false,4.50,"LB"],
-      ["677217","Honey Pc Pure Cup","Smucker's","200/0.5 OZ","Dry",false,40.82,"case"],
-      ["109014","Hushpuppy Corn Sweet","Savannah Foods","2/5 LB","Frozen",false,26.21,"case"],
-      ["152353","Hushpuppy Corn Sweet Jalapeno","Savannah Foods","2/5 LB","Frozen",false,26.69,"case"],
-      ["189261","Ice Cream Mix Choc 5%","Dairy Star","6/64 OZ","Refrigeration",false,34.23,"case"],
-      ["164222","Ice Cream Mix Van 5%","Fresh From Keith's","6/64 OZ","Refrigeration",false,31.66,"case"],
-      ["691585","Icing Chocolate Fudge Rtu","Gold Medal","2/11 LB","Dry",false,82.53,"case"],
-      ["677079","Jelly Pc Assorted Plastic Cup","Smucker's","200/0.5 OZ","Dry",false,17.22,"case"],
-      ["190754","Jelly Pc Grape Pouch","Welchs","200/0.5 OZ","Dry",false,20.64,"case"],
-      ["190753","Jelly Pc Strawberry Pouch","Welchs","200/0.5 OZ","Dry",false,26.80,"case"],
-      ["185927","Jug Plas 1 Gallon W/lid","Buccaneer","1/48 CT","Dry",false,40.94,"case"],
-      ["146968","Ketchup Individual 9 Gram Pc","1906","1000/9 GRM","Dry",false,22.80,"case"],
-      ["878182","Label 2x3 Dissolvable","National Checking","1/250 CT","Dry",false,27.21,"case"],
-      ["383460","Lasagna Meat","Stouffer's","4/96 OZ","Frozen",false,98.98,"case"],
-      ["123145","Lettuce Iceberg Trimmed Only","Markon First Crop","4/6 CT","Refrigeration",true,37.43,"case"],
-      ["123073","Lettuce Shred 1/8 In K","Markon Ready Set Serve","4/5 LB","Refrigeration",true,19.73,"case"],
-      ["123076","Lettuce Shred 1/8 Inch","Markon Ready Set Serve","2/5 LB","Refrigeration",false,15.85,"case"],
-      ["815814","Lid Plas 1 Oz Clear","Essentials","25/100 CT","Dry",false,16.21,"case"],
-      ["860055","Lid Plas 16sl Trans Slotted","Dart","10/100 CT","Dry",false,28.82,"case"],
-      ["870025","Lid Plas 20jl Trans Vented","Dart","10/100 CT","Dry",false,36.11,"case"],
-      ["188154","Lid Plas 32sl Trans Straw Slot","Dart","10/100 CT","Dry",false,71.72,"case"],
-      ["143591","Liner Pan 16x24 Quilon","Handy Wacks","1/1000 CT","Dry",false,64.64,"case"],
-      ["197218","Liner Trash 12-16 Gal Black","Inteplast","1/500 CT","Dry",false,48.09,"case"],
-      ["197269","Liner Trash 33 Gal Black","Essentials","1/250 CT","Dry",false,24.89,"case"],
-      ["136135","Liner Trash 60 Gal Black","Berry Plastics","10/10 CT","Dry",false,73.07,"case"],
-      ["197256","Liner Trash 60 Gal Clear","Essentials","1/100 CT","Dry",false,44.48,"case"],
-      ["131091","Macaroni & Cheese Homestyle","Rons Home Style Foods","4/5 LB","Frozen",false,51.58,"case"],
-      ["119451","Mayonnaise Extra Heavy Duty","Ellington Farms","4/1 GAL","Dry",true,53.60,"case"],
-      ["182377","Mayonnaise Pc Poly Pouch","Ellington Farms","200/9 GRM","Dry",false,16.71,"case"],
-      ["374344","Meat Pie Original Beef & Pork","Natchitoches Meat Pie Co","48/3.75 OZ","Frozen",false,54.04,"case"],
-      ["010008","Meatloaf F/c Pull Apart 12ct","King's Command Foods","12/21 OZ","Frozen",false,93.29,"case"],
-      ["184833","Milk Chocolate 1/2 Pint","Sealtest","24/0.5 PNT","Refrigeration",false,14.32,"case"],
-      ["184724","Milk Whole Vitamin D","Sealtest","4/1 GAL","Refrigeration",false,24.99,"case"],
-      ["121396","Mix Creole Jambalaya","Tony Chacheres","8/40 OZ","Dry",false,55.64,"case"],
-      ["173619","Muffin Cornbread Regular","Muffin Town","96/2 OZ","Frozen",false,31.89,"case"],
-      ["170887","Mustard Pc Pouch 200 Ct","Ellington Farms","200/5.5 GRM","Dry",false,7.68,"case"],
-      ["880037","Napkin Dinner 17x17 1 Ply","Tork","12/250 CT","Dry",false,70.04,"case"],
-      ["779116","Oil Whirl","Whirl","3/1 GAL","Dry",false,38.93,"case"],
-      ["226619","Okra Cut Lightly Breaded","Stilwell","4/5 LB","Frozen",false,36.47,"case"],
-      ["326604","Onion Ring Beer Battered 5/8 in","Tavern Traditions","4/2.5 LB","Frozen",true,36.93,"case"],
-      ["152027","Onion White Jumbo","Packer","1/25 LB","Refrigeration",false,19.65,"case"],
-      ["026761","Onion Yellow Jumbo Fresh 5lb","Packer","1/5 LB","Refrigeration",false,9.00,"case"],
-      ["698007","Pan Spray Pam Saute & Grill","Pam","6/17 OZ","Dry",true,28.54,"case"],
-      ["691188","Pancake Mix Sweet Cream","Krusteaz","6/5 LB","Refrigeration",false,48.08,"case"],
-      ["214370","Paper Copy 8.5x11 Bright White","Us Business Products Inc","10/500 CT","Dry",false,51.76,"case"],
-      ["875102","Paper Waxed Deli 12x10.75","Dixie","12/500 CT","Dry",false,100.09,"case"],
-      ["774726","Parsley Flakes","Mccormick","1/2 OZ","Dry",false,5.67,"case"],
-      ["205593","Pasta Fettuccini 10 In","Bellacibo Primo","2/10 LB","Dry",false,26.59,"case"],
-      ["700150","Pasta Penne Rigate Regular","Barilla","2/10 LB","Dry",false,28.44,"case"],
-      ["205590","Pasta Spaghetti 10 In","Bellacibo Primo","2/10 LB","Dry",false,26.59,"case"],
-      ["012376","Pea Field W/snaps Bags Iqf","Packer","12/3 LB","Frozen",false,55.77,"case"],
-      ["552603","Peanut Dry Roasted","Planters","6/34.5 OZ","Dry",false,41.77,"case"],
-      ["165041","Pepper Bell Green","Markon","1/5 LB","Refrigeration",false,17.64,"case"],
-      ["180821","Pepper Jalapeno 1 1/9 Bsh","Markon First Crop","1/1 CS","Refrigeration",false,73.40,"case"],
-      ["685040","Pepper Jalapeno Sliced","Cajun Chef","4/1 GAL","Dry",false,42.57,"case"],
-      ["685002","Pepper Jalapeno Whole","Cajun Chef","4/1 GAL","Dry",false,44.77,"case"],
-      ["774080","Pepper Lemon Seasoning","Mccormick","1/28 OZ","Dry",false,16.31,"case"],
-      ["555631","Pickle Chip Dill Thin 1/8\"","Mount Olive","4/1 GAL","Dry",false,95.08,"case"],
-      ["015053","Pickle Dill Relish","Kaiser Pickles Llc","4/1 GAL","Dry",false,35.11,"case"],
-      ["187397","Pico De Gallo 5 Lb","Markon Ready Set Serve","1/5 LB","Refrigeration",false,16.88,"case"],
-      ["430121","Pie Pecan Sliced 10 In","Chef Pierre","6/36 OZ","Frozen",true,76.22,"case"],
-      ["010233","Pizza Cheese 12 6/27oz.","Day Night","6/27 OZ","Frozen",false,35.70,"case"],
-      ["370955","Pizza Stick Pepperoni","Hot Pockets","48/3 OZ","Frozen",false,32.00,"case"],
-      ["534047","Pork Chop Boneless Breaded","Pierre Zartic","40/4 OZ","Frozen",false,55.46,"case"],
-      ["145464","Pork Chop Cc Bnls 4oz","Kelley Foods Manufacturing","1/10 LB","Frozen",false,55.41,"case"],
-      ["001011","Pork Loin Bone In Light Frzn","Swift","4/21 LB","Frozen",false,1.57,"LB"],
-      ["001238","Pork Spareribs Light Frozen","Swift","9/5.3 LB","Frozen",false,2.37,"LB"],
-      ["363433","Potato Mashed Deluxe","Simply Potatoes","4/6 LB","Refrigeration",false,42.01,"case"],
-      ["142203","Potato Sliced White","Libby","6/#10 CAN","Dry",false,38.31,"case"],
-      ["194943","Potato Tater Tots Grade A","Ellington Farms","6/5 LB","Frozen",false,50.40,"case"],
-      ["216830","Potato Wedge 8 Cut Seasoned","Golden Phoenix","6/5 LB","Frozen",false,49.94,"case"],
-      ["650314","Potato White Diced","Allens","6/#10 CAN","Dry",true,43.60,"case"],
-      ["402210","Pretzel King Size 5 Oz","Super Pretzel","50/5.5 OZ","Frozen",false,48.71,"case"],
-      ["182376","Relish Sweet Pc Poly","Ellington Farms","200/9 GRM","Dry",false,15.64,"case"],
-      ["301052","Rice Parboiled","Producers Rice Mill, Inc","1/25 LB","Dry",false,13.31,"case"],
-      ["398411","Roll Dinner Hawaiian","Kings Hawaiian Bakery","10/24 CT","Frozen",false,57.89,"case"],
-      ["301979","Salad Dixie Slaw","Resers Fine Foods","2/7 LB","Refrigeration",false,29.89,"case"],
-      ["768640","Salad Pasta Macaroni","Golden Harvest","2/12 LB","Refrigeration",false,59.87,"case"],
-      ["150312","Salad Potato Baked","St Clair","2/12 LB","Refrigeration",false,57.67,"case"],
-      ["768056","Salad Potato Deviled Egg","St Clair","1/12 LB","Refrigeration",false,32.86,"case"],
-      ["157575","Salad Potato Mustard","St Clair","2/12 LB","Refrigeration",false,50.33,"case"],
-      ["148002","Salsa Fire Roasted Rtu","Gran Sabor","6/#10 CAN","Dry",false,51.03,"case"],
-      ["162165","Salt Pc Packs","N'joy","3/1000 CT","Dry",false,9.41,"case"],
-      ["148661","Sanitizer Hand Mystic Nexa","Ssdc","4/1250 ML","Dry",false,82.19,"case"],
-      ["885911","Sanitizer Sani-quad Sinkrite","Ssdc","2/1 GAL","Dry",false,87.26,"case"],
-      ["122730","Sauce Alfredo Pouch","Nestle","4/80 OZ","Frozen",false,46.67,"case"],
-      ["111922","Sauce Bbq Sweet Baby Rays","Sweet Baby Ray's","4/1 GAL","Dry",false,53.96,"case"],
-      ["107049","Sauce Cheese Queso Blanco","Jtm Food Group","4/5 LB","Frozen",false,55.82,"case"],
-      ["107535","Sauce Pc Bbq Original Cups","Sweet Baby Ray's","100/1.5 OZ","Dry",false,26.03,"case"],
-      ["674170","Sauce Pc Hot Texas Pete","Texas Pete","200/7 GRM","Dry",false,15.33,"case"],
-      ["674816","Sauce Pc Marinara Cup","Heinz","60/2 OZ","Dry",false,37.08,"case"],
-      ["674147","Sauce Pc Picante Salsa Del Sol","Del Sol","200/0.5 OZ","Dry",false,27.08,"case"],
-      ["115983","Sauce Pc Sweet N Sour Cup","Ken's","100/1 OZ","Refrigeration",false,19.86,"case"],
-      ["674626","Sauce Pc Tartar Cup","Ken's","100/1.5 OZ","Refrigeration",false,31.31,"case"],
-      ["124163","Sauce Soy","Ellington Farms","4/1 GAL","Dry",true,25.16,"case"],
-      ["007252","Sauce Spaghetti #10","Red Gold","6/#10 CAN","Dry",false,41.17,"case"],
-      ["015187","Sauce Tomato Fancy","Red Gold","6/#10 CAN","Dry",false,34.87,"case"],
-      ["112784","Sauce Wing Buffalo","Sweet Baby Ray's","4/1 GAL","Dry",false,60.72,"case"],
-      ["112786","Sauce Wing Kickin Bourbon","Sweet Baby Ray's","4/64 OZ","Dry",false,47.33,"case"],
-      ["228934","Sausage Link 4 In Split Smk","Kelley Foods Manufacturing","2/6 LB","Frozen",false,60.58,"case"],
-      ["162490","Sausage Link 4 Oz","Country Pleasin","1/10 LB","Frozen",false,42.87,"case"],
-      ["003011","Sausage Link Smk 4 Oz","Kelley Foods Manufacturing","2/5 LB","Refrigeration",false,41.08,"case"],
-      ["111468","Sausage Patty 2 Oz Cooked","Special Recipe","80/2 OZ","Frozen",false,47.18,"case"],
-      ["300712","Scrubber Stainless Steel","3m Corporation","6/12 CT","Dry",false,82.31,"case"],
-      ["115570","Seasoning Creole Original","Tony Chacheres","4/8 LB","Dry",false,78.67,"case"],
-      ["774492","Seasoning Montreal Steak","Mccormick","1/29 OZ","Dry",false,14.41,"case"],
-      ["779123","Shortening Clear Fry Liquid","Keith's Homestyle","1/35 LB","Dry",false,35.62,"case"],
-      ["470543","Shrimp Brd 31-40 Ct Butterfly","Mrs Fridays","12/6 OZ","Frozen",false,29.53,"case"],
-      ["158888","Shrimp Raw P&d White 31-40 Ct","Pacific Treasure","5/2 LB","Frozen",false,62.83,"case"],
-      ["118170","Skewer Wooden 10 In","Handgards","10/100 CT","Dry",false,21.56,"case"],
-      ["885582","Soap Super Rave Sinkrite","Ssdc","2/1 GAL","Dry",false,107.04,"case"],
-      ["773505","Soft Serve Chocolate","Frostline","6/6 LB","Dry",false,78.02,"case"],
-      ["205270","Soft Serve Mix Vanilla","Frostline","6/4.74 LB","Dry",false,82.57,"case"],
-      ["773504","Soft Serve Pineapple Mix","Dole","4/4.4 LB","Dry",false,82.19,"case"],
-      ["123623","Soft Serve Strawberry Mix","Dole","4/4.5 LB","Dry",false,82.11,"case"],
-      ["123886","Soup Cream Of Chicken","Ellington Farms","12/50 OZ","Dry",true,67.73,"case"],
-      ["669005","Sour Cream Pc","Daisy Brands","100/1 OZ","Refrigeration",false,13.66,"case"],
-      ["170174","Squash Yellow Sliced","Fineline","12/3 LB","Frozen",false,49.38,"case"],
-      ["205883","Straw 10.25 In Giant Red","Karat","4/300 CT","Dry",false,15.59,"case"],
-      ["229075","Sugar Brown Light","Domino Foodservice","12/2 LB","Dry",false,32.22,"case"],
-      ["780007","Sugar Granulated Fine 50 Lb","Imperial Sugar","1/50 LB","Dry",false,37.02,"case"],
-      ["008128","Syrup Pc Pancake Maple Premium","Hartleys","100/1.5 OZ","Dry",false,18.43,"case"],
-      ["176026","Tamale Beef Delta Style","Hot Tamale Heaven","60/6 CT","Frozen",false,271.39,"case"],
-      ["182900","Tape Register Roll Thermal","Amercare","1/50 CT","Dry",false,78.24,"case"],
-      ["882002","Toilet Tissue 2 Ply Jumbo Jr","Acclaim","8/1000 FT","Dry",false,44.12,"case"],
-      ["210025","Tomato 5x6 1 Layer","Markon First Crop","1/10 LB","Refrigeration",false,45.30,"case"],
-      ["125654","Tomato Diced In Juice","Ellington Farms","6/#10 CAN","Dry",false,29.74,"case"],
-      ["650547","Tomato Diced W/green Chilies","Red Gold","12/28 OZ","Dry",false,26.17,"case"],
-      ["385964","Tornado Beef Steak Ranchero","Tornados","24/3 OZ","Frozen",false,20.90,"case"],
-      ["385970","Tornado Saus Egg & Cheese","Tornados","24/3 OZ","Frozen",false,20.90,"case"],
-      ["385967","Tornado Southwest Chicken","Tornados","24/3 OZ","Frozen",false,20.90,"case"],
-      ["130838","Tortilla Chip Corn Yel 4 Cut","La Banderita","1/30 LB","Dry",false,27.64,"case"],
-      ["106051","Tortilla Flour Pressed 12 In","Gran Sabor","12/12 CT","Refrigeration",false,42.96,"case"],
-      ["408603","Tortilla Flour Pressed 6 Inch","La Banderita","12/24 CT","Dry",false,24.84,"case"],
-      ["152643","Towel Hand White","Tork","12/410 CT","Dry",false,71.14,"case"],
-      ["881054","Towel Roll White Center Pull","Sofpull","1/6 CT","Dry",false,62.41,"case"],
-      ["198212","Tray Food 5 Lb 500 Red Plaid","Essentials","2/250 CT","Dry",false,35.84,"case"],
-      ["872938","Tray Paper Footlong Hotdog Wht","Southern Champion Tray","1/500 CT","Dry",false,70.35,"case"],
-      ["349504","Vegetable Blend Corn BLK Bean","Roastworks","6/2.5 LB","Frozen",true,35.01,"case"],
-      ["349493","Vegetable Blend Fajita","Markon First Crop","6/2 LB","Frozen",false,27.31,"case"],
-      ["349916","Vegetable Blend Fried Rice","Minh","4/3 LB","Frozen",false,44.87,"case"],
-      ["125736","Vegetable Mixed Fancy","Ellington Farms","6/#10 CAN","Dry",false,44.13,"case"],
-      ["175031","Waffle Belgian Maple Flavored","Pillsbury(r)","72/1.4 OZ","Frozen",false,29.71,"case"],
-      ["453005","Catfish Fillet Split 3-5 Oz","Heartland Catfish","1/15 LB","Frozen",false,94.24,"case"],
-      ["109198","Chicken Breast Hot N Spicy Ckd","Tyson Red Label","40/4 OZ","Frozen",false,40.84,"case"],
-      ["006522","Chicken Breast Fil Hot'n'spcy","Tyson Red Label","2/5 LB","Frozen",false,29.63,"case"]
-    ];
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
+const $=id=>document.getElementById(id);
+
+function getMonday(d){
+  const dt=new Date(d);
+  const day=dt.getDay();
+  const diff=dt.getDate()-day+(day===0?-6:1);
+  dt.setDate(diff);
+  dt.setHours(0,0,0,0);
+  return dt.toISOString().slice(0,10);
+}
+
+function weekLabel(mon){
+  const start=new Date(mon+'T00:00:00');
+  const end=new Date(start);end.setDate(end.getDate()+6);
+  return `${fmtDate(start)} – ${fmtDate(end)}`;
+}
+
+function fmtDate(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function fmtMoney(n){return '$'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+function load(){
+  suppliers   = JSON.parse(localStorage.getItem('dp7_sup')||'null');
+  deliInv     = JSON.parse(localStorage.getItem('dp7_deli')||'null');
+  fountainInv = JSON.parse(localStorage.getItem('dp7_fountain')||'null');
+  brandedInv  = JSON.parse(localStorage.getItem('dp7_branded')||'null');
+  recipes     = JSON.parse(localStorage.getItem('dp7_rec')||'[]');
+  orders      = JSON.parse(localStorage.getItem('dp7_ord')||'[]');
+  invoices    = JSON.parse(localStorage.getItem('dp7_inv')||'[]');
+  weekData    = JSON.parse(localStorage.getItem('dp7_week')||'{}');
+  currentWeek = getMonday(new Date());
+
+  if(!suppliers){ suppliers=SEED_SUP.map(s=>({...s,id:uid()})); sv('sup'); }
+  if(!deliInv){
+    deliInv=SEED_DELI.map(d=>{
+      const s=suppliers.find(x=>x.name===d.sup);
+      return {id:uid(),name:d.name,cat:d.cat,qty:d.qty||0,unit:d.unit,cost:d.cost||0,par:d.par,supplier:s?s.id:''};
+    }); sv('deli');
   }
+  if(!fountainInv){ fountainInv=SEED_FOUNTAIN.map(d=>({id:uid(),name:d.name,cat:d.cat,qty:d.qty,unit:d.unit,cost:d.cost,par:d.par,supplier:''})); sv('fountain'); }
+  if(!brandedInv){ brandedInv=SEED_BRANDED.map(d=>({id:uid(),name:d.name,cat:d.cat,qty:d.qty,unit:d.unit,cost:d.cost,par:d.par,supplier:''})); sv('branded'); }
+  // Apply any pending one-time invoice patches
+  applyBEK56553783();
+  // Connect to Supabase if previously configured (async; will re-apply patches after pull)
+  loadSbSetup();
+}
 
-  // ---------- INIT ----------
-  function initData() {
-    const stored = localStorage.getItem('deli_pro_full');
-    if(stored){
-      let d;
-      try { d = JSON.parse(stored); } catch(e){ localStorage.removeItem('deli_pro_full'); d = null; }
-      if(!d){ suppliers = SEED_SUPPLIERS; inventoryItems = []; invoices = []; return; }
-      inventoryItems = d.inventoryItems || [];
-      suppliers = d.suppliers || SEED_SUPPLIERS;
-      invoices = d.invoices || [];
-    } else {
-      suppliers = SEED_SUPPLIERS;
-      inventoryItems = [];
-      
-      // Add existing items (isActive = true)
-      [...SEED_DELI_ITEMS, ...SEED_FOUNTAIN_ITEMS, ...SEED_BRANDED_ITEMS].forEach((it, idx) => {
-        inventoryItems.push({
-          id: `seed-${idx}-${Date.now()}`,
-          ...it,
-          isActive: true,
-          brandCode: '',
-          retailReady: false
-        });
+function sv(w){
+  if(!w||w==='sup')     localStorage.setItem('dp7_sup',JSON.stringify(suppliers));
+  if(!w||w==='deli')    localStorage.setItem('dp7_deli',JSON.stringify(deliInv));
+  if(!w||w==='fountain')localStorage.setItem('dp7_fountain',JSON.stringify(fountainInv));
+  if(!w||w==='branded') localStorage.setItem('dp7_branded',JSON.stringify(brandedInv));
+  if(!w||w==='rec')     localStorage.setItem('dp7_rec',JSON.stringify(recipes));
+  if(!w||w==='ord')     localStorage.setItem('dp7_ord',JSON.stringify(orders));
+  if(!w||w==='inv')     localStorage.setItem('dp7_inv',JSON.stringify(invoices));
+  if(!w||w==='week')    localStorage.setItem('dp7_week',JSON.stringify(weekData));
+  sbPush(); // sync to cloud if configured
+}
+
+function allInv(){return [...deliInv,...fountainInv,...brandedInv];}
+function getInv(sec){return sec==='deli'?deliInv:sec==='fountain'?fountainInv:brandedInv;}
+function supName(id){const s=suppliers.find(x=>x.id===id);return s?s.name:'—';}
+function invVal(arr){return arr.reduce((s,i)=>s+i.qty*i.cost,0);}
+
+// =============================================================
+// TABS
+// =============================================================
+function showTab(name){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  $('tab-'+name).classList.add('active');
+  document.querySelector(`nav button[onclick="showTab('${name}')"]`).classList.add('active');
+  const fns={analytics:renderAnalytics,inventory:renderInvPage,invoices:renderInvoices,orders:renderOrders,recipes:renderRecipes,suppliers:renderSuppliers,reports:renderReports};
+  fns[name]();
+}
+
+function switchSubpanel(name, btn){
+  document.querySelectorAll('.subtab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.subpanel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  $('sp-'+name).classList.add('active');
+  renderTable(name);
+}
+
+function openModal(id){$(id).classList.add('open');}
+function closeModal(id){$(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+// =============================================================
+// WEEK NAV
+// =============================================================
+function prevWeek(){currentWeek=getMonday(new Date(currentWeek+'T00:00:00').setDate(new Date(currentWeek+'T00:00:00').getDate()-7));renderAnalytics();}
+function nextWeek(){currentWeek=getMonday(new Date(currentWeek+'T00:00:00').setDate(new Date(currentWeek+'T00:00:00').getDate()+7));renderAnalytics();}
+function setCurrentWeek(){currentWeek=getMonday(new Date());renderAnalytics();}
+
+// =============================================================
+// ANALYTICS
+// =============================================================
+function getWeekInvoices(){
+  const wstart=new Date(currentWeek+'T00:00:00');
+  const wend=new Date(wstart);wend.setDate(wend.getDate()+7);
+  return invoices.filter(inv=>{const d=new Date(inv.date+'T00:00:00');return d>=wstart&&d<wend;});
+}
+
+function renderAnalytics(){
+  const wk = weekData[currentWeek]||{};
+  const wInv = getWeekInvoices();
+  const purchases = wInv.reduce((s,i)=>s+Number(i.total),0);
+  const sales = Number(wk.sales||0);
+
+  // beginning inventory from week setup OR live current
+  const begDeli     = Number(wk.begDeli    || invVal(deliInv));
+  const begFountain = Number(wk.begFountain|| invVal(fountainInv));
+  const begBranded  = Number(wk.begBranded || invVal(brandedInv));
+  const begTotal    = begDeli+begFountain+begBranded;
+
+  // ending = current on-hand value
+  const endDeli     = invVal(deliInv);
+  const endFountain = invVal(fountainInv);
+  const endBranded  = invVal(brandedInv);
+  const endTotal    = endDeli+endFountain+endBranded;
+
+  const cogs  = begTotal + purchases - endTotal;
+  const fcPct = sales>0?(cogs/sales*100):null;
+
+  $('week-label').textContent = weekLabel(currentWeek);
+  $('header-week').textContent = 'Week of '+currentWeek;
+
+  // KPI cards
+  const low = allInv().filter(i=>i.par>0&&i.qty<=i.par).length;
+  $('an-kpis').innerHTML=`
+    <div class="stat-card"><div class="stat-label">Weekly Sales</div><div class="stat-value white">${fmtMoney(sales)}</div><div class="stat-sub">Enter via ⚙ Week Setup</div></div>
+    <div class="stat-card"><div class="stat-label">Purchases (Invoices)</div><div class="stat-value white">${fmtMoney(purchases)}</div><div class="stat-sub">${wInv.length} invoice${wInv.length!==1?'s':''} this week</div></div>
+    <div class="stat-card"><div class="stat-label">Beginning Inventory</div><div class="stat-value white">${fmtMoney(begTotal)}</div><div class="stat-sub">Start of week value</div></div>
+    <div class="stat-card"><div class="stat-label">Ending Inventory</div><div class="stat-value white">${fmtMoney(endTotal)}</div><div class="stat-sub">Current on-hand value</div></div>
+    <div class="stat-card ${fcPct!==null&&fcPct>35?'':''}"><div class="stat-label">Cost of Goods Used</div><div class="stat-value ${cogs<0?'red':'green'}">${fmtMoney(cogs)}</div><div class="stat-sub">Beg + Purchases − End</div></div>
+    <div class="stat-card highlight"><div class="stat-label">Food Cost %</div><div class="stat-value ${fcPct===null?'white':fcPct>35?'red':'green'}">${fcPct!==null?fcPct.toFixed(1)+'%':'—'}</div><div class="stat-sub">${fcPct!==null?(fcPct<=28?'✅ Excellent':fcPct<=32?'✅ Good':fcPct<=35?'⚠ Watch':fcPct<=40?'🔴 High':'🔴 Critical'):'Set sales & invoices'}</div></div>
+    <div class="stat-card"><div class="stat-label">Items Low / At Par</div><div class="stat-value ${low>0?'red':'green'}">${low}</div><div class="stat-sub">Need to reorder</div></div>
+    <div class="stat-card"><div class="stat-label">Total Inventory Value</div><div class="stat-value white">${fmtMoney(endTotal)}</div><div class="stat-sub">All sections combined</div></div>`;
+
+  // Food cost detail card
+  $('an-food-cost-detail').innerHTML=`
+    <div class="an-title">This Week Calculation</div>
+    <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2);line-height:2.2;">
+      <div style="display:flex;justify-content:space-between"><span>Beginning Inventory</span><span style="color:var(--text)">${fmtMoney(begTotal)}</span></div>
+      <div style="display:flex;justify-content:space-between"><span>+ Purchases</span><span style="color:var(--text)">${fmtMoney(purchases)}</span></div>
+      <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:6px;"><span>= Available</span><span style="color:var(--gold)">${fmtMoney(begTotal+purchases)}</span></div>
+      <div style="display:flex;justify-content:space-between"><span>− Ending Inventory</span><span style="color:var(--text)">${fmtMoney(endTotal)}</span></div>
+      <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:6px;"><span>= COGS</span><span style="color:${cogs<0?'var(--red2)':'var(--green2)'}">${fmtMoney(cogs)}</span></div>
+      ${sales>0?`<div style="display:flex;justify-content:space-between"><span>÷ Sales</span><span>${fmtMoney(sales)}</span></div>
+      <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:6px;"><span><strong>Food Cost %</strong></span><span style="color:${fcPct>35?'var(--red2)':'var(--green2)'}"><strong>${fcPct!==null?fcPct.toFixed(2)+'%':'—'}</strong></span></div>`:'<div style="color:var(--muted);margin-top:8px">Enter weekly sales in ⚙ Week Setup</div>'}
+    </div>`;
+
+  // Section breakdown
+  const secData=[
+    {label:'Deli', beg:begDeli, end:endDeli, color:'var(--gold)'},
+    {label:'Fountain', beg:begFountain, end:endFountain, color:'var(--blue)'},
+    {label:'Branded Deli', beg:begBranded, end:endBranded, color:'var(--green2)'}
+  ];
+  $('an-section-breakdown').innerHTML=secData.map(s=>{
+    const used=s.beg-s.end;
+    const pct=sales>0?(used/sales*100):null;
+    return `<div style="display:flex;align-items:center;gap:16px;padding:10px 0;border-bottom:1px solid var(--border);">
+      <div style="width:110px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)">${s.label}</div>
+      <div style="width:100px;font-family:'DM Mono',monospace;font-size:12px">Beg: <span style="color:var(--text)">${fmtMoney(s.beg)}</span></div>
+      <div style="width:100px;font-family:'DM Mono',monospace;font-size:12px">End: <span style="color:var(--text)">${fmtMoney(s.end)}</span></div>
+      <div style="width:100px;font-family:'DM Mono',monospace;font-size:12px">Used: <span style="color:${s.color}">${fmtMoney(used)}</span></div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:4px"><span>Food cost contribution</span><span>${pct!==null?pct.toFixed(1)+'%':'—'}</span></div>
+        <div class="cost-bar-bg"><div class="cost-bar-fill ${pct!==null&&pct>15?'bad':''}" style="width:${pct!==null?Math.min(pct*3,100):0}%"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Order needs table
+  const needItems=allInv().filter(i=>i.par>0&&i.qty<i.par).sort((a,b)=>(a.qty/a.par)-(b.qty/b.par));
+  const aTb=$('an-order-tbody');
+  if(!needItems.length){aTb.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted);font-family:'DM Mono',monospace;font-size:12px">✅ All items are at or above par</td></tr>`;return;}
+  aTb.innerHTML=needItems.map(i=>{
+    const need=i.par-i.qty;
+    const sec=deliInv.find(x=>x.id===i.id)?'Deli':fountainInv.find(x=>x.id===i.id)?'Fountain':'Branded';
+    return `<tr>
+      <td><strong>${i.name}</strong></td>
+      <td><span class="badge b-cat">${sec}</span></td>
+      <td class="mono">${i.par}</td>
+      <td class="mono">${i.qty}</td>
+      <td><span class="need-pill">+${need.toFixed(2)} ${i.unit}</span></td>
+      <td style="font-size:12px">${supName(i.supplier)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function sendToOrderList(){
+  const needItems=allInv().filter(i=>i.par>0&&i.qty<i.par);
+  if(!needItems.length){alert('No items below par.');return;}
+  let added=0;
+  needItems.forEach(i=>{
+    if(!orders.find(o=>o.name===i.name&&!o.done)){
+      const need=i.par-i.qty;
+      orders.push({id:uid(),name:i.name,qty:need.toFixed(2),unit:i.unit,supplier:i.supplier||'',notes:'Auto — below par',done:false});
+      added++;
+    }
+  });
+  if(!added){alert('All items already on order list.');return;}
+  sv('ord');alert(`Added ${added} item${added>1?'s':''} to order list.`);
+}
+
+// Week setup modal
+function openWeekSetup(){
+  const wk=weekData[currentWeek]||{};
+  $('ws-date').value=currentWeek;
+  $('ws-sales').value=wk.sales||'';
+  $('ws-deli').value=wk.begDeli||invVal(deliInv).toFixed(2);
+  $('ws-fountain').value=wk.begFountain||invVal(fountainInv).toFixed(2);
+  $('ws-branded').value=wk.begBranded||invVal(brandedInv).toFixed(2);
+  openModal('modal-week');
+}
+
+function saveWeekSetup(){
+  const wd=getMonday($('ws-date').value||currentWeek);
+  weekData[wd]={sales:parseFloat($('ws-sales').value)||0,begDeli:parseFloat($('ws-deli').value)||0,begFountain:parseFloat($('ws-fountain').value)||0,begBranded:parseFloat($('ws-branded').value)||0};
+  currentWeek=wd;
+  sv('week');closeModal('modal-week');renderAnalytics();
+}
+
+// =============================================================
+// INVENTORY PAGE
+// =============================================================
+function renderInvPage(){
+  // stat cards
+  const low=allInv().filter(i=>i.par>0&&i.qty<=i.par).length;
+  const val=invVal(allInv());
+  $('inv-stat-cards').innerHTML=`
+    <div class="stat-card"><div class="stat-label">Total Items</div><div class="stat-value">${allInv().length}</div></div>
+    <div class="stat-card"><div class="stat-label">Low / At Par</div><div class="stat-value ${low>0?'red':'green'}">${low}</div><div class="stat-sub">need reorder</div></div>
+    <div class="stat-card"><div class="stat-label">Total Value</div><div class="stat-value white">${fmtMoney(val)}</div></div>
+    <div class="stat-card"><div class="stat-label">Deli Value</div><div class="stat-value white">${fmtMoney(invVal(deliInv))}</div></div>
+    <div class="stat-card"><div class="stat-label">Fountain Value</div><div class="stat-value white">${fmtMoney(invVal(fountainInv))}</div></div>
+    <div class="stat-card"><div class="stat-label">Branded Value</div><div class="stat-value white">${fmtMoney(invVal(brandedInv))}</div></div>`;
+  // populate sup filter for deli
+  const sf=$('fsup-deli');const sv2=sf.value;
+  sf.innerHTML='<option value="">All Suppliers</option>'+suppliers.map(s=>`<option value="${s.id}"${sv2===s.id?' selected':''}>${s.name}</option>`).join('');
+  renderTable('deli');
+}
+
+function renderTable(sec){
+  const inv=getInv(sec);
+  const search=($('fs-'+sec).value||'').toLowerCase();
+  const cat=$('fcat-'+sec).value;
+  const supF=sec==='deli'?$('fsup-deli').value:'';
+  const showSup=sec==='deli';
+  const rows=inv.filter(i=>(i.name.toLowerCase().includes(search)||i.cat.toLowerCase().includes(search))&&(!cat||i.cat===cat)&&(!supF||i.supplier===supF));
+  const tb=$('tb-'+sec);
+  if(!rows.length){tb.innerHTML=`<tr><td colspan="10"><div class="empty-state"><span class="empty-big">EMPTY</span>No items match.</div></td></tr>`;return;}
+  tb.innerHTML=rows.map(i=>{
+    let st;
+    if(!i.par) st=`<span class="badge b-nopar">No Par</span>`;
+    else if(i.qty<=i.par) st=`<span class="badge b-low">Low</span>`;
+    else if(i.qty<=i.par*1.5) st=`<span class="badge b-warn">Watch</span>`;
+    else st=`<span class="badge b-ok">OK</span>`;
+    const need=i.par>0&&i.qty<i.par?`<span class="need-pill">+${(i.par-i.qty).toFixed(1)}</span>`:`<span style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px">—</span>`;
+    const midCol=showSup?`<td style="font-size:12px">${supName(i.supplier)}</td>`:`<td class="mono">${fmtMoney(i.qty*i.cost)}</td>`;
+    return `<tr>
+      <td><strong style="font-size:13px">${i.name}</strong></td>
+      <td><span class="badge b-cat">${i.cat}</span></td>
+      <td><input class="qty-cell" type="number" value="${i.qty}" min="0" step="0.01" onchange="setQty('${sec}','${i.id}',this.value)"></td>
+      <td class="mono">${i.unit}</td>
+      <td class="mono">${fmtMoney(i.cost)}</td>
+      <td class="mono">${i.par||'—'}</td>
+      ${midCol}
+      <td>${need}</td>
+      <td>${st}</td>
+      <td><div style="display:flex;gap:4px">
+        <button class="btn btn-ghost btn-sm" onclick="openItemModal('${sec}','${i.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="delItem('${sec}','${i.id}')">✕</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function setQty(sec,id,val){
+  const inv=getInv(sec);const i=inv.find(x=>x.id===id);
+  if(i){i.qty=parseFloat(val)||0;sv(sec);}
+}
+
+// Item Modal
+function openItemModal(sec,id){
+  $('item-section').value=sec;
+  $('item-cat').innerHTML=CATS[sec].map(c=>`<option>${c}</option>`).join('');
+  $('item-sup-row').style.display=sec==='deli'?'block':'none';
+  if(sec==='deli'){$('item-supplier').innerHTML='<option value="">— None —</option>'+suppliers.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');}
+  if(!id){
+    $('item-modal-title').textContent='Add Item';
+    $('item-id').value='';
+    ['item-name','item-qty','item-cost','item-par'].forEach(x=>$(x).value='');
+    $('item-unit').value='each';
+  } else {
+    const i=getInv(sec).find(x=>x.id===id);if(!i)return;
+    $('item-modal-title').textContent='Edit Item';
+    $('item-id').value=id;
+    $('item-name').value=i.name;
+    $('item-cat').value=i.cat;
+    $('item-qty').value=i.qty;
+    $('item-unit').value=i.unit;
+    $('item-cost').value=i.cost;
+    $('item-par').value=i.par;
+    if(sec==='deli')$('item-supplier').value=i.supplier||'';
+  }
+  openModal('modal-item');
+}
+
+function saveItem(){
+  const sec=$('item-section').value;
+  const id=$('item-id').value;
+  const inv=getInv(sec);
+  const item={id:id||uid(),name:$('item-name').value.trim(),cat:$('item-cat').value,qty:parseFloat($('item-qty').value)||0,unit:$('item-unit').value,cost:parseFloat($('item-cost').value)||0,par:parseFloat($('item-par').value)||0,supplier:sec==='deli'?$('item-supplier').value:''};
+  if(!item.name){alert('Enter item name.');return;}
+  if(id){const idx=inv.findIndex(x=>x.id===id);inv[idx]=item;}else inv.push(item);
+  sv(sec);closeModal('modal-item');renderTable(sec);renderInvStatCards();
+}
+function renderInvStatCards(){if($('inv-stat-cards'))renderInvPage();}
+
+function delItem(sec,id){
+  if(!confirm('Delete this item?'))return;
+  if(sec==='deli') deliInv=deliInv.filter(x=>x.id!==id);
+  else if(sec==='fountain') fountainInv=fountainInv.filter(x=>x.id!==id);
+  else brandedInv=brandedInv.filter(x=>x.id!==id);
+  sv(sec);renderTable(sec);
+}
+
+// =============================================================
+// INVOICES
+// =============================================================
+function openInvoiceModal(){
+  const today=new Date().toISOString().slice(0,10);
+  $('inv-date').value=today;
+  $('inv-total').value='';$('inv-num').value='';$('inv-notes').value='';
+  $('inv-sup-sel').innerHTML='<option value="">— Select Supplier —</option>'+suppliers.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  openModal('modal-invoice');
+}
+
+function saveInvoice(){
+  const sup=$('inv-sup-sel').value;
+  const total=parseFloat($('inv-total').value)||0;
+  const date=$('inv-date').value;
+  if(!total){alert('Enter invoice total.');return;}
+  invoices.push({id:uid(),supplier:sup,date,total,num:$('inv-num').value.trim(),notes:$('inv-notes').value.trim()});
+  sv('inv');closeModal('modal-invoice');renderInvoices();
+}
+
+function delInvoice(id){if(!confirm('Delete?'))return;invoices=invoices.filter(x=>x.id!==id);sv('inv');renderInvoices();}
+
+function renderInvoices(){
+  const wInv=getWeekInvoices();
+  const total=wInv.reduce((s,i)=>s+Number(i.total),0);
+  $('inv-week-label').textContent='Week of '+currentWeek+' — '+weekLabel(currentWeek);
+  // totals by supplier
+  const bySup={};
+  wInv.forEach(i=>{const n=supName(i.supplier);bySup[n]=(bySup[n]||0)+Number(i.total);});
+  $('inv-totals-cards').innerHTML=Object.entries(bySup).map(([name,amt])=>`
+    <div class="an-card"><div class="an-title">Purchases — ${name}</div><div class="an-big gold">${fmtMoney(amt)}</div></div>`).join('')+
+    `<div class="an-card highlight"><div class="an-title">Total Purchases This Week</div><div class="an-big gold">${fmtMoney(total)}</div><div class="an-sub">${wInv.length} invoice${wInv.length!==1?'s':''}</div></div>`;
+  // all invoices sorted newest first
+  const sorted=[...invoices].sort((a,b)=>b.date.localeCompare(a.date));
+  const el=$('invoice-list');
+  if(!sorted.length){el.innerHTML=`<div class="empty-state"><span class="empty-big">NONE</span>No invoices yet. Add your first invoice.</div>`;return;}
+  el.innerHTML=sorted.map(inv=>{
+    const isThisWeek=wInv.find(x=>x.id===inv.id);
+    return `<div class="invoice-item" style="${isThisWeek?'':'opacity:0.55;border-left-color:var(--border2)'}">
+      <div>
+        <div class="inv-sup">${supName(inv.supplier)}</div>
+        <div class="inv-meta">${inv.date}${inv.num?' · '+inv.num:''}${inv.notes?' · '+inv.notes:''}</div>
+        ${isThisWeek?'<span class="badge b-ok" style="margin-top:4px">This Week</span>':''}
+      </div>
+      <div class="inv-amount">${fmtMoney(inv.total)}</div>
+      <button class="btn btn-danger btn-sm" onclick="delInvoice('${inv.id}')">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// =============================================================
+// ORDERS
+// =============================================================
+function autoOrders(){
+  const low=allInv().filter(i=>i.par>0&&i.qty<i.par);
+  if(!low.length){alert('No items below par.');return;}
+  let added=0;
+  low.forEach(i=>{
+    if(!orders.find(o=>o.name===i.name&&!o.done)){
+      orders.push({id:uid(),name:i.name,qty:(i.par-i.qty).toFixed(2),unit:i.unit,supplier:i.supplier||'',notes:'Auto — below par',done:false});added++;
+    }
+  });
+  if(!added){alert('Already on list.');return;}
+  sv('ord');renderOrders();alert(`Added ${added} item${added>1?'s':''}.`);
+}
+
+function openOrderModal(){
+  $('ord-sup').innerHTML='<option value="">— None —</option>'+suppliers.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  ['ord-name','ord-qty','ord-unit','ord-notes'].forEach(x=>$(x).value='');
+  openModal('modal-order');
+}
+
+function saveOrder(){
+  const o={id:uid(),name:$('ord-name').value.trim(),qty:$('ord-qty').value,unit:$('ord-unit').value.trim(),supplier:$('ord-sup').value,notes:$('ord-notes').value.trim(),done:false};
+  if(!o.name){alert('Enter item name.');return;}
+  orders.push(o);sv('ord');closeModal('modal-order');renderOrders();
+}
+
+function toggleOrder(id){const o=orders.find(x=>x.id===id);if(o){o.done=!o.done;sv('ord');renderOrders();}}
+function delOrder(id){orders=orders.filter(x=>x.id!==id);sv('ord');renderOrders();}
+function clearDone(){orders=orders.filter(o=>!o.done);sv('ord');renderOrders();}
+
+function renderOrders(){
+  const el=$('order-list');
+  if(!orders.length){el.innerHTML=`<div class="empty-state"><span class="empty-big">CLEAR</span>Order list is empty.</div>`;return;}
+  el.innerHTML=[...orders].sort((a,b)=>a.done-b.done).map(o=>`
+    <div class="order-card ${o.done?'done':''}">
+      <input type="checkbox" ${o.done?'checked':''} onchange="toggleOrder('${o.id}')">
+      <div style="flex:1">
+        <div class="o-name">${o.name}</div>
+        <div class="o-meta">${o.qty?o.qty+' '+o.unit:''}${supName(o.supplier)!=='—'?' · '+supName(o.supplier):''}${o.notes?' · '+o.notes:''}</div>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="delOrder('${o.id}')">✕</button>
+    </div>`).join('');
+}
+
+// =============================================================
+// RECIPES
+// =============================================================
+function openRecipeModal(id){
+  $('rec-ing-item').innerHTML=[...allInv()].sort((a,b)=>a.name.localeCompare(b.name)).map(i=>`<option value="${i.id}">${i.name} (${i.unit})</option>`).join('');
+  editRecipeIngs=[];
+  if(!id){
+    $('rec-modal-title').textContent='Add Recipe';
+    $('rec-id').value='';
+    ['rec-name','rec-price'].forEach(x=>$(x).value='');
+    $('rec-servings').value='1';
+  } else {
+    const r=recipes.find(x=>x.id===id);if(!r)return;
+    $('rec-modal-title').textContent='Edit Recipe';
+    $('rec-id').value=id;
+    $('rec-name').value=r.name;
+    $('rec-price').value=r.price;
+    $('rec-servings').value=r.servings;
+    editRecipeIngs=[...r.ingredients];
+  }
+  renderIngList();openModal('modal-recipe');
+}
+
+function addIng(){
+  const invId=$('rec-ing-item').value;
+  const qty=parseFloat($('rec-ing-qty').value);
+  if(!invId||!qty){alert('Select ingredient and enter qty.');return;}
+  const ex=editRecipeIngs.findIndex(x=>x.invId===invId);
+  if(ex>=0)editRecipeIngs[ex].qty+=qty;else editRecipeIngs.push({invId,qty});
+  $('rec-ing-qty').value='';renderIngList();
+}
+
+function renderIngList(){
+  const ul=$('rec-ing-list');
+  if(!editRecipeIngs.length){ul.innerHTML=`<li style="color:var(--muted);font-size:13px;list-style:none">No ingredients yet.</li>`;return;}
+  ul.innerHTML=editRecipeIngs.map((ing,idx)=>{
+    const item=allInv().find(i=>i.id===ing.invId);
+    const cost=item?(item.cost*ing.qty).toFixed(2):'?';
+    return `<li><span>${item?item.name:'Unknown'} — <span class="mono">${ing.qty} ${item?item.unit:''}</span></span><span style="display:flex;align-items:center;gap:10px"><span class="mono" style="color:var(--gold)">${fmtMoney(cost)}</span><button class="ing-del" onclick="editRecipeIngs.splice(${idx},1);renderIngList()">×</button></span></li>`;
+  }).join('');
+}
+
+function saveRecipe(){
+  const id=$('rec-id').value;
+  const r={id:id||uid(),name:$('rec-name').value.trim(),price:parseFloat($('rec-price').value)||0,servings:parseInt($('rec-servings').value)||1,ingredients:[...editRecipeIngs]};
+  if(!r.name){alert('Enter recipe name.');return;}
+  if(id){const idx=recipes.findIndex(x=>x.id===id);recipes[idx]=r;}else recipes.push(r);
+  sv('rec');closeModal('modal-recipe');renderRecipes();
+}
+
+function delRecipe(id){if(!confirm('Delete?'))return;recipes=recipes.filter(r=>r.id!==id);sv('rec');renderRecipes();}
+
+function calcCost(r){return r.ingredients.reduce((s,ing)=>{const item=allInv().find(i=>i.id===ing.invId);return s+(item?item.cost*ing.qty:0);},0);}
+
+function renderRecipes(){
+  const el=$('recipe-list');
+  if(!recipes.length){el.innerHTML=`<div class="empty-state"><span class="empty-big">EMPTY</span>No recipes yet.</div>`;return;}
+  el.innerHTML=recipes.map(r=>{
+    const cost=calcCost(r);const cps=cost/r.servings;
+    const margin=r.price>0?((r.price-cps)/r.price*100):null;
+    const pct=r.price>0?(cps/r.price*100):0;
+    const mc=margin===null?'var(--text2)':margin<50?'var(--red2)':margin<65?'var(--gold)':'var(--green2)';
+    return `<div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);padding:20px;margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+        <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;letter-spacing:1px">${r.name}</div><div style="font-size:12px;color:var(--text2);margin-top:2px">Yield: ${r.servings} serving${r.servings>1?'s':''}</div></div>
+        <div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" onclick="openRecipeModal('${r.id}')">Edit</button><button class="btn btn-danger btn-sm" onclick="delRecipe('${r.id}')">Delete</button></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-top:16px">
+        <div><div class="stat-label">Total Cost</div><div class="mono" style="font-size:18px">${fmtMoney(cost)}</div></div>
+        <div><div class="stat-label">Cost/Serving</div><div class="mono" style="font-size:18px">${fmtMoney(cps)}</div></div>
+        <div><div class="stat-label">Sell Price</div><div class="mono" style="font-size:18px;color:var(--gold)">${fmtMoney(r.price)}</div></div>
+        <div><div class="stat-label">Gross Margin</div><div class="mono" style="font-size:18px;color:${mc}">${margin!==null?margin.toFixed(1)+'%':'—'}</div></div>
+        <div><div class="stat-label">Food Cost %</div><div class="mono" style="font-size:18px;color:${pct>35?'var(--red2)':'var(--text)'}">${r.price>0?pct.toFixed(1)+'%':'—'}</div>${r.price>0?`<div class="cost-bar-bg"><div class="cost-bar-fill ${pct>35?'bad':''}" style="width:${Math.min(pct,100)}%"></div></div>`:''}</div>
+      </div>
+      <div style="margin-top:14px"><div class="stat-label" style="margin-bottom:6px">Ingredients</div>
+        <ul class="ing-list" style="list-style:none">${r.ingredients.map(ing=>{const item=allInv().find(i=>i.id===ing.invId);const c=item?(item.cost*ing.qty).toFixed(2):'?';return `<li><span>${item?item.name:'<em style="color:var(--muted)">Deleted</em>'} · <span class="mono">${ing.qty} ${item?item.unit:''}</span></span><span class="mono" style="color:var(--text2)">${fmtMoney(c)}</span></li>`;}).join('')}</ul>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// =============================================================
+// SUPPLIERS
+// =============================================================
+function openSupplierModal(id){
+  ['sup-name','sup-contact','sup-phone','sup-email','sup-lead','sup-notes'].forEach(x=>$(x).value='');
+  $('sup-id').value='';
+  $('sup-modal-title').textContent='Add Supplier';
+  if(id){
+    const s=suppliers.find(x=>x.id===id);if(!s)return;
+    $('sup-modal-title').textContent='Edit Supplier';
+    $('sup-id').value=id;
+    $('sup-name').value=s.name;$('sup-contact').value=s.contact||'';$('sup-phone').value=s.phone||'';
+    $('sup-email').value=s.email||'';$('sup-lead').value=s.lead||'';$('sup-notes').value=s.notes||'';
+  }
+  openModal('modal-supplier');
+}
+
+function saveSupplier(){
+  const id=$('sup-id').value;
+  const s={id:id||uid(),name:$('sup-name').value.trim(),contact:$('sup-contact').value.trim(),phone:$('sup-phone').value.trim(),email:$('sup-email').value.trim(),lead:$('sup-lead').value.trim(),notes:$('sup-notes').value.trim()};
+  if(!s.name){alert('Enter supplier name.');return;}
+  if(id){const idx=suppliers.findIndex(x=>x.id===id);suppliers[idx]=s;}else suppliers.push(s);
+  sv('sup');closeModal('modal-supplier');renderSuppliers();
+}
+
+function delSupplier(id){if(!confirm('Delete?'))return;suppliers=suppliers.filter(x=>x.id!==id);sv('sup');renderSuppliers();}
+
+function renderSuppliers(){
+  const tb=$('tb-suppliers');
+  if(!suppliers.length){tb.innerHTML=`<tr><td colspan="7"><div class="empty-state"><span class="empty-big">EMPTY</span>No suppliers.</div></td></tr>`;return;}
+  tb.innerHTML=suppliers.map(s=>{
+    const cnt=deliInv.filter(i=>i.supplier===s.id).length;
+    const wTotal=getWeekInvoices().filter(i=>i.supplier===s.id).reduce((sum,i)=>sum+Number(i.total),0);
+    return `<tr>
+      <td><strong>${s.name}</strong><div style="font-size:11px;color:var(--text2);margin-top:2px">${cnt} deli item${cnt!==1?'s':''} · <span style="color:var(--gold)">${fmtMoney(wTotal)} this week</span></div></td>
+      <td>${s.contact||'—'}</td><td class="mono">${s.phone||'—'}</td><td>${s.email||'—'}</td><td>${s.lead||'—'}</td>
+      <td style="max-width:200px;font-size:12px;color:var(--text2)">${s.notes||'—'}</td>
+      <td><div style="display:flex;gap:6px"><button class="btn btn-ghost btn-sm" onclick="openSupplierModal('${s.id}')">Edit</button><button class="btn btn-danger btn-sm" onclick="delSupplier('${s.id}')">✕</button></div></td>
+    </tr>`;
+  }).join('');
+}
+
+// =============================================================
+// REPORTS
+// =============================================================
+let currentReport = null;
+
+function renderReports(){
+  $('rpt-week-label').textContent = 'Week of ' + weekLabel(currentWeek);
+  if(currentReport) buildReport(currentReport);
+}
+
+function selectReport(type){
+  document.querySelectorAll('.rpt-card').forEach(c=>c.classList.remove('selected'));
+  $('rcard-'+type).classList.add('selected');
+  currentReport = type;
+  $('rpt-actions').style.display = 'flex';
+  const labels = {count:'Weekly Count Sheet', inv:'Inventory Valuation', foodcost:'Food Cost Report', order:'Order List Report'};
+  $('rpt-selected-label').textContent = labels[type];
+  buildReport(type);
+}
+
+function buildReport(type){
+  if(type==='count')    $('rpt-preview').innerHTML = buildCountSheet();
+  else if(type==='inv') $('rpt-preview').innerHTML = buildInvValuation();
+  else if(type==='foodcost') $('rpt-preview').innerHTML = buildFoodCost();
+  else if(type==='order')    $('rpt-preview').innerHTML = buildOrderReport();
+}
+
+function rptHeader(title, subtitle){
+  const now = new Date();
+  return `<div class="rpt-doc-header">
+    <div>
+      <div class="rpt-doc-title">⬡ Deli Pro — ${title}</div>
+      <div class="rpt-doc-subtitle">${subtitle}</div>
+    </div>
+    <div class="rpt-doc-meta">
+      <div><strong>Hunt's Convenience Store</strong></div>
+      <div>Week of: ${weekLabel(currentWeek)}</div>
+      <div>Printed: ${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div>
+    </div>
+  </div>`;
+}
+
+// --- COUNT SHEET ---
+function buildCountSheet(){
+  const sections = [
+    {label:'Deli (Merchants / Imperial)', inv:deliInv, cols:['Item','Category','Unit','Par','On Hand','Count','Variance']},
+    {label:'Fountain', inv:fountainInv, cols:['Item','Category','Unit','Par','On Hand','Count','Variance']},
+    {label:'Branded Deli', inv:brandedInv, cols:['Item','Category','Unit','Par','On Hand','Count','Variance']}
+  ];
+  let html = `<div class="rpt-doc">${rptHeader('Weekly Count Sheet','Record physical counts below. Leave blank to fill by hand.')}<br>`;
+  sections.forEach(sec=>{
+    html += `<div class="rpt-section-hd">${sec.label}</div>
+    <table class="rpt-table">
+      <thead><tr>
+        <th>Item</th><th>Category</th><th>Unit</th><th class="num">Par</th><th class="num">On Hand</th><th class="num">Count</th><th class="num">Variance</th><th class="num">Cost/Unit</th><th class="num">Total Value</th>
+      </tr></thead><tbody>`;
+    // group by category
+    const cats = [...new Set(sec.inv.map(i=>i.cat))].sort();
+    cats.forEach(cat=>{
+      const items = sec.inv.filter(i=>i.cat===cat);
+      html += `<tr class="rpt-cat-row"><td colspan="9">${cat}</td></tr>`;
+      items.forEach(i=>{
+        const val = i.qty*i.cost;
+        html += `<tr>
+          <td>${i.name}</td>
+          <td style="font-size:11px;color:#666">${i.cat}</td>
+          <td style="font-family:'DM Mono',monospace;font-size:11px">${i.unit}</td>
+          <td class="num">${i.par||'—'}</td>
+          <td class="num">${i.qty}</td>
+          <td class="num blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+          <td class="num blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+          <td class="num">${i.cost>0?'$'+i.cost.toFixed(2):'—'}</td>
+          <td class="num">${val>0?'$'+val.toFixed(2):'—'}</td>
+        </tr>`;
       });
-      
-      // Seed BEK master (isActive = false)
-      seedBEKMasterSilent();
-      
-      // Create invoice
-      createBEKInvoice();
-    }
-    persist();
-    updateActiveCounter();
-    renderItemsTable();
-    renderInvoicePanel();
-    updateAnalyticsCount();
-  }
-
-  function seedBEKMasterSilent(){
-    const bekItems = getBEKMasterItems();
-    bekItems.forEach(row => {
-      const exists = inventoryItems.find(i => i.itemNumber === row[0] && i.vendor === 'BEK');
-      if(!exists){
-        inventoryItems.push({
-          id: crypto.randomUUID ? crypto.randomUUID() : 'bek-'+Date.now()+'-'+Math.random(),
-          itemNumber: row[0], itemName: row[1], brand: row[2], brandCode: '', 
-          packSize: row[3], storage: row[4], retailReady: row[5], 
-          price: row[6], priceUnit: row[7], vendor: 'BEK', 
-          section: 'Deli', category: 'Deli', 
-          isActive: false, currentOnHand: 0, par: 0
-        });
-      }
+      const catVal = items.reduce((s,i)=>s+i.qty*i.cost,0);
+      html += `<tr class="rpt-totals"><td colspan="4">${cat} Total</td><td colspan="3"></td><td></td><td class="num">$${catVal.toFixed(2)}</td></tr>`;
     });
-    persist();
-  }
+    const secVal = sec.inv.reduce((s,i)=>s+i.qty*i.cost,0);
+    html += `<tr class="rpt-totals" style="font-size:13px;"><td colspan="8"><strong>${sec.label} TOTAL</strong></td><td class="num"><strong>$${secVal.toFixed(2)}</strong></td></tr>`;
+    html += `</tbody></table>`;
+  });
+  html += `<div class="rpt-sig">
+    <div class="rpt-sig-line">Counted By</div>
+    <div class="rpt-sig-line">Date</div>
+    <div class="rpt-sig-line">Manager Approval</div>
+  </div></div>`;
+  return html;
+}
 
-  function seedBEKMaster(){ seedBEKMasterSilent(); renderItemsTable(); updateActiveCounter(); }
-
-  // ---------- INVOICE ----------
-  function createBEKInvoice(){
-    const invoice = {
-      id: 'inv-56678756',
-      invoiceNumber: '56678756', vendor: 'Ben E. Keith Foods',
-      invoiceDate:'2026-04-17', invoiceAmount:1434.89,
-      lineItems: getInvoiceLineItems(), receivedToInventory: false
-    };
-    invoices.push(invoice);
-  }
-
-  function getInvoiceLineItems(){
-    return [
-      ["109198","Chicken Breast Hot N Spicy Ckd","TYSONRED","40/4 OZ",0.00,1,0,0.00],
-      ["370955","Pizza Stick Pepperoni","HOTPOCKT","48/3 OZ",32.00,1,1,32.00],
-      ["106188","Egg Patty Homestyle Fried","PAPETTIS","168/1.5 OZ",50.15,1,1,50.15],
-      ["171854","Egg Roll Chicken Sw Style","VIP","100/3 OZ",77.58,1,1,77.58],
-      ["374344","Meat Pie Original Beef & Pork","NACHITOS","48/3.75 OZ",54.04,1,1,54.04],
-      ["875138","Bag Sandwich 6x.75x6.75 1side","MCNAIRN","1/2000 CT",44.53,1,1,44.53],
-      ["175031","Waffle Belgian Maple Flavored","PILLSBRY","72/1.4 OZ",29.71,1,1,29.71],
-      ["122974","Chicken Breast Fritter Cn 4/1","TYSONRED","2/5 LB",40.84,1,1,40.84],
-      ["394690","Bun Hamburger 5 In Sliced","EUROPNBK","64/3.5 OZ",31.57,2,2,63.14],
-      ["506121","Beef Patty 3/1 Thick N Tender","TNT","60/5.33 OZ",84.52,1,1,84.52],
-      ["111468","Sausage Patty 2 Oz Cooked","SPECIALR","80/2 OZ",47.18,2,2,94.36],
-      ["674170","Sauce Pc Hot Texas Pete","TEX PETE","200/7 GRM",15.33,1,1,15.33],
-      ["165041","Pepper Bell Green","MARKON","1/5 LB",17.64,1,1,17.64],
-      ["385970","Tornado Saus Egg & Cheese","TORNADOS","24/3 OZ",20.90,1,1,20.90],
-      ["123623","Soft Serve Strawberry Mix","DOLE","4/4.5 LB",82.11,1,1,82.11],
-      ["008128","Syrup Pc Pancake Maple Premium","HARTLEYS","100/1.5 OZ",18.43,1,1,18.43],
-      ["189661","Bread Texas Toast White","FRSH/KTH","10/24 OZ",25.78,1,1,25.78],
-      ["370013","Corn Dog Chicken Jalapeno","FOSTER","36/4 OZ",28.00,1,1,28.00],
-      ["139372","Cheese Swiss American 160 Sl","GLDHRVST","4/5 LB",54.82,1,1,54.82],
-      ["016063","Cheese Cheddar Mild Shrd","SCHREIBR","4/5 LB",59.91,1,1,59.91],
-      ["151722","Cheese Pepper Jack Slice .73oz","GLDHRVST","12/1 LB",44.18,1,1,44.18],
-      ["189663","Bun Hamburger White 4 In","FRSH/KTH","8/12 CT",24.89,1,1,24.89],
-      ["145464","Pork Chop Cc Bnls 4oz","KELLEY","1/10 LB",55.41,1,1,55.41],
-      ["674147","Sauce Pc Picante Salsa Del Sol","DEL SOL","200/0.5 OZ",27.08,1,1,27.08],
-      ["026761","Onion Yellow Jumbo Fresh 5lb","PACKER","1/5 LB",9.00,1,1,9.00],
-      ["412862","Dough Biscuit 3 In Sliced","PILLSBRY","168/3.17 OZ",53.87,2,2,107.74],
-      ["173490","Candy Gummy Worm Mini","ALBANESE","4/5 LB",53.36,1,1,53.36],
-      ["188849","Beef Steak Fritter Raw Breaded","CHEFEXCL","40/4 OZ",65.87,1,1,65.87],
-      ["401194","French Toast Stick Wg 1.1 Oz","BAKECRAF","2/5 LB",24.59,1,1,24.59],
-      ["674816","Sauce Pc Marinara Cup","HEINZ","60/2 OZ",37.08,1,1,37.08],
-      ["006522","Chicken Breast Fil Hot'n'spcy","TYSONRED","2/5 LB",29.63,1,1,29.63],
-      ["121802","Cheese American Yellow 184 Sl","SCHREIBR","4/5 LB",55.32,1,1,55.32]
-    ];
-  }
-
-  // ---------- AUTO-RECEIVE ----------
-  function receiveInvoice(invId){
-    const inv = invoices.find(i=>i.id === invId);
-    if(!inv || inv.receivedToInventory) { alert('Already received or not found'); return; }
-    let receivedCount=0, updatedCount=0, activated=0;
-    const missingItems = [];
-    inv.lineItems.forEach(line => {
-      const itemNumber = line[0], shipped = line[6];
-      if(shipped <=0) return;
-      let item = inventoryItems.find(it => it.itemNumber === itemNumber);
-      if(!item) {
-        missingItems.push({ number:itemNumber, name:line[1], brand:mapBrand(line[2]), pack:line[3], price:line[4] });
-        return;
-      }
-      const wasInactive = !item.isActive;
-      item.currentOnHand = (item.currentOnHand||0) + shipped;
-      if(wasInactive) { item.isActive = true; activated++; }
-      updatedCount++; receivedCount += shipped;
+// --- INVENTORY VALUATION ---
+function buildInvValuation(){
+  const sections = [
+    {label:'Deli (Merchants / Imperial)', inv:deliInv},
+    {label:'Fountain', inv:fountainInv},
+    {label:'Branded Deli', inv:brandedInv}
+  ];
+  const grandTotal = invVal(allInv());
+  let html = `<div class="rpt-doc">${rptHeader('Inventory Valuation Report','Current on-hand values by section and category.')}`;
+  html += `<div class="rpt-summary-box">
+    <div><div class="rpt-summary-label">Grand Total</div><div class="rpt-summary-value">$${grandTotal.toFixed(2)}</div></div>
+    <div><div class="rpt-summary-label">Deli Value</div><div class="rpt-summary-value">$${invVal(deliInv).toFixed(2)}</div></div>
+    <div><div class="rpt-summary-label">Fountain Value</div><div class="rpt-summary-value">$${invVal(fountainInv).toFixed(2)}</div></div>
+    <div><div class="rpt-summary-label">Branded Deli Value</div><div class="rpt-summary-value">$${invVal(brandedInv).toFixed(2)}</div></div>
+    <div><div class="rpt-summary-label">Total Items</div><div class="rpt-summary-value">${allInv().length}</div></div>
+    <div><div class="rpt-summary-label">Low Stock Items</div><div class="rpt-summary-value red">${allInv().filter(i=>i.par>0&&i.qty<=i.par).length}</div></div>
+  </div>`;
+  sections.forEach(sec=>{
+    const secVal = invVal(sec.inv);
+    html += `<div class="rpt-section-hd">${sec.label} — $${secVal.toFixed(2)}</div>
+    <table class="rpt-table"><thead><tr>
+      <th>Item</th><th>Category</th><th>On Hand</th><th>Unit</th><th class="num">Cost/Unit</th><th class="num">Total Value</th><th>Par</th><th>Status</th>
+    </tr></thead><tbody>`;
+    const cats=[...new Set(sec.inv.map(i=>i.cat))].sort();
+    cats.forEach(cat=>{
+      const items=sec.inv.filter(i=>i.cat===cat);
+      const catVal=items.reduce((s,i)=>s+i.qty*i.cost,0);
+      html+=`<tr class="rpt-cat-row"><td colspan="8">${cat} — $${catVal.toFixed(2)}</td></tr>`;
+      items.forEach(i=>{
+        const val=i.qty*i.cost;
+        const st=!i.par?'No Par':i.qty<=i.par?'⚠ LOW':i.qty<=i.par*1.5?'Watch':'OK';
+        html+=`<tr>
+          <td>${i.name}</td><td style="font-size:11px;color:#666">${i.cat}</td>
+          <td class="num">${i.qty}</td><td style="font-family:'DM Mono',monospace;font-size:11px">${i.unit}</td>
+          <td class="num">${i.cost>0?'$'+i.cost.toFixed(2):'—'}</td>
+          <td class="num"><strong>${val>0?'$'+val.toFixed(2):'—'}</strong></td>
+          <td class="num">${i.par||'—'}</td>
+          <td style="font-size:11px;color:${i.par&&i.qty<=i.par?'#b52b20':i.par&&i.qty<=i.par*1.5?'#b07020':'#1a4a80'}">${st}</td>
+        </tr>`;
+      });
     });
-    if(missingItems.length){
-      pendingMissing = missingItems[0];
-      showAddMissingModal(pendingMissing);
+    html+=`<tr class="rpt-totals"><td colspan="5"><strong>${sec.label} TOTAL</strong></td><td class="num"><strong>$${secVal.toFixed(2)}</strong></td><td colspan="2"></td></tr>`;
+    html+=`</tbody></table>`;
+  });
+  html+=`<div class="rpt-sig"><div class="rpt-sig-line">Prepared By</div><div class="rpt-sig-line">Date</div><div class="rpt-sig-line">Manager Approval</div></div></div>`;
+  return html;
+}
+
+// --- FOOD COST REPORT ---
+function buildFoodCost(){
+  const wk = weekData[currentWeek]||{};
+  const wInv = getWeekInvoices();
+  const purchases = wInv.reduce((s,i)=>s+Number(i.total),0);
+  const sales = Number(wk.sales||0);
+  const begDeli     = Number(wk.begDeli    ||0);
+  const begFountain = Number(wk.begFountain||0);
+  const begBranded  = Number(wk.begBranded ||0);
+  const begTotal    = begDeli+begFountain+begBranded;
+  const endDeli     = invVal(deliInv);
+  const endFountain = invVal(fountainInv);
+  const endBranded  = invVal(brandedInv);
+  const endTotal    = endDeli+endFountain+endBranded;
+  const cogs        = begTotal+purchases-endTotal;
+  const fcPct       = sales>0?(cogs/sales*100):null;
+  const rating      = fcPct===null?'N/A':fcPct<=28?'Excellent':fcPct<=32?'Good':fcPct<=35?'Acceptable':fcPct<=40?'High':'Critical';
+
+  // invoices by supplier
+  const bySup = {};
+  wInv.forEach(i=>{const n=supName(i.supplier);bySup[n]=(bySup[n]||0)+Number(i.total);});
+
+  let html = `<div class="rpt-doc">${rptHeader('Weekly Food Cost Report','Beginning Inventory + Purchases − Ending Inventory = COGS')}`;
+  html += `<div class="rpt-summary-box">
+    <div><div class="rpt-summary-label">Weekly Sales</div><div class="rpt-summary-value ${sales?'':'red'}">${sales?'$'+sales.toFixed(2):'Not Set'}</div></div>
+    <div><div class="rpt-summary-label">Total Purchases</div><div class="rpt-summary-value">$${purchases.toFixed(2)}</div></div>
+    <div><div class="rpt-summary-label">COGS</div><div class="rpt-summary-value ${cogs<0?'red':'grn'}">$${cogs.toFixed(2)}</div></div>
+    <div><div class="rpt-summary-label">Food Cost %</div><div class="rpt-summary-value ${fcPct===null?'':fcPct>35?'red':'grn'}">${fcPct!==null?fcPct.toFixed(1)+'%':'—'}</div></div>
+    <div><div class="rpt-summary-label">Rating</div><div class="rpt-summary-value" style="font-size:18px">${rating}</div></div>
+  </div>`;
+
+  // calculation breakdown
+  html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+  <div>
+    <div class="rpt-section-hd">Food Cost Calculation</div>
+    <div style="padding:16px;background:#faf7f2;border:1px solid #ddd;">
+      <div class="rpt-fc-row"><span class="lbl">Beginning Inventory (Deli)</span><span class="val">$${begDeli.toFixed(2)}</span></div>
+      <div class="rpt-fc-row"><span class="lbl">Beginning Inventory (Fountain)</span><span class="val">$${begFountain.toFixed(2)}</span></div>
+      <div class="rpt-fc-row"><span class="lbl">Beginning Inventory (Branded)</span><span class="val">$${begBranded.toFixed(2)}</span></div>
+      <div class="rpt-fc-row" style="font-weight:600"><span class="lbl">= Total Beginning Inventory</span><span class="val">$${begTotal.toFixed(2)}</span></div>
+      <div class="rpt-fc-row" style="margin-top:8px"><span class="lbl">+ Total Purchases (Invoices)</span><span class="val">$${purchases.toFixed(2)}</span></div>
+      <div class="rpt-fc-row" style="font-weight:600"><span class="lbl">= Goods Available</span><span class="val">$${(begTotal+purchases).toFixed(2)}</span></div>
+      <div class="rpt-fc-row" style="margin-top:8px"><span class="lbl">− Ending Inventory (Deli)</span><span class="val">$${endDeli.toFixed(2)}</span></div>
+      <div class="rpt-fc-row"><span class="lbl">− Ending Inventory (Fountain)</span><span class="val">$${endFountain.toFixed(2)}</span></div>
+      <div class="rpt-fc-row"><span class="lbl">− Ending Inventory (Branded)</span><span class="val">$${endBranded.toFixed(2)}</span></div>
+      <div class="rpt-fc-row total-row"><span class="lbl">= Cost of Goods Used (COGS)</span><span class="val" style="color:${cogs<0?'#b52b20':'#1a4a80'}">$${cogs.toFixed(2)}</span></div>
+      ${sales>0?`<div class="rpt-fc-row" style="margin-top:8px"><span class="lbl">÷ Weekly Sales</span><span class="val">$${sales.toFixed(2)}</span></div>
+      <div class="rpt-fc-row total-row"><span class="lbl" style="font-size:16px">Food Cost %</span><span class="val" style="font-size:18px;color:${fcPct>35?'#b52b20':'#1a4a80'}">${fcPct.toFixed(2)}%</span></div>`:'<div style="color:#b52b20;font-size:12px;margin-top:12px;font-style:italic">Set weekly sales in Analytics → ⚙ Week Setup to calculate Food Cost %.</div>'}
+    </div>
+  </div>
+  <div>
+    <div class="rpt-section-hd">Purchases by Supplier</div>
+    <div style="padding:16px;background:#faf7f2;border:1px solid #ddd;">
+      ${Object.keys(bySup).length?Object.entries(bySup).map(([n,a])=>`
+        <div class="rpt-fc-row"><span class="lbl">${n}</span><span class="val">$${a.toFixed(2)}</span></div>`).join('')+'<div class="rpt-fc-row total-row"><span class="lbl">Total Purchases</span><span class="val">$'+purchases.toFixed(2)+'</span></div>':'<div style="color:#888;font-style:italic;font-size:12px">No invoices entered for this week.</div>'}
+    </div>
+    <div class="rpt-section-hd" style="margin-top:16px">Invoices This Week</div>
+    <table class="rpt-table"><thead><tr><th>Date</th><th>Supplier</th><th>Invoice #</th><th class="num">Amount</th></tr></thead><tbody>
+      ${wInv.length?wInv.map(i=>`<tr><td>${i.date}</td><td>${supName(i.supplier)}</td><td>${i.num||'—'}</td><td class="num">$${Number(i.total).toFixed(2)}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;color:#888;font-style:italic">No invoices this week</td></tr>'}
+    </tbody></table>
+  </div></div>`;
+
+  // Section breakdown
+  const secData=[
+    {label:'Deli',beg:begDeli,end:endDeli},
+    {label:'Fountain',beg:begFountain,end:endFountain},
+    {label:'Branded Deli',beg:begBranded,end:endBranded}
+  ];
+  html+=`<div class="rpt-section-hd">Food Cost by Section</div>
+  <table class="rpt-table"><thead><tr>
+    <th>Section</th><th class="num">Beg. Inventory</th><th class="num">Ending Inventory</th><th class="num">Used</th><th class="num">% of Sales</th>
+  </tr></thead><tbody>
+  ${secData.map(s=>{
+    const used=s.beg-s.end;
+    const pct=sales>0?(used/sales*100):null;
+    return `<tr><td><strong>${s.label}</strong></td><td class="num">$${s.beg.toFixed(2)}</td><td class="num">$${s.end.toFixed(2)}</td><td class="num">$${used.toFixed(2)}</td><td class="num">${pct!==null?pct.toFixed(1)+'%':'—'}</td></tr>`;
+  }).join('')}
+  <tr class="rpt-totals"><td><strong>TOTAL</strong></td><td class="num"><strong>$${begTotal.toFixed(2)}</strong></td><td class="num"><strong>$${endTotal.toFixed(2)}</strong></td><td class="num"><strong>$${cogs.toFixed(2)}</strong></td><td class="num"><strong>${fcPct!==null?fcPct.toFixed(1)+'%':'—'}</strong></td></tr>
+  </tbody></table>`;
+
+  html+=`<div class="rpt-sig"><div class="rpt-sig-line">Prepared By</div><div class="rpt-sig-line">Date</div><div class="rpt-sig-line">Manager Approval</div></div></div>`;
+  return html;
+}
+
+// --- ORDER LIST REPORT ---
+function buildOrderReport(){
+  const needItems = allInv().filter(i=>i.par>0&&i.qty<i.par).sort((a,b)=>(a.qty/a.par)-(b.qty/b.par));
+  const bySup = {};
+  needItems.forEach(i=>{
+    const sn = supName(i.supplier);
+    if(!bySup[sn]) bySup[sn]=[];
+    bySup[sn].push(i);
+  });
+  let html = `<div class="rpt-doc">${rptHeader('Order List Report','Items at or below par — order quantities needed.')}`;
+  html += `<div class="rpt-summary-box">
+    <div><div class="rpt-summary-label">Items to Order</div><div class="rpt-summary-value red">${needItems.length}</div></div>
+    <div><div class="rpt-summary-label">Suppliers</div><div class="rpt-summary-value">${Object.keys(bySup).length}</div></div>
+    <div><div class="rpt-summary-label">Week Of</div><div class="rpt-summary-value" style="font-size:16px">${currentWeek}</div></div>
+  </div>`;
+  if(!needItems.length){
+    html += `<div style="text-align:center;padding:40px;color:#666;font-style:italic">✅ All items are at or above par. No orders needed.</div>`;
+  } else {
+    Object.entries(bySup).forEach(([supN, items])=>{
+      html += `<div class="rpt-section-hd">${supN}</div>
+      <table class="rpt-table"><thead><tr>
+        <th>Item</th><th>Section</th><th class="num">Par</th><th class="num">On Hand</th><th class="num">Need to Order</th><th>Unit</th><th>Notes</th>
+      </tr></thead><tbody>`;
+      items.forEach(i=>{
+        const sec = deliInv.find(x=>x.id===i.id)?'Deli':fountainInv.find(x=>x.id===i.id)?'Fountain':'Branded';
+        const need = i.par-i.qty;
+        html+=`<tr>
+          <td><strong>${i.name}</strong></td>
+          <td style="font-size:11px">${sec}</td>
+          <td class="num">${i.par}</td>
+          <td class="num" style="color:${i.qty===0?'#b52b20':'inherit'}">${i.qty}</td>
+          <td class="num" style="color:#b52b20;font-weight:700">+${need.toFixed(2)}</td>
+          <td style="font-family:'DM Mono',monospace;font-size:11px">${i.unit}</td>
+          <td class="blank" style="min-width:100px">&nbsp;</td>
+        </tr>`;
+      });
+      html+=`</tbody></table>`;
+    });
+  }
+  html+=`<div class="rpt-sig"><div class="rpt-sig-line">Ordered By</div><div class="rpt-sig-line">Date Ordered</div><div class="rpt-sig-line">Manager Approval</div></div></div>`;
+  return html;
+}
+
+// --- PRINT ---
+function printReport(){
+  if(!currentReport){alert('Select a report first.');return;}
+  window.print();
+}
+
+// --- EXCEL EXPORT ---
+function exportExcel(){
+  if(!currentReport){alert('Select a report first.');return;}
+  let rows=[], title='';
+  if(currentReport==='count') { rows=buildExcelCount(); title='Weekly_Count_Sheet'; }
+  else if(currentReport==='inv') { rows=buildExcelInv(); title='Inventory_Valuation'; }
+  else if(currentReport==='foodcost') { rows=buildExcelFoodCost(); title='Food_Cost_Report'; }
+  else if(currentReport==='order') { rows=buildExcelOrder(); title='Order_List'; }
+
+  // Build CSV (universal Excel compatible)
+  const csv = rows.map(r=>r.map(cell=>{
+    const s = String(cell===null||cell===undefined?'':cell);
+    return s.includes(',')||s.includes('"')||s.includes('\n') ? '"'+s.replace(/"/g,'""')+'"' : s;
+  }).join(',')).join('\n');
+
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=title+'_'+currentWeek+'.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function buildExcelCount(){
+  const rows=[['DELI PRO — WEEKLY COUNT SHEET'],['Week Of:', weekLabel(currentWeek)],['Printed:', new Date().toLocaleDateString()],[]];
+  const sections=[{label:'DELI (Merchants/Imperial)',inv:deliInv},{label:'FOUNTAIN',inv:fountainInv},{label:'BRANDED DELI',inv:brandedInv}];
+  sections.forEach(sec=>{
+    rows.push([sec.label]);
+    rows.push(['Item','Category','Unit','Par','On Hand','Physical Count','Variance','Cost/Unit','Total Value']);
+    const cats=[...new Set(sec.inv.map(i=>i.cat))].sort();
+    cats.forEach(cat=>{
+      rows.push([`-- ${cat} --`]);
+      sec.inv.filter(i=>i.cat===cat).forEach(i=>{
+        rows.push([i.name,i.cat,i.unit,i.par,i.qty,'','',i.cost>0?i.cost.toFixed(2):'',i.cost>0?(i.qty*i.cost).toFixed(2):'']);
+      });
+    });
+    rows.push([sec.label+' TOTAL','','','','','','','',sec.inv.reduce((s,i)=>s+i.qty*i.cost,0).toFixed(2)]);
+    rows.push([]);
+  });
+  rows.push(['','','','','','Counted By:','','Date:','']);
+  return rows;
+}
+
+function buildExcelInv(){
+  const rows=[['DELI PRO — INVENTORY VALUATION'],['Week Of:', weekLabel(currentWeek)],['Grand Total:', '$'+invVal(allInv()).toFixed(2)],[]];
+  const sections=[{label:'DELI',inv:deliInv},{label:'FOUNTAIN',inv:fountainInv},{label:'BRANDED DELI',inv:brandedInv}];
+  sections.forEach(sec=>{
+    rows.push([sec.label,'Total: $'+invVal(sec.inv).toFixed(2)]);
+    rows.push(['Item','Category','On Hand','Unit','Cost/Unit','Total Value','Par','Status']);
+    sec.inv.forEach(i=>{
+      const st=!i.par?'No Par':i.qty<=i.par?'LOW':i.qty<=i.par*1.5?'Watch':'OK';
+      rows.push([i.name,i.cat,i.qty,i.unit,i.cost>0?i.cost.toFixed(2):'0.00',i.cost>0?(i.qty*i.cost).toFixed(2):'0.00',i.par||0,st]);
+    });
+    rows.push([sec.label+' TOTAL','','','','','$'+invVal(sec.inv).toFixed(2),'','']);
+    rows.push([]);
+  });
+  return rows;
+}
+
+function buildExcelFoodCost(){
+  const wk=weekData[currentWeek]||{};
+  const wInv=getWeekInvoices();
+  const purchases=wInv.reduce((s,i)=>s+Number(i.total),0);
+  const sales=Number(wk.sales||0);
+  const begTotal=Number(wk.begDeli||0)+Number(wk.begFountain||0)+Number(wk.begBranded||0);
+  const endTotal=invVal(allInv());
+  const cogs=begTotal+purchases-endTotal;
+  const fcPct=sales>0?(cogs/sales*100):null;
+  const rows=[
+    ['DELI PRO — FOOD COST REPORT'],['Week Of:',weekLabel(currentWeek)],[],
+    ['FOOD COST CALCULATION'],
+    ['Beginning Inventory (Deli)','$'+(Number(wk.begDeli||0)).toFixed(2)],
+    ['Beginning Inventory (Fountain)','$'+(Number(wk.begFountain||0)).toFixed(2)],
+    ['Beginning Inventory (Branded)','$'+(Number(wk.begBranded||0)).toFixed(2)],
+    ['Total Beginning Inventory','$'+begTotal.toFixed(2)],
+    ['+  Total Purchases','$'+purchases.toFixed(2)],
+    ['=  Goods Available','$'+(begTotal+purchases).toFixed(2)],
+    ['-  Ending Inventory','$'+endTotal.toFixed(2)],
+    ['=  COGS','$'+cogs.toFixed(2)],
+    ['Weekly Sales','$'+sales.toFixed(2)],
+    ['Food Cost %',fcPct!==null?fcPct.toFixed(2)+'%':'N/A (set sales)'],
+    [],['INVOICES THIS WEEK'],
+    ['Date','Supplier','Invoice #','Amount'],
+    ...wInv.map(i=>[i.date,supName(i.supplier),i.num||'',Number(i.total).toFixed(2)]),
+    ['TOTAL','','','$'+purchases.toFixed(2)],
+    [],['SECTION BREAKDOWN'],
+    ['Section','Beginning','Ending','Used','% of Sales'],
+    ['Deli',Number(wk.begDeli||0).toFixed(2),invVal(deliInv).toFixed(2),(Number(wk.begDeli||0)-invVal(deliInv)).toFixed(2),sales>0?((Number(wk.begDeli||0)-invVal(deliInv))/sales*100).toFixed(1)+'%':'—'],
+    ['Fountain',Number(wk.begFountain||0).toFixed(2),invVal(fountainInv).toFixed(2),(Number(wk.begFountain||0)-invVal(fountainInv)).toFixed(2),sales>0?((Number(wk.begFountain||0)-invVal(fountainInv))/sales*100).toFixed(1)+'%':'—'],
+    ['Branded Deli',Number(wk.begBranded||0).toFixed(2),invVal(brandedInv).toFixed(2),(Number(wk.begBranded||0)-invVal(brandedInv)).toFixed(2),sales>0?((Number(wk.begBranded||0)-invVal(brandedInv))/sales*100).toFixed(1)+'%':'—'],
+  ];
+  return rows;
+}
+
+function buildExcelOrder(){
+  const needItems=allInv().filter(i=>i.par>0&&i.qty<i.par).sort((a,b)=>(a.qty/a.par)-(b.qty/b.par));
+  const rows=[['DELI PRO — ORDER LIST REPORT'],['Week Of:',weekLabel(currentWeek)],['Items to Order:',needItems.length],[],
+    ['Item','Section','Supplier','Par','On Hand','Need to Order','Unit']];
+  needItems.forEach(i=>{
+    const sec=deliInv.find(x=>x.id===i.id)?'Deli':fountainInv.find(x=>x.id===i.id)?'Fountain':'Branded';
+    rows.push([i.name,sec,supName(i.supplier),i.par,i.qty,(i.par-i.qty).toFixed(2),i.unit]);
+  });
+  if(!needItems.length) rows.push(['All items at or above par — no orders needed.']);
+  return rows;
+}
+
+// =============================================================
+// ONE-TIME INVOICE PATCHES
+// =============================================================
+
+// BEK Invoice #56553783 — 04/05/2026 — $1,992.21
+// Adds/updates items and logs the invoice. Idempotent: skips if invoice already present.
+function applyBEK56553783() {
+  if (invoices.find(i => i.num === '56553783')) return;
+
+  // Ensure Ben E. Keith Foods supplier exists
+  let bek = suppliers.find(s => s.name === 'Ben E. Keith Foods');
+  if (!bek) {
+    bek = {id:uid(), name:'Ben E. Keith Foods', contact:'', phone:'', email:'', lead:'', notes:''};
+    suppliers.push(bek);
+  }
+
+  const items = [
+    // BREAD
+    {name:'Bun Hamburger White 4 In',         cat:'Bread',      cases:1, cost:24.89},
+    {name:'Dough Biscuit 3 In Sliced',         cat:'Bread',      cases:3, cost:62.38},
+    {name:'Dough Apple Turnover',              cat:'Bread',      cases:1, cost:59.30},
+    {name:'Glaze Honey Dip Heat & Ice',        cat:'Bread',      cases:1, cost:58.84},
+    {name:'Brownie Blondie',                   cat:'Bread',      cases:1, cost:46.31},
+    // CONDIMENTS
+    {name:'Dressing Pc Honey Mustard Cup',     cat:'Condiments', cases:1, cost:28.23},
+    {name:'Dressing Pc Ranch Cup',             cat:'Condiments', cases:1, cost:26.60},
+    // DAIRY
+    {name:'Soft Serve Chocolate 6/6 LB',       cat:'Dairy',      cases:1, cost:78.02},
+    // DELI MEAT
+    {name:'Bacon Layout 18/22',                cat:'Deli Meat',  cases:2, cost:57.62},
+    {name:'Beef Patty 3/1 Thick N Tender',     cat:'Deli Meat',  cases:1, cost:84.52},
+    {name:'Beef Steak Fritter Raw Breaded',    cat:'Deli Meat',  cases:1, cost:65.87},
+    {name:'Chicken Breast Flame Grilled 4oz',  cat:'Deli Meat',  cases:1, cost:64.46},
+    {name:'Chicken Breast Fritter Cn 4/1',     cat:'Deli Meat',  cases:1, cost:40.84},
+    {name:'Chicken Breast Hot N Spicy Ckd',    cat:'Deli Meat',  cases:1, cost:40.84},
+    {name:'Sausage Patty 2 Oz Cooked',         cat:'Deli Meat',  cases:3, cost:47.18},
+    {name:'Waffle Stuffed Sausage Egg Cheese', cat:'Deli Meat',  cases:1, cost:83.08},
+    {name:'Egg Patty Homestyle Fried',         cat:'Deli Meat',  cases:2, cost:50.00},
+    // OTHER
+    {name:'Corn Dog Chili Cheese',             cat:'Other',      cases:1, cost:27.50},
+    {name:'Crispito Chicken & Cheese',         cat:'Other',      cases:1, cost:56.11},
+    {name:'Burrito Breakfast Bacon',           cat:'Other',      cases:1, cost:37.33},
+    {name:'Burrito Breakfast Sausage',         cat:'Other',      cases:1, cost:37.33},
+    {name:'Empanada Beef And Cheese',          cat:'Other',      cases:1, cost:31.17},
+    {name:'Empanada Chicken And Cheese',       cat:'Other',      cases:1, cost:31.17},
+    {name:'Meat Pie Original Beef & Pork',     cat:'Other',      cases:1, cost:54.04},
+    {name:'Meat Pie Spicy Bulk',               cat:'Other',      cases:1, cost:54.49},
+    {name:'Nacho Cheese Triangles Breaded',    cat:'Other',      cases:1, cost:58.16},
+    // PACKAGING
+    {name:'Bag Reclosable 2 Gal 13x15.5',     cat:'Packaging',  cases:1, cost:14.55},
+    {name:'Label 2x3 Dissolvable',             cat:'Packaging',  cases:1, cost:27.21},
+    {name:'Tape Register Roll Thermal',        cat:'Packaging',  cases:1, cost:78.24},
+    {name:'Toilet Tissue 2 Ply Jumbo Jr',      cat:'Packaging',  cases:2, cost:44.12},
+    // PRODUCE
+    {name:'Onion Yellow Jumbo Fresh 5lb',      cat:'Produce',    cases:1, cost:10.09},
+    {name:'Pepper Bell Green',                 cat:'Produce',    cases:1, cost:16.83},
+  ];
+
+  items.forEach(item => {
+    const existing = deliInv.find(i => i.name.toLowerCase() === item.name.toLowerCase());
+    if (existing) {
+      existing.qty  = +(existing.qty + item.cases).toFixed(2);
+      existing.cost = item.cost;
     } else {
-      finalizeReceive(inv, receivedCount, updatedCount, activated);
+      deliInv.push({id:uid(), name:item.name, cat:item.cat, qty:item.cases, unit:'cases', cost:item.cost, par:1, supplier:bek.id});
     }
-  }
+  });
 
-  function finalizeReceive(inv, rec, upd, act){
-    inv.receivedToInventory = true;
-    persist();
-    document.getElementById('summary-content').innerText = `✅ Received ${rec} units, updated ${upd} items, activated ${act} previously inactive.`;
-    openModal('modal-summary');
-    renderItemsTable(); updateActiveCounter(); renderInvoicePanel(); updateAnalyticsCount();
-  }
+  invoices.push({
+    id: uid(), supplier: bek.id, date: '2026-04-05', total: 1992.21, num: '56553783',
+    notes: 'BEK — Cooler $81.75 / Dry $369.99 / Frozen $1,525.89 / Tax $14.58'
+  });
 
-  function confirmAddMissing(){
-    if(!pendingMissing) return;
-    const name = document.getElementById('miss-name').value || pendingMissing.name;
-    const number = document.getElementById('miss-number').value || pendingMissing.number;
-    const brand = document.getElementById('miss-brand').value || pendingMissing.brand;
-    const pack = document.getElementById('miss-pack').value || pendingMissing.pack;
-    const storage = document.getElementById('miss-storage').value;
-    const price = parseFloat(document.getElementById('miss-price').value) || pendingMissing.price;
-    const newItem = {
-      id: crypto.randomUUID ? crypto.randomUUID() : 'item-'+Date.now()+'-'+Math.random(), itemNumber: number, itemName: name, brand, brandCode:'',
-      packSize: pack, storage, retailReady: false, price, priceUnit: 'case', vendor: 'BEK',
-      section: 'Deli', category: 'Deli', isActive: true, currentOnHand: 1, par: 0
-    };
-    inventoryItems.push(newItem);
-    closeModal('modal-addMissing');
-    const inv = invoices.find(i=>i.invoiceNumber==='56678756' && !i.receivedToInventory);
-    if(inv) receiveInvoice(inv.id);
-    else { persist(); renderItemsTable(); updateActiveCounter(); }
-  }
+  // persist immediately (sbPush() is a no-op until Supabase is initialized)
+  localStorage.setItem('dp7_sup', JSON.stringify(suppliers));
+  localStorage.setItem('dp7_deli', JSON.stringify(deliInv));
+  localStorage.setItem('dp7_inv', JSON.stringify(invoices));
+}
 
-  // ---------- UI ----------
-  function renderItemsTable(){
-    const search = (document.getElementById('im-search')?.value||'').toLowerCase();
-    const storage = document.getElementById('im-storage')?.value;
-    const activeFilter = document.getElementById('im-active')?.value;
-    const vendor = document.getElementById('im-vendor')?.value;
-    const section = document.getElementById('im-section')?.value;
-    
-    let filtered = inventoryItems.filter(i => {
-      if(search && !(i.itemName.toLowerCase().includes(search) || (i.itemNumber||'').includes(search) || i.brand.toLowerCase().includes(search))) return false;
-      if(storage && i.storage !== storage) return false;
-      if(activeFilter === 'active' && !i.isActive) return false;
-      if(activeFilter === 'inactive' && i.isActive) return false;
-      if(vendor && i.vendor !== vendor) return false;
-      if(section && i.section !== section) return false;
-      return true;
+// =============================================================
+// CLOUD SYNC (Supabase)
+// =============================================================
+const SB_DEFAULT_URL   = 'https://zdbaymktrzsmzimwdeua.supabase.co';
+const SB_DEFAULT_KEY   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpkYmF5bWt0cnpzbXppbXdkZXVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NDAxNTQsImV4cCI6MjA5MTQxNjE1NH0.-NONMuk3lkeL0HTiJtPBNEU3F33Y4dOIb1Iv7_K2Ykw';
+const SB_DEFAULT_STORE = 'keiths-deli';
+
+let sbUrl = '';
+let sbKey = '';
+let sbStoreCode = '';
+let _sbReady = false;
+
+function setSyncStatus(state) {
+  const dot = $('sync-dot');
+  const txt = $('sync-txt');
+  if (!dot) return;
+  const colors = { ok:'#22c55e', syncing:'#f59e0b', err:'#ef4444', off:'#6b7280' };
+  const labels = { ok:'Synced',  syncing:'Syncing…', err:'Error',   off:'Cloud'   };
+  dot.style.background = colors[state] || colors.off;
+  if (txt) txt.textContent = labels[state] || 'Cloud';
+}
+
+function loadSbSetup() {
+  // Use stored values if present, otherwise fall back to hardcoded defaults
+  const url  = localStorage.getItem('dp7_sb_url')   || SB_DEFAULT_URL;
+  const key  = localStorage.getItem('dp7_sb_key')   || SB_DEFAULT_KEY;
+  const code = localStorage.getItem('dp7_sb_store') || SB_DEFAULT_STORE;
+  // Persist defaults so the modal shows them pre-filled
+  if (!localStorage.getItem('dp7_sb_url')) {
+    localStorage.setItem('dp7_sb_url',   url);
+    localStorage.setItem('dp7_sb_key',   key);
+    localStorage.setItem('dp7_sb_store', code);
+  }
+  sbUrl = url; sbKey = key; sbStoreCode = code;
+  _sbReady = true;
+  setSyncStatus('ok');
+  sbPull(true); // auto-pull on load so every device starts with the latest data
+}
+
+async function sbPush() {
+  if (!_sbReady) return;
+  setSyncStatus('syncing');
+  try {
+    const res = await fetch(sbUrl + '/rest/v1/deli_stores', {
+      method: 'POST',
+      headers: {
+        'apikey': sbKey,
+        'Authorization': 'Bearer ' + sbKey,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({
+        store_code: sbStoreCode,
+        data: { sup: suppliers, deli: deliInv, fountain: fountainInv, branded: brandedInv,
+                rec: recipes, ord: orders, inv: invoices, week: weekData, _ts: Date.now() },
+        updated_at: new Date().toISOString()
+      })
     });
-    
-    const tbody = document.getElementById('items-tbody');
-    tbody.innerHTML = filtered.map(i => `
-      <tr>
-        <td><span class="badge b-cat">${i.section || 'Deli'}</span></td>
-        <td><code>${i.itemNumber || '—'}</code></td>
-        <td>${i.itemName}</td>
-        <td>${i.brand}</td>
-        <td>${i.packSize || '—'}</td>
-        <td>${i.storage||'—'}</td>
-        <td>$${(i.price||0).toFixed(2)} / ${i.priceUnit||'case'}</td>
-        <td>${i.currentOnHand||0}</td>
-        <td>${i.par||0}</td>
-        <td>
-          <label class="toggle-switch">
-            <input type="checkbox" ${i.isActive?'checked':''} onchange="toggleActive('${i.id}', this.checked)">
-            <span class="slider"></span>
-          </label>
-        </td>
-      </tr>
-    `).join('');
-    updateActiveCounter();
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + await res.text());
+    setSyncStatus('ok');
+  } catch(e) {
+    setSyncStatus('err');
+    console.error('Cloud push failed:', e);
   }
+}
 
-  window.toggleActive = function(id, val){
-    const item = inventoryItems.find(i=>i.id === id);
-    if(item) { item.isActive = val; persist(); updateActiveCounter(); updateAnalyticsCount(); }
-  };
-
-  function bulkActivate(active){
-    const search = document.getElementById('im-search')?.value.toLowerCase()||'';
-    const storage = document.getElementById('im-storage')?.value;
-    const vendor = document.getElementById('im-vendor')?.value;
-    const section = document.getElementById('im-section')?.value;
-    inventoryItems.forEach(i => {
-      let match = true;
-      if(search && !(i.itemName.toLowerCase().includes(search)||(i.itemNumber||'').includes(search)||i.brand.toLowerCase().includes(search))) match=false;
-      if(storage && i.storage !== storage) match=false;
-      if(vendor && i.vendor !== vendor) match=false;
-      if(section && i.section !== section) match=false;
-      if(match) i.isActive = active;
-    });
-    persist(); renderItemsTable(); updateAnalyticsCount();
+async function sbPull(silent) {
+  if (!_sbReady) {
+    if (!silent) alert('Cloud sync not configured. Click ☁ Cloud to set up.');
+    return;
   }
-
-  function updateActiveCounter(){
-    const total = inventoryItems.length;
-    const active = inventoryItems.filter(i=>i.isActive).length;
-    document.getElementById('active-counter').textContent = `${active} of ${total} active`;
+  setSyncStatus('syncing');
+  try {
+    const res = await fetch(
+      sbUrl + '/rest/v1/deli_stores?store_code=eq.' + encodeURIComponent(sbStoreCode) + '&select=data',
+      { headers: { 'apikey': sbKey, 'Authorization': 'Bearer ' + sbKey } }
+    );
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + await res.text());
+    const rows = await res.json();
+    if (!rows.length) {
+      setSyncStatus('ok');
+      if (!silent) alert('No cloud data found for store "' + sbStoreCode + '".\nSave some data from your primary device first.');
+      return;
+    }
+    const d = rows[0].data;
+    if (d.sup)      { suppliers   = d.sup;      localStorage.setItem('dp7_sup',      JSON.stringify(d.sup)); }
+    if (d.deli)     { deliInv     = d.deli;     localStorage.setItem('dp7_deli',     JSON.stringify(d.deli)); }
+    if (d.fountain) { fountainInv = d.fountain; localStorage.setItem('dp7_fountain', JSON.stringify(d.fountain)); }
+    if (d.branded)  { brandedInv  = d.branded;  localStorage.setItem('dp7_branded',  JSON.stringify(d.branded)); }
+    if (d.rec)      { recipes     = d.rec;      localStorage.setItem('dp7_rec',      JSON.stringify(d.rec)); }
+    if (d.ord)      { orders      = d.ord;      localStorage.setItem('dp7_ord',      JSON.stringify(d.ord)); }
+    if (d.inv)      { invoices    = d.inv;      localStorage.setItem('dp7_inv',      JSON.stringify(d.inv)); }
+    if (d.week)     { weekData    = d.week;     localStorage.setItem('dp7_week',     JSON.stringify(d.week)); }
+    applyBEK56553783(); // ensure invoice patches are present after pull
+    setSyncStatus('ok');
+    renderAnalytics();
+    if (!silent) alert('Pulled latest data from cloud.');
+  } catch(e) {
+    setSyncStatus('err');
+    console.error('Cloud pull failed:', e);
+    if (!silent) alert('Sync error: ' + e.message);
   }
+}
 
-  function updateAnalyticsCount(){ renderAnalytics(); }
-
-  function renderAnalytics(){
-    const panel = document.getElementById('analytics-panel');
-    if(!panel) return;
-    const active = inventoryItems.filter(i => i.isActive);
-    const total = active.length;
-    if(!total){ panel.innerHTML = '<div class="empty-state">No active items yet.</div>'; return; }
-
-    const bySection = ['Deli','Fountain','Branded Deli'].map(s => ({
-      label: s, count: active.filter(i => (i.section||'Deli') === s).length
-    })).filter(s => s.count);
-
-    const byStorage = ['Dry','Frozen','Refrigeration'].map(s => ({
-      label: s, count: active.filter(i => i.storage === s).length
-    })).filter(s => s.count);
-
-    const lowStock = active.filter(i => (i.par||0) > 0 && (i.currentOnHand||0) < (i.par||0));
-    const totalValue = active.reduce((sum, i) => sum + ((i.price||0) * (i.currentOnHand||0)), 0);
-    const byVendor = ['BEK','Merchants','Imperial','Other'].map(v => ({
-      label: v, count: active.filter(i => i.vendor === v).length
-    })).filter(v => v.count);
-
-    panel.innerHTML = `
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px;">
-        <div class="an-card"><div class="stat-label">Total Active Items</div><div class="stat-value" id="active-count-display">${total}</div></div>
-        <div class="an-card"><div class="stat-label">Low Stock</div><div class="stat-value" style="color:var(--red)">${lowStock.length}</div></div>
-        <div class="an-card"><div class="stat-label">On-Hand Value</div><div class="stat-value" style="font-size:20px;">$${totalValue.toFixed(2)}</div></div>
-      </div>
-
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px;">
-        <div class="an-card">
-          <div class="stat-label" style="margin-bottom:10px;">By Section</div>
-          ${bySection.map(s => `
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);">
-              <span style="font-size:13px;">${s.label}</span>
-              <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;">${s.count}</span>
-            </div>`).join('')}
-        </div>
-        <div class="an-card">
-          <div class="stat-label" style="margin-bottom:10px;">By Storage</div>
-          ${byStorage.map(s => `
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);">
-              <span style="font-size:13px;">${s.label}</span>
-              <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;">${s.count}</span>
-            </div>`).join('')}
-        </div>
-        <div class="an-card">
-          <div class="stat-label" style="margin-bottom:10px;">By Vendor</div>
-          ${byVendor.map(v => `
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);">
-              <span style="font-size:13px;">${v.label}</span>
-              <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;">${v.count}</span>
-            </div>`).join('')}
-        </div>
-      </div>
-
-      ${lowStock.length ? `
-      <div class="an-card">
-        <div class="stat-label" style="margin-bottom:10px;">Low Stock Items (below par)</div>
-        <div class="table-wrap" style="border:none;">
-          <table>
-            <thead><tr><th>Item Name</th><th>Section</th><th>On Hand</th><th>Par</th><th>Need</th></tr></thead>
-            <tbody>${lowStock.map(i => `
-              <tr>
-                <td>${i.itemName}</td>
-                <td><span class="badge b-cat">${i.section||'Deli'}</span></td>
-                <td><span class="badge b-low">${i.currentOnHand||0}</span></td>
-                <td>${i.par||0}</td>
-                <td style="font-weight:600;color:var(--red);">+${(i.par||0)-(i.currentOnHand||0)}</td>
-              </tr>`).join('')}
-            </tbody>
-          </table>
-        </div>
-      </div>` : '<div style="color:var(--muted);font-size:13px;font-family:\'DM Mono\',monospace;">✅ All items at or above par.</div>'}
-    `;
+function openSyncModal() {
+  $('sb-url').value  = localStorage.getItem('dp7_sb_url')   || '';
+  $('sb-key').value  = localStorage.getItem('dp7_sb_key')   || '';
+  $('sb-code').value = localStorage.getItem('dp7_sb_store') || '';
+  const msg = $('sync-status-msg');
+  if (_sbReady) {
+    msg.textContent = '● Connected — store: ' + sbStoreCode;
+    msg.style.color = '#22c55e';
+  } else {
+    msg.textContent = '● Not connected';
+    msg.style.color = 'var(--muted)';
   }
+  openModal('modal-sync');
+}
 
-  function renderInventory(){
-    const panel = document.getElementById('inv-demo');
-    if(!panel) return;
-    const active = inventoryItems.filter(i => i.isActive);
-    if(!active.length){ panel.innerHTML = '<div class="empty-state">No active items. Go to Items Mgmt to activate items.</div>'; return; }
-    const sections = ['Deli','Fountain','Branded Deli'];
-    panel.innerHTML = sections.map(sec => {
-      const items = active.filter(i => (i.section||'Deli') === sec);
-      if(!items.length) return '';
-      return `
-        <div style="margin-bottom:24px;">
-          <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--border2);margin-bottom:8px;">${sec} &mdash; ${items.length} items</div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Item#</th><th>Item Name</th><th>Brand</th><th>Pack/Size</th><th>Storage</th><th>Price</th><th>On Hand</th><th>Par</th></tr></thead>
-              <tbody>${items.map(i => `
-                <tr>
-                  <td><code>${i.itemNumber||'—'}</code></td>
-                  <td>${i.itemName}</td>
-                  <td>${mapBrand(i.brand)||i.brand}</td>
-                  <td>${i.packSize||'—'}</td>
-                  <td>${i.storage||'—'}</td>
-                  <td>$${(i.price||0).toFixed(2)}</td>
-                  <td><input type="number" min="0" step="1" value="${i.currentOnHand||0}" onchange="updateOnHand('${i.id}', this.value)" style="width:64px;padding:4px 6px;background:var(--bg2);border:1px solid var(--border2);font-family:'DM Mono',monospace;font-size:12px;text-align:center;"></td>
-                  <td><input type="number" min="0" step="1" value="${i.par||0}" onchange="updatePar('${i.id}', this.value)" style="width:64px;padding:4px 6px;background:var(--bg2);border:1px solid var(--border2);font-family:'DM Mono',monospace;font-size:12px;text-align:center;"></td>
-                </tr>`).join('')}
-              </tbody>
-            </table>
-          </div>
-        </div>`;
-    }).join('');
+function saveSyncSetup() {
+  const url  = $('sb-url').value.trim().replace(/\/$/, '');
+  const key  = $('sb-key').value.trim();
+  const code = $('sb-code').value.trim().toLowerCase().replace(/\s+/g, '-');
+  if (!url || !key || !code) { alert('All three fields are required.'); return; }
+  if (!url.startsWith('https://')) { alert('Project URL must start with https://'); return; }
+  localStorage.setItem('dp7_sb_url',   url);
+  localStorage.setItem('dp7_sb_key',   key);
+  localStorage.setItem('dp7_sb_store', code);
+  sbUrl = url; sbKey = key; sbStoreCode = code;
+  _sbReady = true;
+  setSyncStatus('ok');
+  closeModal('modal-sync');
+  if (confirm('Connected to "' + code + '"!\n\nPull latest data from the cloud now?\n(Choose Pull on a new/secondary device, Push to upload existing local data.)')) {
+    sbPull(false);
+  } else {
+    sbPush();
   }
+}
 
-  window.updateOnHand = function(id, val){
-    const item = inventoryItems.find(i => i.id === id);
-    if(item){ item.currentOnHand = Math.max(0, parseInt(val)||0); persist(); }
-  };
+function clearSyncSetup() {
+  if (!confirm('Disconnect from cloud sync?\n\nYour local data will not be affected.')) return;
+  localStorage.removeItem('dp7_sb_url');
+  localStorage.removeItem('dp7_sb_key');
+  localStorage.removeItem('dp7_sb_store');
+  sbUrl = ''; sbKey = ''; sbStoreCode = ''; _sbReady = false;
+  setSyncStatus('off');
+  closeModal('modal-sync');
+}
 
-  window.updatePar = function(id, val){
-    const item = inventoryItems.find(i => i.id === id);
-    if(item){ item.par = Math.max(0, parseInt(val)||0); persist(); }
-  };
-
-  function renderInvoicePanel(){
-    const inv = invoices.find(i=>i.invoiceNumber==='56678756');
-    const panel = document.getElementById('invoice-panel');
-    if(!panel) return;
-    if(!inv) { panel.innerHTML = '<div class="empty-state">No invoice found</div>'; return; }
-    panel.innerHTML = `
-      <div class="an-card">
-        <div class="stat-label">Invoice #${inv.invoiceNumber}</div>
-        <div><strong>${inv.vendor}</strong> · $${inv.invoiceAmount.toFixed(2)}</div>
-        <div style="margin-top:8px;">${inv.receivedToInventory?'✅ Received into inventory':'⏳ Not yet received'}</div>
-        ${!inv.receivedToInventory ? `<button class="btn btn-sm btn-gold" style="margin-top:12px;" onclick="window.receiveInvoice('${inv.id}')">📦 Receive now (auto-update on-hand)</button>` : ''}
-      </div>
-    `;
-  }
-
-  // Helpers
-  function persist(){ localStorage.setItem('deli_pro_full', JSON.stringify({inventoryItems, suppliers, invoices})); }
-  function openModal(id){ document.getElementById(id).classList.add('open'); }
-  function closeModal(id){ document.getElementById(id).classList.remove('open'); }
-  window.closeModal = closeModal;
-  window.showTab = function(name){
-    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-    document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-    document.getElementById('tab-'+name).classList.add('active');
-    document.querySelector(`nav button[onclick="showTab('${name}')"]`).classList.add('active');
-    if(name==='itemsMgmt') renderItemsTable();
-    if(name==='invoices') renderInvoicePanel();
-    if(name==='analytics') updateAnalyticsCount();
-    if(name==='inventory') renderInventory();
-  };
-
-  function showAddMissingModal(m){
-    document.getElementById('missing-detail').innerHTML = `<strong>${m.number}</strong> ${m.name} · ${m.brand}`;
-    document.getElementById('miss-name').value = m.name;
-    document.getElementById('miss-number').value = m.number;
-    document.getElementById('miss-brand').value = m.brand;
-    document.getElementById('miss-pack').value = m.pack;
-    document.getElementById('miss-price').value = m.price;
-    openModal('modal-addMissing');
-  }
-  window.confirmAddMissing = confirmAddMissing;
-  window.bulkActivate = bulkActivate;
-  window.seedBEKMaster = seedBEKMaster;
-  window.receiveInvoice = receiveInvoice;
-
-  // Start
-  initData();
-})();
+// =============================================================
+// INIT
+// =============================================================
+load();
+renderAnalytics();
 </script>
+
 </body>
 </html>
