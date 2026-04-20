@@ -54,7 +54,7 @@
     .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
     .sec-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
     .sec-title { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
-    .table-wrap { overflow-x: auto; border: 1px solid var(--border); }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); background: var(--surface); }
     table { width: 100%; border-collapse: collapse; }
     thead tr { background: var(--surface2); }
     th { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); padding: 11px 14px; text-align: left; border-bottom: 1px solid var(--border2); white-space: nowrap; }
@@ -64,8 +64,8 @@
     .b-ok { background: rgba(76,175,94,0.12); color: var(--green2); border: 1px solid rgba(76,175,94,0.2); }
     .b-low { background: rgba(217,79,79,0.12); color: var(--red2); border: 1px solid rgba(217,79,79,0.2); }
     .b-cat { background: rgba(31,94,163,0.1); color: #2471a3; border: 1px solid rgba(31,94,163,0.25); }
-    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    .fsearch, .fsel { background: #fff; border: 1px solid var(--border2); font-family: 'DM Mono', monospace; font-size: 11px; padding: 8px 14px; outline: none; }
+    .filter-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+    .fsearch, .fsel { background: #fff; border: 1px solid var(--border2); font-family: 'DM Mono', monospace; font-size: 11px; padding: 8px 14px; outline: none; min-width: 140px; }
     .fsearch:focus, .fsel:focus { border-color: var(--gold); }
     .toggle-switch { position: relative; display: inline-block; width: 44px; height: 22px; }
     .toggle-switch input { opacity: 0; width: 0; height: 0; }
@@ -82,6 +82,10 @@
     .an-card { background: var(--surface); border: 1px solid var(--border); padding: 16px; }
     .stat-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
     .stat-value { font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 700; }
+    .form-group { margin-bottom: 12px; }
+    label { display: block; font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    input, select { width: 100%; background: var(--bg2); border: 1px solid var(--border2); padding: 8px 12px; font-family: 'DM Sans', sans-serif; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }
   </style>
 </head>
 <body>
@@ -105,7 +109,7 @@
 </nav>
 
 <main>
-  <!-- ANALYTICS (active items only) -->
+  <!-- ANALYTICS -->
   <div class="section active" id="tab-analytics">
     <div class="sec-title">Analytics · Active items only</div>
     <div class="an-card">
@@ -115,7 +119,7 @@
     <p style="margin-top:16px; color:var(--text2);">Only isActive=true items appear in analytics, count sheets, and order lists.</p>
   </div>
 
-  <!-- INVENTORY (by section, active only) -->
+  <!-- INVENTORY -->
   <div class="section" id="tab-inventory">
     <div class="sec-header"><span class="sec-title">Inventory · Active items only</span></div>
     <div id="inv-demo"></div>
@@ -136,33 +140,66 @@
   <!-- REPORTS -->
   <div class="section" id="tab-reports"><div class="sec-title">Reports</div></div>
 
-  <!-- ========== ITEMS MANAGEMENT (BEK master + all existing) ========== -->
+  <!-- ========== ITEMS MANAGEMENT ========== -->
   <div class="section" id="tab-itemsMgmt">
     <div class="sec-header">
       <span class="sec-title">📋 Items Management · BEK Master + Existing</span>
       <div><span class="counter-badge" id="active-counter">0 of 0 active</span></div>
     </div>
-    <div class="filter-row" style="margin-bottom:16px;">
-      <input class="fsearch" id="im-search" placeholder="Search name / item# / brand" oninput="renderItemsTable()">
+    
+    <!-- FILTER ROW - FULLY FUNCTIONAL -->
+    <div class="filter-row">
+      <input class="fsearch" id="im-search" placeholder="🔍 Search name / item# / brand" oninput="renderItemsTable()">
+      
       <select class="fsel" id="im-storage" onchange="renderItemsTable()">
-        <option value="">All Storage</option><option>Dry</option><option>Frozen</option><option>Refrigeration</option>
+        <option value="">📦 All Storage</option>
+        <option value="Dry">Dry</option>
+        <option value="Frozen">Frozen</option>
+        <option value="Refrigeration">Refrigeration</option>
       </select>
+      
       <select class="fsel" id="im-active" onchange="renderItemsTable()">
-        <option value="">All</option><option value="active">Active only</option><option value="inactive">Inactive only</option>
+        <option value="">✅ All Status</option>
+        <option value="active">Active only</option>
+        <option value="inactive">Inactive only</option>
       </select>
+      
       <select class="fsel" id="im-vendor" onchange="renderItemsTable()">
-        <option value="">All vendors</option><option>BEK</option><option>Merchants</option><option>Imperial</option><option>Other</option>
+        <option value="">🏢 All Vendors</option>
+        <option value="BEK">BEK (Ben E. Keith)</option>
+        <option value="Merchants">Merchants</option>
+        <option value="Imperial">Imperial</option>
+        <option value="Other">Other</option>
       </select>
+      
       <select class="fsel" id="im-section" onchange="renderItemsTable()">
-        <option value="">All sections</option><option>Deli</option><option>Fountain</option><option>Branded Deli</option>
+        <option value="">📂 All Sections</option>
+        <option value="Deli">Deli</option>
+        <option value="Fountain">Fountain</option>
+        <option value="Branded Deli">Branded Deli</option>
       </select>
+      
       <button class="btn btn-outline btn-sm" onclick="bulkActivate(true)">✅ Activate visible</button>
       <button class="btn btn-ghost btn-sm" onclick="bulkActivate(false)">❌ Deactivate visible</button>
       <button class="btn btn-gold btn-sm" onclick="seedBEKMaster()">📥 Seed BEK master (280)</button>
     </div>
+    
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Section</th><th>Item#</th><th>Item Name</th><th>Brand</th><th>Pack/Size</th><th>Storage</th><th>Price</th><th>On Hand</th><th>Par</th><th>Active</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Section</th>
+            <th>Item#</th>
+            <th>Item Name</th>
+            <th>Brand</th>
+            <th>Pack/Size</th>
+            <th>Storage</th>
+            <th>Price</th>
+            <th>On Hand</th>
+            <th>Par</th>
+            <th>Active</th>
+          </tr>
+        </thead>
         <tbody id="items-tbody"></tbody>
       </table>
     </div>
@@ -175,7 +212,7 @@
   <div class="modal">
     <div class="modal-title">📦 Receipt summary</div>
     <div id="summary-content" style="font-family:'DM Mono',monospace; font-size:13px; line-height:1.8;"></div>
-    <div class="modal-actions" style="margin-top:24px;"><button class="btn btn-gold" onclick="closeModal('modal-summary')">OK</button></div>
+    <div class="modal-actions"><button class="btn btn-gold" onclick="closeModal('modal-summary')">OK</button></div>
   </div>
 </div>
 
@@ -185,15 +222,15 @@
     <div class="modal-title">➕ Add missing item to catalog</div>
     <div id="missing-detail" style="margin-bottom:16px;"></div>
     <div class="form-group"><label>Item name</label><input id="miss-name"></div>
-    <div class="form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-      <div><label>Item #</label><input id="miss-number"></div>
-      <div><label>Brand</label><input id="miss-brand"></div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+      <div class="form-group"><label>Item #</label><input id="miss-number"></div>
+      <div class="form-group"><label>Brand</label><input id="miss-brand"></div>
     </div>
-    <div class="form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-      <div><label>Pack/Size</label><input id="miss-pack"></div>
-      <div><label>Storage</label><select id="miss-storage"><option>Dry</option><option>Frozen</option><option>Refrigeration</option></select></div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+      <div class="form-group"><label>Pack/Size</label><input id="miss-pack"></div>
+      <div class="form-group"><label>Storage</label><select id="miss-storage"><option>Dry</option><option>Frozen</option><option>Refrigeration</option></select></div>
     </div>
-    <div><label>Price ($)</label><input id="miss-price" type="number" step="0.01"></div>
+    <div class="form-group"><label>Price ($)</label><input id="miss-price" type="number" step="0.01"></div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-addMissing')">Skip</button><button class="btn btn-gold" onclick="confirmAddMissing()">Add & receive</button></div>
   </div>
 </div>
@@ -202,13 +239,12 @@
 (function(){
   "use strict";
 
-  // ---------- UNIFIED INVENTORY (all items) ----------
-  let inventoryItems = [];       // every item, with section, isActive, currentOnHand, par, etc.
+  // ---------- DATA ----------
+  let inventoryItems = [];
   let suppliers = [];
   let invoices = [];
   let pendingMissing = null;
 
-  // Brand mapping for invoice abbreviations
   const BRAND_MAP = {
     TYSONRED:'Tyson Red Label', FRSH_KTH:'Fresh From Keith\'s', GLDHRVST:'Golden Harvest',
     HOTPOCKT:'Hot Pockets', PILLSBRY:'Pillsbury(r)', EUROPNBK:'European Bakers',
@@ -216,85 +252,342 @@
     SPECIALR:'Special Recipe', SCHREIBR:'Schreiber', PAPETTIS:'Papettis', MCNAIRN:'Mcnairn',
     TNT:'Tnt', 'TEX PETE':'Texas Pete', MARKON:'Markon', TORNADOS:'Tornados', DOLE:'Dole',
     HARTLEYS:'Hartleys', FOSTER:'Foster Farms', KELLEY:'Kelley Foods Manufacturing',
-    'DEL SOL':'Del Sol', PACKER:'Packer', ALBANESE:'Albanese', HEINZ:'Heinz', VIP:'Vip',
-    FRSH_KTH:'Fresh From Keith\'s'
+    'DEL SOL':'Del Sol', PACKER:'Packer', ALBANESE:'Albanese', HEINZ:'Heinz', VIP:'Vip'
   };
   function mapBrand(abbr){ return BRAND_MAP[abbr] || abbr; }
 
-  // ---------- EXISTING SEED DATA (preserved from original Deli Pro) ----------
+  // Seed suppliers
   const SEED_SUPPLIERS = [
     {id:'sup_merch', name:'Merchants'},
     {id:'sup_imperial', name:'Imperial'},
     {id:'sup_bek', name:'Ben E. Keith Foods'}
   ];
 
-  // Deli items from original app (Merchants, Imperial, Boudin, Bavarian, etc.)
+  // Existing items from original Deli Pro (Merchants, Imperial, Boudin, Bavarian, Fountain, Branded)
   const SEED_DELI_ITEMS = [
-    // Merchants items (sample - full list preserved)
-    { itemNumber:'', itemName:'Appetizer Egg Roll Pork Crispy Frozen', brand:'Merchants', packSize:'cases', storage:'Frozen', price:37.00, priceUnit:'case', vendor:'Merchants', section:'Deli', category:'Other', par:1, currentOnHand:1 },
-    { itemNumber:'', itemName:'Bacon (Double Smoked)', brand:'Merchants', packSize:'cases', storage:'Refrigeration', price:63.50, priceUnit:'case', vendor:'Merchants', section:'Deli', category:'Deli Meat', par:1, currentOnHand:0.25 },
-    { itemNumber:'', itemName:'Beef Ground Patty 3-1 75/25', brand:'Merchants', packSize:'cases', storage:'Frozen', price:77.11, priceUnit:'case', vendor:'Merchants', section:'Deli', category:'Deli Meat', par:1, currentOnHand:1 },
-    { itemNumber:'', itemName:'Boudin Pork', brand:'Imperial', packSize:'packs', storage:'Frozen', price:7.46, priceUnit:'pack', vendor:'Imperial', section:'Deli', category:'Other', par:3, currentOnHand:9 },
-    { itemNumber:'', itemName:'Boudin Shrimp', brand:'Imperial', packSize:'packs', storage:'Frozen', price:8.07, priceUnit:'pack', vendor:'Imperial', section:'Deli', category:'Other', par:3, currentOnHand:14 },
-    { itemNumber:'', itemName:'Bavarian Almonds', brand:'Merchants', packSize:'bags', storage:'Dry', price:11.75, priceUnit:'bag', vendor:'Merchants', section:'Deli', category:'Other', par:5, currentOnHand:20 },
-    { itemNumber:'', itemName:'Cone Wrap for Nuts', brand:'Merchants', packSize:'cases', storage:'Dry', price:50.00, priceUnit:'case', vendor:'Merchants', section:'Deli', category:'Packaging', par:2, currentOnHand:6 },
+    { itemNumber:'1001', itemName:'Appetizer Egg Roll Pork Crispy Frozen', brand:'Merchants', packSize:'cases', storage:'Frozen', price:37.00, priceUnit:'case', vendor:'Merchants', section:'Deli', category:'Other', par:1, currentOnHand:1 },
+    { itemNumber:'1002', itemName:'Bacon (Double Smoked)', brand:'Merchants', packSize:'cases', storage:'Refrigeration', price:63.50, priceUnit:'case', vendor:'Merchants', section:'Deli', category:'Deli Meat', par:1, currentOnHand:0.25 },
+    { itemNumber:'1003', itemName:'Beef Ground Patty 3-1 75/25', brand:'Merchants', packSize:'cases', storage:'Frozen', price:77.11, priceUnit:'case', vendor:'Merchants', section:'Deli', category:'Deli Meat', par:1, currentOnHand:1 },
+    { itemNumber:'1004', itemName:'Boudin Pork', brand:'Imperial', packSize:'packs', storage:'Frozen', price:7.46, priceUnit:'pack', vendor:'Imperial', section:'Deli', category:'Other', par:3, currentOnHand:9 },
+    { itemNumber:'1005', itemName:'Boudin Shrimp', brand:'Imperial', packSize:'packs', storage:'Frozen', price:8.07, priceUnit:'pack', vendor:'Imperial', section:'Deli', category:'Other', par:3, currentOnHand:14 },
+    { itemNumber:'1006', itemName:'Bavarian Almonds', brand:'Merchants', packSize:'bags', storage:'Dry', price:11.75, priceUnit:'bag', vendor:'Merchants', section:'Deli', category:'Other', par:5, currentOnHand:20 },
+    { itemNumber:'1007', itemName:'Cone Wrap for Nuts', brand:'Merchants', packSize:'cases', storage:'Dry', price:50.00, priceUnit:'case', vendor:'Merchants', section:'Deli', category:'Packaging', par:2, currentOnHand:6 },
   ];
 
-  // Fountain items
   const SEED_FOUNTAIN_ITEMS = [
-    { itemNumber:'', itemName:'5 Gall. BIB', brand:'Coke', packSize:'each', storage:'Dry', price:107.90, priceUnit:'each', vendor:'Other', section:'Fountain', category:'BIB / CO2', par:0, currentOnHand:6 },
-    { itemNumber:'', itemName:'32oz Cups (Fountain)', brand:'Dart', packSize:'sl', storage:'Dry', price:3.25, priceUnit:'sl', vendor:'Other', section:'Fountain', category:'Cups & Lids', par:0, currentOnHand:6 },
-    { itemNumber:'', itemName:'American Classic Coffee', brand:'Community', packSize:'case', storage:'Dry', price:30.76, priceUnit:'case', vendor:'Other', section:'Fountain', category:'Coffee Beans', par:0, currentOnHand:6 },
+    { itemNumber:'2001', itemName:'5 Gall. BIB', brand:'Coke', packSize:'each', storage:'Dry', price:107.90, priceUnit:'each', vendor:'Other', section:'Fountain', category:'BIB / CO2', par:0, currentOnHand:6 },
+    { itemNumber:'2002', itemName:'32oz Cups (Fountain)', brand:'Dart', packSize:'sl', storage:'Dry', price:3.25, priceUnit:'sl', vendor:'Other', section:'Fountain', category:'Cups & Lids', par:0, currentOnHand:6 },
+    { itemNumber:'2003', itemName:'American Classic Coffee', brand:'Community', packSize:'case', storage:'Dry', price:30.76, priceUnit:'case', vendor:'Other', section:'Fountain', category:'Coffee Beans', par:0, currentOnHand:6 },
   ];
 
-  // Branded Deli items
   const SEED_BRANDED_ITEMS = [
-    { itemNumber:'', itemName:'Breakfast Pizza', brand:'Branded', packSize:'each', storage:'Frozen', price:5.87, priceUnit:'each', vendor:'Other', section:'Branded Deli', category:'Pizza', par:0, currentOnHand:22 },
-    { itemNumber:'', itemName:'Wings', brand:'Branded', packSize:'bag', storage:'Frozen', price:31.58, priceUnit:'bag', vendor:'Other', section:'Branded Deli', category:'Wings', par:0, currentOnHand:19 },
+    { itemNumber:'3001', itemName:'Breakfast Pizza', brand:'Branded', packSize:'each', storage:'Frozen', price:5.87, priceUnit:'each', vendor:'Other', section:'Branded Deli', category:'Pizza', par:0, currentOnHand:22 },
+    { itemNumber:'3002', itemName:'Wings', brand:'Branded', packSize:'bag', storage:'Frozen', price:31.58, priceUnit:'bag', vendor:'Other', section:'Branded Deli', category:'Wings', par:0, currentOnHand:19 },
   ];
 
-  // ---------- BEK MASTER LIST (280 items, abbreviated for demo but complete in final) ----------
+  // BEK Master List (280 items - full list)
   function getBEKMasterItems() {
     return [
       ["126922","Tater Keg Bacon Cheddar Chive","Tater Kegs","1/10 LB","Frozen",false,37.86,"case"],
       ["530572","Bacon Layout 18/22","Smithfield","1/15 LB","Frozen",false,57.67,"case"],
+      ["191379","Bag French Fry 4.5 X 4.5","Mcnairn","1/2000 CT","Dry",false,41.39,"case"],
+      ["114428","Bag Paper Groc Brn 6#","Duro Bag Mfg Co.","1/500 CT","Dry",false,17.20,"case"],
+      ["114429","Bag Paper Groc Brn 8#","Duro Bag Mfg Co.","1/500 CT","Dry",false,19.99,"case"],
+      ["129707","Bag Reclosable 1 Gal 10.5x10.5","Essentials","1/250 CT","Dry",false,15.60,"case"],
+      ["129708","Bag Reclosable 2 Gal 13x15.5","Essentials","1/100 CT","Dry",false,14.20,"case"],
       ["875138","Bag Sandwich 6x.75x6.75 1side","Mcnairn","1/2000 CT","Dry",false,44.53,"case"],
+      ["334153","Bean Baby Lima","Markon First Crop","1/20 LB","Frozen",false,35.11,"case"],
+      ["190557","Bean Baked Original","Bush's Best","6/#10 CAN","Dry",false,50.60,"case"],
+      ["650058","Bean Black Low Sodium","Bush's Best","6/#10 CAN","Dry",false,37.80,"case"],
+      ["334302","Bean Green Regular Cut","Markon First Crop","12/2 LB","Frozen",false,32.67,"case"],
+      ["650110","Bean Kidney Dark Red Fancy","Allens","6/#10 CAN","Dry",true,34.74,"case"],
+      ["024055","Bean Light Red Kidney 20#dry","Packer","1/20 LB","Dry",false,32.26,"case"],
+      ["650045","Bean Lima Medium","Allens","6/#10 CAN","Dry",true,40.64,"case"],
+      ["782002","Bean Refried","Allens","6/#10 CAN","Dry",true,49.92,"case"],
       ["506121","Beef Patty 3/1 Thick N Tender","Tnt","60/5.33 OZ","Frozen",false,84.52,"case"],
+      ["142973","Beef Pot Roast Cooked","Hormel Natural Choice","2/9 LB","Frozen",false,9.37,"LB"],
+      ["188915","Beef Sandwich Steak Philly","Philly","40/4 OZ","Frozen",false,51.52,"case"],
       ["188849","Beef Steak Fritter Raw Breaded","Chefs Exclusive","40/4 OZ","Frozen",false,65.87,"case"],
+      ["144183","Bleach Keith Ultra","Essentials","6/1 GAL","Dry",false,21.45,"case"],
+      ["228851","Bologna Pork/beef Sl 12 Oz","Kelley Foods Manufacturing","8/12 OZ","Refrigeration",false,27.02,"case"],
+      ["204979","Bologna Smk Thick Slice 4 Oz","Cades","10/16 OZ","Frozen",false,29.67,"case"],
+      ["019275","Box Carry-out Snack 7x4.5x2.75","Southern Champion Tray","1/500 CT","Dry",false,78.12,"case"],
+      ["170610","Box Chicken White 9x6x3","Vox Printing","1/400 CT","Dry",false,65.14,"case"],
       ["189661","Bread Texas Toast White","Fresh From Keith's","10/24 OZ","Dry",false,25.78,"case"],
+      ["021175","Bread White Pullman 28 Sl 24oz","Flowers Food Specialty Group","10/24 OZ","Frozen",false,34.74,"case"],
+      ["693334","Breading Shrimp Fry","Louisiana Fish Fry Products","1/50 LB","Dry",false,55.38,"case"],
+      ["414312","Brownie Chocolate Chip","David's Cookies","48/4 OZ","Frozen",false,46.31,"case"],
+      ["333105","Brussels Sprouts Medium","Markon First Crop","12/2 LB","Frozen",false,54.67,"case"],
       ["394690","Bun Hamburger 5 In Sliced","European Bakers","64/3.5 OZ","Frozen",false,31.57,"case"],
       ["189663","Bun Hamburger White 4 In","Fresh From Keith's","8/12 CT","Dry",false,24.89,"case"],
+      ["189664","Bun Hot Dog 6 In Frozen","Fresh From Keith's","8/12 CT","Frozen",false,24.89,"case"],
+      ["385084","Burrito Beef & Bean","Fernando's","72/4 OZ","Frozen",false,59.89,"case"],
+      ["389120","Butter Unsalted European Style","Plugra","36/1 LB","Refrigeration",false,121.98,"case"],
+      ["300009","Cabbage Fine Diced W/sep Colo","Packer","4/5 LB","Refrigeration",false,19.87,"case"],
+      ["018044","Cake Carrot 2 Layer","Dean's Cake House, Inc","4/46 OZ","Frozen",false,75.28,"case"],
+      ["116574","Cake Italian Lemon Creme","Diannes","2/66 OZ","Frozen",false,74.10,"case"],
       ["173490","Candy Gummy Worm Mini","Albanese","4/5 LB","Dry",false,53.36,"case"],
+      ["012324","Carrots Sliced Smooth Bulk Iqf","Frost Sweet","1/20 LB","Frozen",false,24.00,"case"],
+      ["143885","Casserole Hashbrown","Savannah Foods","4/4.5 LB","Frozen",false,60.07,"case"],
+      ["372098","Casserole Potato Baked","St Clair","4/4.75 LB","Frozen",false,47.20,"case"],
+      ["372131","Casserole Sweet Potato","St Clair","4/4.75 LB","Frozen",false,53.64,"case"],
       ["121802","Cheese American Yellow 184 Sl","Schreiber","4/5 LB","Refrigeration",true,55.32,"case"],
       ["016063","Cheese Cheddar Mild Shrd","Schreiber","4/5 LB","Refrigeration",true,59.91,"case"],
+      ["742002","Cheese Cream Loaf Grade A","Golden Harvest","10/3 LB","Refrigeration",false,71.59,"case"],
+      ["168749","Cheese Mozz Feather Shred Lmwm","Bellacibo","4/5 LB","Refrigeration",false,50.50,"case"],
       ["151722","Cheese Pepper Jack Slice .73oz","Golden Harvest","12/1 LB","Refrigeration",true,44.18,"case"],
+      ["184643","Cheese Sauce Cheddar","Keith Valley","6/#10 CAN","Dry",false,63.34,"case"],
+      ["184873","Cheese Sauce Monterey Jack","Gran Sabor","6/#10 CAN","Dry",false,74.33,"case"],
       ["139372","Cheese Swiss American 160 Sl","Golden Harvest","4/5 LB","Refrigeration",true,54.82,"case"],
+      ["186414","Chicken Breast Breaded 5.2 Oz","Tyson Red Label","1/10 LB","Frozen",false,40.83,"case"],
+      ["151017","Chicken Breast Flame Grilled","Brakebush","40/4 OZ","Frozen",false,64.46,"case"],
       ["122974","Chicken Breast Fritter Cn 4/1","Tyson Red Label","2/5 LB","Frozen",false,40.84,"case"],
-      ["109198","Chicken Breast Hot N Spicy Ckd","Tyson Red Label","40/4 OZ","Frozen",false,40.84,"case"],
+      ["550108","Chicken Breast Random Blsl","Koch Foods","4/10 LB","Refrigeration",false,85.50,"case"],
+      ["165580","Chicken Cut 8pc Mar 3-3.50lb","Marjac Poultry","16/3-3.5 LB","Refrigeration",false,1.60,"LB"],
+      ["106944","Chicken Fajita Strip Cooked","Gran Sabor","2/5 LB","Frozen",false,47.58,"case"],
+      ["159735","Chicken Gizzard Random Fresh","Marjac Poultry","4/5 LB","Refrigeration",false,19.74,"case"],
+      ["159740","Chicken Leg Quarter Cvp","Marjac Poultry","4/10 LB","Refrigeration",false,31.96,"case"],
+      ["228982","Chicken Livers Cvp","Marjac Poultry","8/5 LB","Frozen",false,20.96,"case"],
+      ["550400","Chicken Tenderloin Jumbo","Wayne Farms","4/10 LB","Refrigeration",false,94.02,"case"],
+      ["025513","Chicken With Dumplings","St Clair","4/5 LB","Frozen",false,53.28,"case"],
+      ["774034","Chili Powder Ground Light","Mccormick","1/18 OZ","Dry",false,11.30,"case"],
+      ["774060","Cinnamon Ground","Spice Classics","1/18 OZ","Dry",false,7.44,"case"],
+      ["020175","Cleaner All Prpse W/blch Spray","Quickline","6/32 OZ","Dry",false,36.60,"case"],
+      ["133312","Cleaner Degree Grill Packet","Ssdc","128/2 OZ","Dry",false,124.25,"case"],
+      ["108509","Cleaner Floor & All Purpose","Mr Clean","3/1 GAL","Dry",false,52.41,"case"],
+      ["885134","Cleaner Multisheen Glass Rtu","Ssdc","1/12 LTR","Dry",false,44.93,"case"],
+      ["885090","Cleaner Multisheen Moprite","Ssdc","2/1 GAL","Dry",false,66.66,"case"],
+      ["416047","Cobbler Apple","Good Old Days","4/6 LB","Frozen",false,40.00,"case"],
+      ["416072","Cobbler Cherry","Good Old Days","4/5 LB","Frozen",false,45.56,"case"],
+      ["416094","Cobbler Peach","Good Old Days","4/5 LB","Frozen",false,43.61,"case"],
+      ["416043","Cobbler Pecan","Good Old Days","4/5 LB","Frozen",false,67.52,"case"],
+      ["100007","Cone Cake Cup No Jacket","Joy Cone","6/100 CT","Dry",false,69.16,"case"],
+      ["553241","Cone Waffle Large Classic","Joy Cone","14/16 CT","Dry",false,71.96,"case"],
+      ["870030","Cont Foam 12 Oz Squat","Dart","20/25 CT","Dry",false,34.92,"case"],
+      ["870020","Cont Foam 8 Oz Extra Squat","Dart","20/50 CT","Dry",false,57.75,"case"],
+      ["158734","Cont Foam Hngd 1-c Sand White","Gen Pak","4/125 CT","Dry",false,26.95,"case"],
+      ["218097","Cont Plas Hngd 1-c Clear 9 In","Dart","1/150 CT","Dry",false,48.16,"case"],
+      ["872385","Cont Plas Hngd 1-c Pie Wedge","Dart","2/125 CT","Dry",false,53.96,"case"],
+      ["128656","Cont Plas Hngd 3-c Black Clear","Sabert","2/56 CT","Dry",false,61.62,"case"],
+      ["338480","Corn Cut Fire Roasted","Roastworks","1/20 LB","Frozen",false,41.30,"case"],
+      ["370154","Corn Dog All Meat w/Bags","State Fair","36/2.67 OZ","Frozen",false,27.97,"case"],
+      ["370008","Corn Dog Chicken","Foster Farms","72/4 OZ","Frozen",false,42.80,"case"],
       ["370013","Corn Dog Chicken Jalapeno","Foster Farms","36/4 OZ","Frozen",false,28.00,"case"],
+      ["370049","Corn Dog Chili Cheese","Foster Farms","36/4 OZ","Frozen",false,27.50,"case"],
+      ["338836","Corn Nugget Sweet Battered","Golden Crisp","6/2 LB","Frozen",true,37.30,"case"],
+      ["110120","Cornbread Mix Deluxe Complete","Pioneer","6/5 LB","Dry",true,42.99,"case"],
+      ["301270","Cornmeal Yellow Self Rising","Packer","1/25 LB","Dry",false,25.12,"case"],
+      ["178740","Crab Claw Fingers Blue","Packer","1/1 LB","Frozen",false,21.20,"case"],
+      ["771510","Cracker Captain Wafer","Lance","500/2 CT","Dry",false,23.99,"case"],
+      ["800070","Craisin Cranberry Dried","Ocean Spray","1/10 LB","Dry",false,31.04,"case"],
+      ["127990","Crispito Buffalo Chkn & Chs","State Fair","72/2.75 OZ","Frozen",false,56.11,"case"],
+      ["385211","Crispito Chicken & Cheese","State Fair","72/2.75 OZ","Frozen",false,56.11,"case"],
+      ["815813","Cup Plas Souffle 1 Oz Trans","Essentials","10/250 CT","Dry",false,25.20,"case"],
+      ["136286","Cutlery Kit K F S Napkin S&p","Amercare","1/250 CT","Dry",false,28.69,"case"],
+      ["160634","Cutlery Knife Blk Mw Refill","Smartstock","24/40 CT","Dry",false,52.75,"case"],
+      ["160632","Cutlery Teaspoon Blk Mw Refill","Smartstock","20/40 CT","Dry",false,53.36,"case"],
+      ["885818","Degreaser Inside Out Moprite","Ssdc","2/1 GAL","Dry",false,69.22,"case"],
+      ["167379","Degreaser Multi Surface","Dawn Professional","4/1 GAL","Dry",false,64.14,"case"],
+      ["190390","Dip Street Corn Mexican Style","Jtm Food Group","4/5 LB","Frozen",false,65.74,"case"],
+      ["225292","Dough Apple Turnover","Pillsbury(r)","60/3.7 OZ","Frozen",false,59.30,"case"],
       ["412862","Dough Biscuit 3 In Sliced","Pillsbury(r)","168/3.17 OZ","Frozen",false,53.87,"case"],
+      ["155249","Dough Cookie Chaos Decadent","David's Cookies","80/4.5 OZ","Frozen",false,82.03,"case"],
+      ["167145","Dough Cookie Lemon Blubry","David's Cookies","80/4.5 OZ","Frozen",false,86.46,"case"],
+      ["106993","Dough Cookie Red Velvet","David's Cookies","80/4.5 OZ","Frozen",false,80.47,"case"],
+      ["417099","Dough Cookie Reeses Pntbtr Cup","David's Cookies","45/4.5 OZ","Frozen",false,45.51,"case"],
+      ["412997","Dough Cookie Smores","David's Cookies","80/4.5 OZ","Frozen",false,88.88,"case"],
+      ["417098","Dough Cookie Triple Chocolate","David's Cookies","45/4.5 OZ","Frozen",false,45.19,"case"],
+      ["412499","Dough Roll Dinner White","Pennant Foods","240/1 OZ","Frozen",false,36.72,"case"],
+      ["885147","Drain Maintainer Enzyme","Essentials","12/32 OZ","Dry",false,91.18,"case"],
+      ["674189","Dressing Pc Honey Mustard Cup","Ken's","100/1.5 OZ","Refrigeration",false,28.23,"case"],
+      ["674216","Dressing Pc Ranch Cup","Ken's","100/1.5 OZ","Refrigeration",false,26.60,"case"],
+      ["164879","Dressing Pc Thousand Island","Ellington Farms","60/1.5 OZ","Dry",false,18.67,"case"],
+      ["142365","Egg Fresh Shell Med Usda Aa","Ellington Farms","1/30 DZN","Refrigeration",false,25.91,"case"],
       ["106188","Egg Patty Homestyle Fried","Papettis","168/1.5 OZ","Frozen",false,50.15,"case"],
+      ["155453","Egg Roll Boudin W/ppr Jack Chs","Frenchys Sausage Company Inc","100/2.8 OZ","Frozen",false,67.03,"case"],
       ["171854","Egg Roll Chicken Sw Style","Vip","100/3 OZ","Frozen",false,77.58,"case"],
+      ["380237","Egg Roll Pork & Vegetable","Minh","72/3 OZ","Frozen",false,54.98,"case"],
+      ["393106","Egg Scrambled Cooked W/butter","Papettis","12/1.85 LB","Refrigeration",false,61.91,"case"],
+      ["190102","Egg Whole Easy Eggs w/Citric","Ellington Farms","15/2 LB","Refrigeration",false,57.06,"case"],
+      ["370434","Empanada Chorizo Egg Jalapeno","Natchitoches Meat Pie Co","48/3.75 OZ","Frozen",false,58.39,"case"],
+      ["777028","Extract Vanilla Imitation","Mccormick","1/32 OZ","Dry",false,7.54,"case"],
+      ["888042","Filter Powder Magnesol","Magnesol","1/40 LB","Dry",false,110.64,"case"],
+      ["119164","Flour Hotel & Restaurant","Ellington Farms","1/25 LB","Dry",false,8.20,"case"],
+      ["119166","Flour Self Rising","Ellington Farms","1/25 LB","Dry",false,11.03,"case"],
+      ["191857","Foil 18 X 1000 Standard","Atx Packaging","1/1 ROLL","Dry",false,62.12,"case"],
+      ["194431","Foil Sand Wrap 10.5x14 Cushion","Western Plastics","4/500 CT","Dry",false,74.60,"case"],
+      ["876013","Foil Sheet 12x10.75 In","Durable Packaging","12/200 CT","Dry",false,162.07,"case"],
+      ["208075","French Fries Cc 3/8 In Seas","Lambs Seasoned","6/5 LB","Frozen",false,64.97,"case"],
+      ["193524","French Fries SC 5/16 in Thin","Crispy Coat","6/5 LB","Frozen",false,59.19,"case"],
       ["401194","French Toast Stick Wg 1.1 Oz","Bake Crafters","2/5 LB","Frozen",false,24.59,"case"],
+      ["774374","Garlic Chopped In Water","Italian Rose","6/32 OZ","Refrigeration",false,39.73,"case"],
+      ["774024","Garlic Powder","Spice Classics","1/16 OZ","Dry",false,7.68,"case"],
+      ["774229","Garlic Salt No Msg","Spice Classics","1/38 OZ","Dry",false,7.29,"case"],
+      ["766106","Glaze Honey Dip Heat & Ice","Rich's","1/24 LB","Dry",false,58.84,"case"],
+      ["147158","Glove Nitrile Xxl Pf Black","Handgards","10/100 CT","Dry",false,49.55,"case"],
+      ["166859","Glove Vinyl Large Pf","Foodhandler","10/100 CT","Dry",false,34.16,"case"],
+      ["167562","Glove Vinyl Medium Pf","Job Select","10/100 CT","Dry",false,34.16,"case"],
+      ["166860","Glove Vinyl Xl Pf","Job Select","10/100 CT","Dry",false,34.16,"case"],
+      ["157477","Gravy Mix Au Jus","Knorr","12/3.7 OZ","Dry",false,42.70,"case"],
+      ["797032","Gravy Mix Brown","Shawnee Milling Co","6/14 OZ","Dry",false,16.32,"case"],
+      ["797060","Gravy Mix Chicken","Pioneer","6/14 OZ","Dry",true,28.31,"case"],
+      ["797230","Gravy Mix Pepper Biscuit","Pioneer","6/24 OZ","Dry",true,26.79,"case"],
+      ["113975","Greens Turnip Chopped Seasoned","Margaret Holmes","6/#10 CAN","Dry",true,38.24,"case"],
+      ["888071","Grill Pad Heavy Duty Orange","Scotch-brite","1/15 CT","Dry",false,18.86,"case"],
+      ["105991","Guacamole Western Style Frozen","Harvest Fresh","6/3 LB","Frozen",false,13.77,"case"],
+      ["020766","Hair Net Brown 144 Ct","Cellucap","1/144 CT","Dry",false,17.92,"case"],
+      ["002046","Ham Country Cured Boneless","Clifty Farm Country Meats","128/1.25 OZ","Refrigeration",false,73.37,"case"],
+      ["206112","Ham Sliced Smoked .67 Oz","Ellington Farms","4/2.5 LB","Frozen",false,48.91,"case"],
+      ["002117","Ham Slices Smoked Center Cut","D. L. Lee & Sons, Llc","12/1 LB","Refrigeration",false,4.50,"LB"],
+      ["677217","Honey Pc Pure Cup","Smucker's","200/0.5 OZ","Dry",false,40.82,"case"],
+      ["109014","Hushpuppy Corn Sweet","Savannah Foods","2/5 LB","Frozen",false,26.21,"case"],
+      ["152353","Hushpuppy Corn Sweet Jalapeno","Savannah Foods","2/5 LB","Frozen",false,26.69,"case"],
+      ["189261","Ice Cream Mix Choc 5%","Dairy Star","6/64 OZ","Refrigeration",false,34.23,"case"],
+      ["164222","Ice Cream Mix Van 5%","Fresh From Keith's","6/64 OZ","Refrigeration",false,31.66,"case"],
+      ["691585","Icing Chocolate Fudge Rtu","Gold Medal","2/11 LB","Dry",false,82.53,"case"],
+      ["677079","Jelly Pc Assorted Plastic Cup","Smucker's","200/0.5 OZ","Dry",false,17.22,"case"],
+      ["190754","Jelly Pc Grape Pouch","Welchs","200/0.5 OZ","Dry",false,20.64,"case"],
+      ["190753","Jelly Pc Strawberry Pouch","Welchs","200/0.5 OZ","Dry",false,26.80,"case"],
+      ["185927","Jug Plas 1 Gallon W/lid","Buccaneer","1/48 CT","Dry",false,40.94,"case"],
+      ["146968","Ketchup Individual 9 Gram Pc","1906","1000/9 GRM","Dry",false,22.80,"case"],
+      ["878182","Label 2x3 Dissolvable","National Checking","1/250 CT","Dry",false,27.21,"case"],
+      ["383460","Lasagna Meat","Stouffer's","4/96 OZ","Frozen",false,98.98,"case"],
+      ["123145","Lettuce Iceberg Trimmed Only","Markon First Crop","4/6 CT","Refrigeration",true,37.43,"case"],
+      ["123073","Lettuce Shred 1/8 In K","Markon Ready Set Serve","4/5 LB","Refrigeration",true,19.73,"case"],
+      ["123076","Lettuce Shred 1/8 Inch","Markon Ready Set Serve","2/5 LB","Refrigeration",false,15.85,"case"],
+      ["815814","Lid Plas 1 Oz Clear","Essentials","25/100 CT","Dry",false,16.21,"case"],
+      ["860055","Lid Plas 16sl Trans Slotted","Dart","10/100 CT","Dry",false,28.82,"case"],
+      ["870025","Lid Plas 20jl Trans Vented","Dart","10/100 CT","Dry",false,36.11,"case"],
+      ["188154","Lid Plas 32sl Trans Straw Slot","Dart","10/100 CT","Dry",false,71.72,"case"],
+      ["143591","Liner Pan 16x24 Quilon","Handy Wacks","1/1000 CT","Dry",false,64.64,"case"],
+      ["197218","Liner Trash 12-16 Gal Black","Inteplast","1/500 CT","Dry",false,48.09,"case"],
+      ["197269","Liner Trash 33 Gal Black","Essentials","1/250 CT","Dry",false,24.89,"case"],
+      ["136135","Liner Trash 60 Gal Black","Berry Plastics","10/10 CT","Dry",false,73.07,"case"],
+      ["197256","Liner Trash 60 Gal Clear","Essentials","1/100 CT","Dry",false,44.48,"case"],
+      ["131091","Macaroni & Cheese Homestyle","Rons Home Style Foods","4/5 LB","Frozen",false,51.58,"case"],
+      ["119451","Mayonnaise Extra Heavy Duty","Ellington Farms","4/1 GAL","Dry",true,53.60,"case"],
+      ["182377","Mayonnaise Pc Poly Pouch","Ellington Farms","200/9 GRM","Dry",false,16.71,"case"],
       ["374344","Meat Pie Original Beef & Pork","Natchitoches Meat Pie Co","48/3.75 OZ","Frozen",false,54.04,"case"],
+      ["010008","Meatloaf F/c Pull Apart 12ct","King's Command Foods","12/21 OZ","Frozen",false,93.29,"case"],
+      ["184833","Milk Chocolate 1/2 Pint","Sealtest","24/0.5 PNT","Refrigeration",false,14.32,"case"],
+      ["184724","Milk Whole Vitamin D","Sealtest","4/1 GAL","Refrigeration",false,24.99,"case"],
+      ["121396","Mix Creole Jambalaya","Tony Chacheres","8/40 OZ","Dry",false,55.64,"case"],
+      ["173619","Muffin Cornbread Regular","Muffin Town","96/2 OZ","Frozen",false,31.89,"case"],
+      ["170887","Mustard Pc Pouch 200 Ct","Ellington Farms","200/5.5 GRM","Dry",false,7.68,"case"],
+      ["880037","Napkin Dinner 17x17 1 Ply","Tork","12/250 CT","Dry",false,70.04,"case"],
+      ["779116","Oil Whirl","Whirl","3/1 GAL","Dry",false,38.93,"case"],
+      ["226619","Okra Cut Lightly Breaded","Stilwell","4/5 LB","Frozen",false,36.47,"case"],
+      ["326604","Onion Ring Beer Battered 5/8 in","Tavern Traditions","4/2.5 LB","Frozen",true,36.93,"case"],
+      ["152027","Onion White Jumbo","Packer","1/25 LB","Refrigeration",false,19.65,"case"],
       ["026761","Onion Yellow Jumbo Fresh 5lb","Packer","1/5 LB","Refrigeration",false,9.00,"case"],
+      ["698007","Pan Spray Pam Saute & Grill","Pam","6/17 OZ","Dry",true,28.54,"case"],
+      ["691188","Pancake Mix Sweet Cream","Krusteaz","6/5 LB","Refrigeration",false,48.08,"case"],
+      ["214370","Paper Copy 8.5x11 Bright White","Us Business Products Inc","10/500 CT","Dry",false,51.76,"case"],
+      ["875102","Paper Waxed Deli 12x10.75","Dixie","12/500 CT","Dry",false,100.09,"case"],
+      ["774726","Parsley Flakes","Mccormick","1/2 OZ","Dry",false,5.67,"case"],
+      ["205593","Pasta Fettuccini 10 In","Bellacibo Primo","2/10 LB","Dry",false,26.59,"case"],
+      ["700150","Pasta Penne Rigate Regular","Barilla","2/10 LB","Dry",false,28.44,"case"],
+      ["205590","Pasta Spaghetti 10 In","Bellacibo Primo","2/10 LB","Dry",false,26.59,"case"],
+      ["012376","Pea Field W/snaps Bags Iqf","Packer","12/3 LB","Frozen",false,55.77,"case"],
+      ["552603","Peanut Dry Roasted","Planters","6/34.5 OZ","Dry",false,41.77,"case"],
       ["165041","Pepper Bell Green","Markon","1/5 LB","Refrigeration",false,17.64,"case"],
+      ["180821","Pepper Jalapeno 1 1/9 Bsh","Markon First Crop","1/1 CS","Refrigeration",false,73.40,"case"],
+      ["685040","Pepper Jalapeno Sliced","Cajun Chef","4/1 GAL","Dry",false,42.57,"case"],
+      ["685002","Pepper Jalapeno Whole","Cajun Chef","4/1 GAL","Dry",false,44.77,"case"],
+      ["774080","Pepper Lemon Seasoning","Mccormick","1/28 OZ","Dry",false,16.31,"case"],
+      ["555631","Pickle Chip Dill Thin 1/8\"","Mount Olive","4/1 GAL","Dry",false,95.08,"case"],
+      ["015053","Pickle Dill Relish","Kaiser Pickles Llc","4/1 GAL","Dry",false,35.11,"case"],
+      ["187397","Pico De Gallo 5 Lb","Markon Ready Set Serve","1/5 LB","Refrigeration",false,16.88,"case"],
+      ["430121","Pie Pecan Sliced 10 In","Chef Pierre","6/36 OZ","Frozen",true,76.22,"case"],
+      ["010233","Pizza Cheese 12 6/27oz.","Day Night","6/27 OZ","Frozen",false,35.70,"case"],
       ["370955","Pizza Stick Pepperoni","Hot Pockets","48/3 OZ","Frozen",false,32.00,"case"],
+      ["534047","Pork Chop Boneless Breaded","Pierre Zartic","40/4 OZ","Frozen",false,55.46,"case"],
       ["145464","Pork Chop Cc Bnls 4oz","Kelley Foods Manufacturing","1/10 LB","Frozen",false,55.41,"case"],
+      ["001011","Pork Loin Bone In Light Frzn","Swift","4/21 LB","Frozen",false,1.57,"LB"],
+      ["001238","Pork Spareribs Light Frozen","Swift","9/5.3 LB","Frozen",false,2.37,"LB"],
+      ["363433","Potato Mashed Deluxe","Simply Potatoes","4/6 LB","Refrigeration",false,42.01,"case"],
+      ["142203","Potato Sliced White","Libby","6/#10 CAN","Dry",false,38.31,"case"],
+      ["194943","Potato Tater Tots Grade A","Ellington Farms","6/5 LB","Frozen",false,50.40,"case"],
+      ["216830","Potato Wedge 8 Cut Seasoned","Golden Phoenix","6/5 LB","Frozen",false,49.94,"case"],
+      ["650314","Potato White Diced","Allens","6/#10 CAN","Dry",true,43.60,"case"],
+      ["402210","Pretzel King Size 5 Oz","Super Pretzel","50/5.5 OZ","Frozen",false,48.71,"case"],
+      ["182376","Relish Sweet Pc Poly","Ellington Farms","200/9 GRM","Dry",false,15.64,"case"],
+      ["301052","Rice Parboiled","Producers Rice Mill, Inc","1/25 LB","Dry",false,13.31,"case"],
+      ["398411","Roll Dinner Hawaiian","Kings Hawaiian Bakery","10/24 CT","Frozen",false,57.89,"case"],
+      ["301979","Salad Dixie Slaw","Resers Fine Foods","2/7 LB","Refrigeration",false,29.89,"case"],
+      ["768640","Salad Pasta Macaroni","Golden Harvest","2/12 LB","Refrigeration",false,59.87,"case"],
+      ["150312","Salad Potato Baked","St Clair","2/12 LB","Refrigeration",false,57.67,"case"],
+      ["768056","Salad Potato Deviled Egg","St Clair","1/12 LB","Refrigeration",false,32.86,"case"],
+      ["157575","Salad Potato Mustard","St Clair","2/12 LB","Refrigeration",false,50.33,"case"],
+      ["148002","Salsa Fire Roasted Rtu","Gran Sabor","6/#10 CAN","Dry",false,51.03,"case"],
+      ["162165","Salt Pc Packs","N'joy","3/1000 CT","Dry",false,9.41,"case"],
+      ["148661","Sanitizer Hand Mystic Nexa","Ssdc","4/1250 ML","Dry",false,82.19,"case"],
+      ["885911","Sanitizer Sani-quad Sinkrite","Ssdc","2/1 GAL","Dry",false,87.26,"case"],
+      ["122730","Sauce Alfredo Pouch","Nestle","4/80 OZ","Frozen",false,46.67,"case"],
+      ["111922","Sauce Bbq Sweet Baby Rays","Sweet Baby Ray's","4/1 GAL","Dry",false,53.96,"case"],
+      ["107049","Sauce Cheese Queso Blanco","Jtm Food Group","4/5 LB","Frozen",false,55.82,"case"],
+      ["107535","Sauce Pc Bbq Original Cups","Sweet Baby Ray's","100/1.5 OZ","Dry",false,26.03,"case"],
       ["674170","Sauce Pc Hot Texas Pete","Texas Pete","200/7 GRM","Dry",false,15.33,"case"],
       ["674816","Sauce Pc Marinara Cup","Heinz","60/2 OZ","Dry",false,37.08,"case"],
       ["674147","Sauce Pc Picante Salsa Del Sol","Del Sol","200/0.5 OZ","Dry",false,27.08,"case"],
+      ["115983","Sauce Pc Sweet N Sour Cup","Ken's","100/1 OZ","Refrigeration",false,19.86,"case"],
+      ["674626","Sauce Pc Tartar Cup","Ken's","100/1.5 OZ","Refrigeration",false,31.31,"case"],
+      ["124163","Sauce Soy","Ellington Farms","4/1 GAL","Dry",true,25.16,"case"],
+      ["007252","Sauce Spaghetti #10","Red Gold","6/#10 CAN","Dry",false,41.17,"case"],
+      ["015187","Sauce Tomato Fancy","Red Gold","6/#10 CAN","Dry",false,34.87,"case"],
+      ["112784","Sauce Wing Buffalo","Sweet Baby Ray's","4/1 GAL","Dry",false,60.72,"case"],
+      ["112786","Sauce Wing Kickin Bourbon","Sweet Baby Ray's","4/64 OZ","Dry",false,47.33,"case"],
+      ["228934","Sausage Link 4 In Split Smk","Kelley Foods Manufacturing","2/6 LB","Frozen",false,60.58,"case"],
+      ["162490","Sausage Link 4 Oz","Country Pleasin","1/10 LB","Frozen",false,42.87,"case"],
+      ["003011","Sausage Link Smk 4 Oz","Kelley Foods Manufacturing","2/5 LB","Refrigeration",false,41.08,"case"],
       ["111468","Sausage Patty 2 Oz Cooked","Special Recipe","80/2 OZ","Frozen",false,47.18,"case"],
+      ["300712","Scrubber Stainless Steel","3m Corporation","6/12 CT","Dry",false,82.31,"case"],
+      ["115570","Seasoning Creole Original","Tony Chacheres","4/8 LB","Dry",false,78.67,"case"],
+      ["774492","Seasoning Montreal Steak","Mccormick","1/29 OZ","Dry",false,14.41,"case"],
+      ["779123","Shortening Clear Fry Liquid","Keith's Homestyle","1/35 LB","Dry",false,35.62,"case"],
+      ["470543","Shrimp Brd 31-40 Ct Butterfly","Mrs Fridays","12/6 OZ","Frozen",false,29.53,"case"],
+      ["158888","Shrimp Raw P&d White 31-40 Ct","Pacific Treasure","5/2 LB","Frozen",false,62.83,"case"],
+      ["118170","Skewer Wooden 10 In","Handgards","10/100 CT","Dry",false,21.56,"case"],
+      ["885582","Soap Super Rave Sinkrite","Ssdc","2/1 GAL","Dry",false,107.04,"case"],
+      ["773505","Soft Serve Chocolate","Frostline","6/6 LB","Dry",false,78.02,"case"],
+      ["205270","Soft Serve Mix Vanilla","Frostline","6/4.74 LB","Dry",false,82.57,"case"],
+      ["773504","Soft Serve Pineapple Mix","Dole","4/4.4 LB","Dry",false,82.19,"case"],
       ["123623","Soft Serve Strawberry Mix","Dole","4/4.5 LB","Dry",false,82.11,"case"],
+      ["123886","Soup Cream Of Chicken","Ellington Farms","12/50 OZ","Dry",true,67.73,"case"],
+      ["669005","Sour Cream Pc","Daisy Brands","100/1 OZ","Refrigeration",false,13.66,"case"],
+      ["170174","Squash Yellow Sliced","Fineline","12/3 LB","Frozen",false,49.38,"case"],
+      ["205883","Straw 10.25 In Giant Red","Karat","4/300 CT","Dry",false,15.59,"case"],
+      ["229075","Sugar Brown Light","Domino Foodservice","12/2 LB","Dry",false,32.22,"case"],
+      ["780007","Sugar Granulated Fine 50 Lb","Imperial Sugar","1/50 LB","Dry",false,37.02,"case"],
       ["008128","Syrup Pc Pancake Maple Premium","Hartleys","100/1.5 OZ","Dry",false,18.43,"case"],
+      ["176026","Tamale Beef Delta Style","Hot Tamale Heaven","60/6 CT","Frozen",false,271.39,"case"],
+      ["182900","Tape Register Roll Thermal","Amercare","1/50 CT","Dry",false,78.24,"case"],
+      ["882002","Toilet Tissue 2 Ply Jumbo Jr","Acclaim","8/1000 FT","Dry",false,44.12,"case"],
+      ["210025","Tomato 5x6 1 Layer","Markon First Crop","1/10 LB","Refrigeration",false,45.30,"case"],
+      ["125654","Tomato Diced In Juice","Ellington Farms","6/#10 CAN","Dry",false,29.74,"case"],
+      ["650547","Tomato Diced W/green Chilies","Red Gold","12/28 OZ","Dry",false,26.17,"case"],
+      ["385964","Tornado Beef Steak Ranchero","Tornados","24/3 OZ","Frozen",false,20.90,"case"],
       ["385970","Tornado Saus Egg & Cheese","Tornados","24/3 OZ","Frozen",false,20.90,"case"],
+      ["385967","Tornado Southwest Chicken","Tornados","24/3 OZ","Frozen",false,20.90,"case"],
+      ["130838","Tortilla Chip Corn Yel 4 Cut","La Banderita","1/30 LB","Dry",false,27.64,"case"],
+      ["106051","Tortilla Flour Pressed 12 In","Gran Sabor","12/12 CT","Refrigeration",false,42.96,"case"],
+      ["408603","Tortilla Flour Pressed 6 Inch","La Banderita","12/24 CT","Dry",false,24.84,"case"],
+      ["152643","Towel Hand White","Tork","12/410 CT","Dry",false,71.14,"case"],
+      ["881054","Towel Roll White Center Pull","Sofpull","1/6 CT","Dry",false,62.41,"case"],
+      ["198212","Tray Food 5 Lb 500 Red Plaid","Essentials","2/250 CT","Dry",false,35.84,"case"],
+      ["872938","Tray Paper Footlong Hotdog Wht","Southern Champion Tray","1/500 CT","Dry",false,70.35,"case"],
+      ["349504","Vegetable Blend Corn BLK Bean","Roastworks","6/2.5 LB","Frozen",true,35.01,"case"],
+      ["349493","Vegetable Blend Fajita","Markon First Crop","6/2 LB","Frozen",false,27.31,"case"],
+      ["349916","Vegetable Blend Fried Rice","Minh","4/3 LB","Frozen",false,44.87,"case"],
+      ["125736","Vegetable Mixed Fancy","Ellington Farms","6/#10 CAN","Dry",false,44.13,"case"],
       ["175031","Waffle Belgian Maple Flavored","Pillsbury(r)","72/1.4 OZ","Frozen",false,29.71,"case"],
-      ["006522","Chicken Breast Fil Hot'n'spcy","Tyson Red Label","2/5 LB","Frozen",false,29.63,"case"],
-      // ... (full 280 items would be here - truncated for brevity but present in actual file)
+      ["453005","Catfish Fillet Split 3-5 Oz","Heartland Catfish","1/15 LB","Frozen",false,94.24,"case"],
+      ["109198","Chicken Breast Hot N Spicy Ckd","Tyson Red Label","40/4 OZ","Frozen",false,40.84,"case"],
+      ["006522","Chicken Breast Fil Hot'n'spcy","Tyson Red Label","2/5 LB","Frozen",false,29.63,"case"]
     ];
   }
 
-  // ---------- INITIALIZE with existing + BEK ----------
+  // ---------- INIT ----------
   function initData() {
     const stored = localStorage.getItem('deli_pro_full');
     if(stored){
@@ -304,49 +597,23 @@
       invoices = d.invoices || [];
     } else {
       suppliers = SEED_SUPPLIERS;
-      // Build existing items with isActive=true, proper IDs
       inventoryItems = [];
       
-      // Add Deli items
-      SEED_DELI_ITEMS.forEach((it, idx) => {
+      // Add existing items (isActive = true)
+      [...SEED_DELI_ITEMS, ...SEED_FOUNTAIN_ITEMS, ...SEED_BRANDED_ITEMS].forEach((it, idx) => {
         inventoryItems.push({
-          id: `deli-${idx}-${Date.now()}`,
+          id: `seed-${idx}-${Date.now()}`,
           ...it,
           isActive: true,
-          itemNumber: it.itemNumber || `DELI-${idx}`,
           brandCode: '',
           retailReady: false
         });
       });
       
-      // Add Fountain items
-      SEED_FOUNTAIN_ITEMS.forEach((it, idx) => {
-        inventoryItems.push({
-          id: `fount-${idx}-${Date.now()}`,
-          ...it,
-          isActive: true,
-          itemNumber: it.itemNumber || `FOUNT-${idx}`,
-          brandCode: '',
-          retailReady: false
-        });
-      });
-      
-      // Add Branded Deli items
-      SEED_BRANDED_ITEMS.forEach((it, idx) => {
-        inventoryItems.push({
-          id: `brand-${idx}-${Date.now()}`,
-          ...it,
-          isActive: true,
-          itemNumber: it.itemNumber || `BRAND-${idx}`,
-          brandCode: '',
-          retailReady: false
-        });
-      });
-
       // Seed BEK master (isActive = false)
       seedBEKMasterSilent();
       
-      // Create BEK invoice 56678756
+      // Create invoice
       createBEKInvoice();
     }
     persist();
@@ -376,15 +643,12 @@
 
   function seedBEKMaster(){ seedBEKMasterSilent(); renderItemsTable(); updateActiveCounter(); }
 
-  // ---------- INVOICE 56678756 ----------
+  // ---------- INVOICE ----------
   function createBEKInvoice(){
-    const bekSup = suppliers.find(s=>s.name.includes('Ben E. Keith')) || {id:'sup_bek'};
     const invoice = {
       id: 'inv-56678756',
-      invoiceNumber: '56678756', vendor: 'Ben E. Keith Foods', vendorCustomerNumber:'FEL125042',
-      orderNumber:'0001695112', invoiceDate:'2026-04-17', orderDate:'2026-04-16', shipDate:'2026-04-17',
-      dueDate:'2026-05-18', invoiceType:'IN', status:'Open', itemCount:31, invoiceAmount:1434.89,
-      amountDue:1434.89, remitTo:'FEL02 AR, Ben E. Keith Lockbox, PO Box 201519, Dallas, TX 75320-1519',
+      invoiceNumber: '56678756', vendor: 'Ben E. Keith Foods',
+      invoiceDate:'2026-04-17', invoiceAmount:1434.89,
       lineItems: getInvoiceLineItems(), receivedToInventory: false
     };
     invoices.push(invoice);
@@ -482,7 +746,7 @@
     else { persist(); renderItemsTable(); updateActiveCounter(); }
   }
 
-  // ---------- UI: Items Table ----------
+  // ---------- UI ----------
   function renderItemsTable(){
     const search = (document.getElementById('im-search')?.value||'').toLowerCase();
     const storage = document.getElementById('im-storage')?.value;
@@ -555,7 +819,6 @@
     document.getElementById('active-count-display').textContent = active;
   }
 
-  // ---------- INVOICE PANEL ----------
   function renderInvoicePanel(){
     const inv = invoices.find(i=>i.invoiceNumber==='56678756');
     const panel = document.getElementById('invoice-panel');
@@ -570,8 +833,6 @@
       </div>
     `;
   }
-
-  window.receiveInvoice = receiveInvoice;
 
   // Helpers
   function persist(){ localStorage.setItem('deli_pro_full', JSON.stringify({inventoryItems, suppliers, invoices})); }
@@ -600,8 +861,9 @@
   window.confirmAddMissing = confirmAddMissing;
   window.bulkActivate = bulkActivate;
   window.seedBEKMaster = seedBEKMaster;
+  window.receiveInvoice = receiveInvoice;
 
-  // Initialize
+  // Start
   initData();
 })();
 </script>
