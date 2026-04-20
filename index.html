@@ -112,11 +112,7 @@
   <!-- ANALYTICS -->
   <div class="section active" id="tab-analytics">
     <div class="sec-title">Analytics · Active items only</div>
-    <div class="an-card">
-      <div class="stat-label">Total Active Items</div>
-      <div class="stat-value" id="active-count-display">0</div>
-    </div>
-    <p style="margin-top:16px; color:var(--text2);">Only isActive=true items appear in analytics, count sheets, and order lists.</p>
+    <div id="analytics-panel"></div>
   </div>
 
   <!-- INVENTORY -->
@@ -816,9 +812,82 @@
     document.getElementById('active-counter').textContent = `${active} of ${total} active`;
   }
 
-  function updateAnalyticsCount(){
-    const active = inventoryItems.filter(i=>i.isActive).length;
-    document.getElementById('active-count-display').textContent = active;
+  function updateAnalyticsCount(){ renderAnalytics(); }
+
+  function renderAnalytics(){
+    const panel = document.getElementById('analytics-panel');
+    if(!panel) return;
+    const active = inventoryItems.filter(i => i.isActive);
+    const total = active.length;
+    if(!total){ panel.innerHTML = '<div class="empty-state">No active items yet.</div>'; return; }
+
+    const bySection = ['Deli','Fountain','Branded Deli'].map(s => ({
+      label: s, count: active.filter(i => (i.section||'Deli') === s).length
+    })).filter(s => s.count);
+
+    const byStorage = ['Dry','Frozen','Refrigeration'].map(s => ({
+      label: s, count: active.filter(i => i.storage === s).length
+    })).filter(s => s.count);
+
+    const lowStock = active.filter(i => (i.par||0) > 0 && (i.currentOnHand||0) < (i.par||0));
+    const totalValue = active.reduce((sum, i) => sum + ((i.price||0) * (i.currentOnHand||0)), 0);
+    const byVendor = ['BEK','Merchants','Imperial','Other'].map(v => ({
+      label: v, count: active.filter(i => i.vendor === v).length
+    })).filter(v => v.count);
+
+    panel.innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px;">
+        <div class="an-card"><div class="stat-label">Total Active Items</div><div class="stat-value" id="active-count-display">${total}</div></div>
+        <div class="an-card"><div class="stat-label">Low Stock</div><div class="stat-value" style="color:var(--red)">${lowStock.length}</div></div>
+        <div class="an-card"><div class="stat-label">On-Hand Value</div><div class="stat-value" style="font-size:20px;">$${totalValue.toFixed(2)}</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px;">
+        <div class="an-card">
+          <div class="stat-label" style="margin-bottom:10px;">By Section</div>
+          ${bySection.map(s => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);">
+              <span style="font-size:13px;">${s.label}</span>
+              <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;">${s.count}</span>
+            </div>`).join('')}
+        </div>
+        <div class="an-card">
+          <div class="stat-label" style="margin-bottom:10px;">By Storage</div>
+          ${byStorage.map(s => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);">
+              <span style="font-size:13px;">${s.label}</span>
+              <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;">${s.count}</span>
+            </div>`).join('')}
+        </div>
+        <div class="an-card">
+          <div class="stat-label" style="margin-bottom:10px;">By Vendor</div>
+          ${byVendor.map(v => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);">
+              <span style="font-size:13px;">${v.label}</span>
+              <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;">${v.count}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      ${lowStock.length ? `
+      <div class="an-card">
+        <div class="stat-label" style="margin-bottom:10px;">Low Stock Items (below par)</div>
+        <div class="table-wrap" style="border:none;">
+          <table>
+            <thead><tr><th>Item Name</th><th>Section</th><th>On Hand</th><th>Par</th><th>Need</th></tr></thead>
+            <tbody>${lowStock.map(i => `
+              <tr>
+                <td>${i.itemName}</td>
+                <td><span class="badge b-cat">${i.section||'Deli'}</span></td>
+                <td><span class="badge b-low">${i.currentOnHand||0}</span></td>
+                <td>${i.par||0}</td>
+                <td style="font-weight:600;color:var(--red);">+${(i.par||0)-(i.currentOnHand||0)}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>` : '<div style="color:var(--muted);font-size:13px;font-family:\'DM Mono\',monospace;">✅ All items at or above par.</div>'}
+    `;
   }
 
   function renderInventory(){
