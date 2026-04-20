@@ -821,6 +821,39 @@
     document.getElementById('active-count-display').textContent = active;
   }
 
+  function renderInventory(){
+    const panel = document.getElementById('inv-demo');
+    if(!panel) return;
+    const active = inventoryItems.filter(i => i.isActive);
+    if(!active.length){ panel.innerHTML = '<div class="empty-state">No active items. Go to Items Mgmt to activate items.</div>'; return; }
+    const sections = ['Deli','Fountain','Branded Deli'];
+    panel.innerHTML = sections.map(sec => {
+      const items = active.filter(i => (i.section||'Deli') === sec);
+      if(!items.length) return '';
+      return `
+        <div style="margin-bottom:24px;">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--border2);margin-bottom:8px;">${sec} &mdash; ${items.length} items</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Item#</th><th>Item Name</th><th>Brand</th><th>Pack/Size</th><th>Storage</th><th>Price</th><th>On Hand</th><th>Par</th></tr></thead>
+              <tbody>${items.map(i => `
+                <tr>
+                  <td><code>${i.itemNumber||'—'}</code></td>
+                  <td>${i.itemName}</td>
+                  <td>${mapBrand(i.brand)||i.brand}</td>
+                  <td>${i.packSize||'—'}</td>
+                  <td>${i.storage||'—'}</td>
+                  <td>$${(i.price||0).toFixed(2)}</td>
+                  <td><span class="badge ${(i.currentOnHand||0)<(i.par||0)?'b-low':'b-ok'}">${i.currentOnHand||0}</span></td>
+                  <td>${i.par||0}</td>
+                </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
   function renderInvoicePanel(){
     const inv = invoices.find(i=>i.invoiceNumber==='56678756');
     const panel = document.getElementById('invoice-panel');
@@ -849,6 +882,7 @@
     if(name==='itemsMgmt') renderItemsTable();
     if(name==='invoices') renderInvoicePanel();
     if(name==='analytics') updateAnalyticsCount();
+    if(name==='inventory') renderInventory();
   };
 
   function showAddMissingModal(m){
