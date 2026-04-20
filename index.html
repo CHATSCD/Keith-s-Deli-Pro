@@ -246,7 +246,7 @@
   let pendingMissing = null;
 
   const BRAND_MAP = {
-    TYSONRED:'Tyson Red Label', FRSH_KTH:'Fresh From Keith\'s', GLDHRVST:'Golden Harvest',
+    TYSONRED:'Tyson Red Label', 'FRSH/KTH':'Fresh From Keith\'s', GLDHRVST:'Golden Harvest',
     HOTPOCKT:'Hot Pockets', PILLSBRY:'Pillsbury(r)', EUROPNBK:'European Bakers',
     NACHITOS:'Natchitoches Meat Pie Co', CHEFEXCL:'Chefs Exclusive', BAKECRAF:'Bake Crafters',
     SPECIALR:'Special Recipe', SCHREIBR:'Schreiber', PAPETTIS:'Papettis', MCNAIRN:'Mcnairn',
@@ -591,7 +591,9 @@
   function initData() {
     const stored = localStorage.getItem('deli_pro_full');
     if(stored){
-      const d = JSON.parse(stored);
+      let d;
+      try { d = JSON.parse(stored); } catch(e){ localStorage.removeItem('deli_pro_full'); d = null; }
+      if(!d){ suppliers = SEED_SUPPLIERS; inventoryItems = []; invoices = []; return; }
       inventoryItems = d.inventoryItems || [];
       suppliers = d.suppliers || SEED_SUPPLIERS;
       invoices = d.invoices || [];
@@ -735,7 +737,7 @@
     const storage = document.getElementById('miss-storage').value;
     const price = parseFloat(document.getElementById('miss-price').value) || pendingMissing.price;
     const newItem = {
-      id: crypto.randomUUID(), itemNumber: number, itemName: name, brand, brandCode:'',
+      id: crypto.randomUUID ? crypto.randomUUID() : 'item-'+Date.now()+'-'+Math.random(), itemNumber: number, itemName: name, brand, brandCode:'',
       packSize: pack, storage, retailReady: false, price, priceUnit: 'case', vendor: 'BEK',
       section: 'Deli', category: 'Deli', isActive: true, currentOnHand: 1, par: 0
     };
