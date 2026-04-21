@@ -1209,6 +1209,7 @@ function load(){
   if(!brandedInv){ brandedInv=SEED_BRANDED.map(d=>({id:uid(),name:d.name,cat:d.cat,qty:d.qty,unit:d.unit,cost:d.cost,par:d.par,supplier:''})); sv('branded'); }
   // Apply any pending one-time invoice patches
   applyBEK56553783();
+  applyBEK56678756();
   // Connect to Supabase if previously configured (async; will re-apply patches after pull)
   loadSbSetup();
 }
@@ -2170,6 +2171,79 @@ function applyBEK56553783() {
   localStorage.setItem('dp7_inv', JSON.stringify(invoices));
 }
 
+// BEK Invoice #56678756 — 04/17/2026 — $1,434.89
+// 31 items ordered; 30 shipped (109198 qty=0 skipped). Idempotent.
+function applyBEK56678756() {
+  if (invoices.find(i => i.num === '56678756')) return;
+
+  let bek = suppliers.find(s => s.name === 'Ben E. Keith Foods');
+  if (!bek) {
+    bek = {id:uid(), name:'Ben E. Keith Foods', contact:'', phone:'', email:'', lead:'', notes:''};
+    suppliers.push(bek);
+  }
+
+  const items = [
+    // BREAD
+    {name:'Bun Hamburger 5 In Sliced',         cat:'Bread',      cases:2, cost:31.57},
+    {name:'Bun Hamburger White 4 In',           cat:'Bread',      cases:1, cost:24.89},
+    {name:'Bread Texas Toast White',            cat:'Bread',      cases:1, cost:25.78},
+    {name:'Dough Biscuit 3 In Sliced',          cat:'Bread',      cases:2, cost:53.87},
+    {name:'French Toast Stick Wg 1.1 Oz',      cat:'Bread',      cases:1, cost:24.59},
+    {name:'Waffle Belgian Maple Flavored',      cat:'Bread',      cases:1, cost:29.71},
+    // CHEESE
+    {name:'Cheese American Yellow 184 Sl',      cat:'Cheese',     cases:1, cost:55.32},
+    {name:'Cheese Cheddar Mild Shrd',           cat:'Cheese',     cases:1, cost:59.91},
+    {name:'Cheese Pepper Jack Slice .73oz',     cat:'Cheese',     cases:1, cost:44.18},
+    {name:'Cheese Swiss American 160 Sl',       cat:'Cheese',     cases:1, cost:54.82},
+    // CONDIMENTS
+    {name:'Sauce Pc Hot Texas Pete',            cat:'Condiments', cases:1, cost:15.33},
+    {name:'Sauce Pc Marinara Cup',              cat:'Condiments', cases:1, cost:37.08},
+    {name:'Sauce Pc Picante Salsa Del Sol',     cat:'Condiments', cases:1, cost:27.08},
+    {name:'Syrup Pc Pancake Maple Premium',     cat:'Condiments', cases:1, cost:18.43},
+    // DAIRY
+    {name:'Soft Serve Strawberry Mix',          cat:'Dairy',      cases:1, cost:82.11},
+    // DELI MEAT
+    {name:'Beef Patty 3/1 Thick N Tender',      cat:'Deli Meat',  cases:1, cost:84.52},
+    {name:'Beef Steak Fritter Raw Breaded',     cat:'Deli Meat',  cases:1, cost:65.87},
+    {name:'Chicken Breast Fil Hot\'n\'spcy',    cat:'Deli Meat',  cases:1, cost:29.63},
+    {name:'Chicken Breast Fritter Cn 4/1',      cat:'Deli Meat',  cases:1, cost:40.84},
+    {name:'Egg Patty Homestyle Fried',          cat:'Deli Meat',  cases:1, cost:50.15},
+    {name:'Pork Chop Cc Bnls 4oz',             cat:'Deli Meat',  cases:1, cost:55.41},
+    {name:'Sausage Patty 2 Oz Cooked',          cat:'Deli Meat',  cases:2, cost:47.18},
+    // OTHER
+    {name:'Candy Gummy Worm Mini',              cat:'Other',      cases:1, cost:53.36},
+    {name:'Corn Dog Chicken Jalapeno',          cat:'Other',      cases:1, cost:28.00},
+    {name:'Egg Roll Chicken Sw Style',          cat:'Other',      cases:1, cost:77.58},
+    {name:'Meat Pie Original Beef & Pork',      cat:'Other',      cases:1, cost:54.04},
+    {name:'Pizza Stick Pepperoni',              cat:'Other',      cases:1, cost:32.00},
+    {name:'Tornado Saus Egg & Cheese',          cat:'Other',      cases:1, cost:20.90},
+    // PACKAGING
+    {name:'Bag Sandwich 6x.75x6.75 1side',     cat:'Packaging',  cases:1, cost:44.53},
+    // PRODUCE
+    {name:'Onion Yellow Jumbo Fresh 5lb',       cat:'Produce',    cases:1, cost:9.00},
+    {name:'Pepper Bell Green',                  cat:'Produce',    cases:1, cost:17.64},
+  ];
+
+  items.forEach(item => {
+    const existing = deliInv.find(i => i.name.toLowerCase() === item.name.toLowerCase());
+    if (existing) {
+      existing.qty  = +(existing.qty + item.cases).toFixed(2);
+      existing.cost = item.cost;
+    } else {
+      deliInv.push({id:uid(), name:item.name, cat:item.cat, qty:item.cases, unit:'cases', cost:item.cost, par:1, supplier:bek.id});
+    }
+  });
+
+  invoices.push({
+    id: uid(), supplier: bek.id, date: '2026-04-17', total: 1434.89, num: '56678756',
+    notes: 'BEK — Dry $328.59 / Frozen $858.48 / Cooler $240.87 / Tax $6.95'
+  });
+
+  localStorage.setItem('dp7_sup', JSON.stringify(suppliers));
+  localStorage.setItem('dp7_deli', JSON.stringify(deliInv));
+  localStorage.setItem('dp7_inv', JSON.stringify(invoices));
+}
+
 // =============================================================
 // CLOUD SYNC (Supabase)
 // =============================================================
@@ -2264,6 +2338,7 @@ async function sbPull(silent) {
     if (d.inv)      { invoices    = d.inv;      localStorage.setItem('dp7_inv',      JSON.stringify(d.inv)); }
     if (d.week)     { weekData    = d.week;     localStorage.setItem('dp7_week',     JSON.stringify(d.week)); }
     applyBEK56553783(); // ensure invoice patches are present after pull
+    applyBEK56678756();
     setSyncStatus('ok');
     renderAnalytics();
     if (!silent) alert('Pulled latest data from cloud.');
