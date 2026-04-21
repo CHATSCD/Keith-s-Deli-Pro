@@ -1,25 +1,32 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Keith's Deli Manager Pro – Invoice & Inventory</title>
+<title>Keith's Deli Manager Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
+  /* Tan/cream backgrounds */
   --bg: #f2ede4;
   --bg2: #e8e0d2;
   --surface: #faf7f2;
   --surface2: #f0ebe0;
   --border: #d8cfc0;
   --border2: #bfb49e;
+  /* Primary accent = deep red */
   --gold: #b52b20;
   --gold2: #d4382b;
+  /* Success/positive = navy blue */
   --green: #1a4a80;
   --green2: #1f5ea3;
+  /* Danger = red */
   --red: #b52b20;
   --red2: #d4382b;
+  /* Info = steel blue */
   --blue: #2471a3;
+  /* Text */
   --text: #1a1612;
   --text2: #4a3f32;
   --muted: #8a7a66;
@@ -28,390 +35,530 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
 
+/* scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--bg2); }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-track { background: var(–bg2); }
+::-webkit-scrollbar-thumb { background: var(–border2); border-radius: 3px; }
 
+/* HEADER */
 header {
-  background: linear-gradient(135deg, #0d1f3c 0%, #1a3560 50%, #8c1c12 100%);
-  border-bottom: 3px solid var(--gold);
-  padding: 0 28px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  height: 64px;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+background: linear-gradient(135deg, #0d1f3c 0%, #1a3560 50%, #8c1c12 100%);
+border-bottom: 3px solid var(–gold);
+padding: 0 28px;
+display: flex;
+align-items: center;
+gap: 20px;
+height: 64px;
+position: sticky;
+top: 0;
+z-index: 50;
+box-shadow: 0 2px 20px rgba(0,0,0,0.2);
 }
 header h1 {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: #f5f0e8;
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 26px;
+font-weight: 800;
+letter-spacing: 3px;
+text-transform: uppercase;
+color: #f5f0e8;
 }
 .header-badge {
-  background: rgba(181,43,32,0.3);
-  border: 1px solid rgba(181,43,32,0.6);
-  color: #f0b0a8;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  font-weight: 500;
-  padding: 3px 10px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+background: rgba(181,43,32,0.3);
+border: 1px solid rgba(181,43,32,0.6);
+color: #f0b0a8;
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+font-weight: 500;
+padding: 3px 10px;
+letter-spacing: 1px;
+text-transform: uppercase;
 }
 .header-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
 .week-display {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  color: #c8d8f0;
+font-family: ‘DM Mono’, monospace;
+font-size: 11px;
+color: #c8d8f0;
 }
 nav {
-  background: #ffffff;
-  border-bottom: 2px solid var(--border);
-  display: flex;
-  overflow-x: auto;
-  padding: 0 12px;
-  box-shadow: 0 1px 6px rgba(26,70,128,0.07);
+background: #ffffff;
+border-bottom: 2px solid var(–border);
+display: flex;
+overflow-x: auto;
+padding: 0 12px;
+box-shadow: 0 1px 6px rgba(26,70,128,0.07);
 }
 nav button {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 1.5px;
-  padding: 0 20px;
-  height: 48px;
-  background: none;
-  border: none;
-  color: var(--muted);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s;
-  white-space: nowrap;
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+font-family: ‘DM Mono’, monospace;
+font-size: 11px;
+font-weight: 500;
+letter-spacing: 1.5px;
+padding: 0 20px;
+height: 48px;
+background: none;
+border: none;
+color: var(–muted);
+cursor: pointer;
+border-bottom: 2px solid transparent;
+transition: all 0.2s;
+white-space: nowrap;
+text-transform: uppercase;
+display: flex;
+align-items: center;
+gap: 8px;
 }
-nav button:hover { color: var(--text); }
-nav button.active { color: var(--gold); border-bottom-color: var(--gold); }
+nav button:hover { color: var(–text); }
+nav button.active { color: var(–gold); border-bottom-color: var(–gold); }
+nav button .nav-icon { font-size: 14px; }
+
 main { flex: 1; padding: 24px 28px; max-width: 1500px; width: 100%; margin: 0 auto; }
 .section { display: none; animation: fadeIn 0.2s ease; }
 .section.active { display: block; }
 @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
 
+/* BUTTONS */
 .btn {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 1px;
-  padding: 9px 18px;
-  border: none;
-  cursor: pointer;
-  text-transform: uppercase;
-  transition: all 0.15s;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+font-family: ‘DM Mono’, monospace;
+font-size: 11px;
+font-weight: 500;
+letter-spacing: 1px;
+padding: 9px 18px;
+border: none;
+cursor: pointer;
+text-transform: uppercase;
+transition: all 0.15s;
+display: inline-flex;
+align-items: center;
+gap: 6px;
 }
-.btn-gold { background: var(--gold); color: #ffffff; }
-.btn-gold:hover { background: var(--gold2); }
-.btn-green { background: var(--green); color: #fff; }
-.btn-green:hover { background: var(--green2); }
-.btn-danger { background: var(--red); color: #fff; }
-.btn-danger:hover { background: var(--red2); }
-.btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
-.btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+.btn-gold { background: var(–gold); color: #ffffff; }
+.btn-gold:hover { background: var(–gold2); }
+.btn-green { background: var(–green); color: #fff; }
+.btn-green:hover { background: var(–green2); }
+.btn-danger { background: var(–red); color: #fff; }
+.btn-danger:hover { background: var(–red2); }
+.btn-ghost { background: transparent; color: var(–text2); border: 1px solid var(–border2); }
+.btn-ghost:hover { color: var(–text); border-color: var(–muted); }
 .btn-sm { padding: 5px 12px; font-size: 10px; }
-.btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
+.btn-outline { background: transparent; border: 1px solid var(–gold); color: var(–gold); }
+.btn-outline:hover { background: rgba(181,43,32,0.07); }
+.btn-green { background: var(–green); color: #fff; }
+.btn-green:hover { background: var(–green2); }
 
+/* SECTION HEADER */
 .sec-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 12px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 20px;
+flex-wrap: wrap;
+gap: 12px;
 }
 .sec-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--gold);
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 20px;
+font-weight: 700;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(–gold);
 }
+
+/* STAT CARDS */
 .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 24px; }
 .stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 18px 20px;
-  position: relative;
-  overflow: hidden;
-  transition: border-color 0.2s;
+background: var(–surface);
+border: 1px solid var(–border);
+padding: 18px 20px;
+position: relative;
+overflow: hidden;
+transition: border-color 0.2s;
 }
 .stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--green2), var(--gold));
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 3px;
+background: linear-gradient(90deg, var(–green2), var(–gold));
 }
+.stat-card:hover { border-color: var(–border2); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
 .stat-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 10px;
+font-family: ‘DM Mono’, monospace;
+font-size: 9px;
+font-weight: 500;
+letter-spacing: 1.5px;
+text-transform: uppercase;
+color: var(–muted);
+margin-bottom: 10px;
 }
 .stat-value {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 36px;
-  font-weight: 700;
-  color: var(--gold);
-  line-height: 1;
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 36px;
+font-weight: 700;
+color: var(–gold);
+line-height: 1;
 }
-.stat-value.green { color: var(--green2); }
-.stat-value.red { color: var(--red2); }
-.table-wrap { overflow-x: auto; border: 1px solid var(--border); }
-table { width: 100%; border-collapse: collapse; }
-thead tr { background: var(--surface2); }
-th {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding: 11px 14px;
-  text-align: left;
-  border-bottom: 1px solid var(--border2);
-  white-space: nowrap;
-}
-td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
-.mono { font-family: 'DM Mono', monospace; font-size: 12px; }
+.stat-value.green { color: var(–green2); }
+.stat-value.red { color: var(–red2); }
+.stat-value.white { color: var(–text); }
+.stat-sub { font-size: 11px; color: var(–text2); margin-top: 5px; }
 
+/* TABLES */
+.table-wrap { overflow-x: auto; border: 1px solid var(–border); }
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: var(–surface2); }
+th {
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+font-weight: 500;
+letter-spacing: 1.5px;
+text-transform: uppercase;
+color: var(–muted);
+padding: 11px 14px;
+text-align: left;
+border-bottom: 1px solid var(–border2);
+white-space: nowrap;
+}
+td { padding: 10px 14px; border-bottom: 1px solid var(–border); font-size: 13px; vertical-align: middle; }
+tbody tr:hover td { background: rgba(26,70,128,0.04); }
+tbody tr:last-child td { border-bottom: none; }
+.mono { font-family: ‘DM Mono’, monospace; font-size: 12px; }
+
+/* BADGES */
 .badge {
-  display: inline-block;
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  font-weight: 500;
-  padding: 2px 8px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+display: inline-block;
+font-family: ‘DM Mono’, monospace;
+font-size: 9px;
+font-weight: 500;
+padding: 2px 8px;
+letter-spacing: 1px;
+text-transform: uppercase;
 }
-.b-ok { background: rgba(76,175,94,0.12); color: var(--green2); border: 1px solid rgba(76,175,94,0.2); }
-.b-low { background: rgba(217,79,79,0.12); color: var(--red2); border: 1px solid rgba(217,79,79,0.2); }
-.b-warn { background: rgba(212,168,67,0.12); color: var(--gold); border: 1px solid rgba(212,168,67,0.2); }
-.b-nopar { background: transparent; color: var(--muted); border: 1px solid var(--border2); }
+.b-ok { background: rgba(76,175,94,0.12); color: var(–green2); border: 1px solid rgba(76,175,94,0.2); }
+.b-low { background: rgba(217,79,79,0.12); color: var(–red2); border: 1px solid rgba(217,79,79,0.2); }
+.b-warn { background: rgba(212,168,67,0.12); color: var(–gold); border: 1px solid rgba(212,168,67,0.2); }
+.b-nopar { background: transparent; color: var(–muted); border: 1px solid var(–border2); }
 .b-cat { background: rgba(31,94,163,0.1); color: #2471a3; border: 1px solid rgba(31,94,163,0.25); }
-.need-pill {
-  display: inline-block;
-  background: rgba(192,57,43,0.1);
-  border: 1px solid rgba(181,43,32,0.25);
-  color: var(--red2);
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  padding: 2px 8px;
-  font-weight: 500;
-}
-.qty-cell {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
-  padding: 4px 8px;
-  width: 72px;
-  outline: none;
-}
-.filter-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-.fsearch {
-  background: #fff;
-  border: 1px solid var(--border2);
-  color: var(--text);
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  padding: 8px 14px;
-  outline: none;
-  width: 190px;
-}
-.fsel {
-  background: #fff;
-  border: 1px solid var(--border2);
-  color: var(--text2);
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  padding: 8px 12px;
-  outline: none;
-  cursor: pointer;
-}
-.subtabs { display: flex; gap: 0; margin-bottom: 18px; border-bottom: 2px solid var(--border); }
-.subtab {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 1.5px;
-  padding: 10px 18px;
-  background: none;
-  border: none;
-  color: var(--muted);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
-  text-transform: uppercase;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-.subtab.active { color: var(--gold); border-bottom-color: var(--gold); }
-.subpanel { display: none; } .subpanel.active { display: block; }
-.analytics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-bottom: 24px; }
-.an-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 20px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-}
-.an-card.highlight { border-color: var(--green2); background: rgba(26,70,128,0.04); }
-.an-title {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 10px;
-}
-.an-big { font-family: 'Barlow Condensed', sans-serif; font-size: 42px; font-weight: 700; line-height: 1; }
-.an-big.gold { color: var(--gold); }
-.cost-bar-bg { background: var(--border); height: 5px; margin-top: 8px; }
-.cost-bar-fill { height: 100%; background: var(--blue); transition: width 0.4s; }
-.cost-bar-fill.bad { background: var(--red); }
-.invoice-item {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--gold);
-  padding: 14px 18px;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.inv-sup { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 1px; }
-.inv-meta { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text2); }
-.inv-amount { font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 700; color: var(--gold); margin-left: auto; }
-.order-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 13px 18px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 6px;
-}
-.order-card.done { opacity: 0.5; }
-.order-card.done .o-name { text-decoration: line-through; }
-.o-name { font-weight: 500; flex: 1; }
-.o-meta { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
-.ing-list { list-style: none; margin-top: 10px; }
-.ing-list li { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-.ing-del { background: none; border: none; color: var(--red2); cursor: pointer; font-size: 16px; }
-.empty-state { text-align: center; padding: 60px 20px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 12px; }
-.empty-big { font-family: 'Barlow Condensed', sans-serif; font-size: 52px; font-weight: 700; color: var(--border2); letter-spacing: 3px; display: block; margin-bottom: 8px; }
+
+/* MODAL */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.open { display: flex; }
 .modal {
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-top: 3px solid var(--gold);
-  width: 100%;
-  max-width: 540px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 28px;
+background: var(–surface);
+border: 1px solid var(–border2);
+border-top: 3px solid var(–gold);
+width: 100%;
+max-width: 540px;
+max-height: 90vh;
+overflow-y: auto;
+padding: 28px;
+animation: slideUp 0.2s ease;
+box-shadow: 0 8px 40px rgba(0,0,0,0.18);
 }
-.modal-title { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 22px; }
+@keyframes slideUp { from { transform: translateY(16px); opacity:0; } to { transform:none; opacity:1; } }
+.modal-title {
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 20px;
+font-weight: 700;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(–gold);
+margin-bottom: 22px;
+}
 .form-group { margin-bottom: 16px; }
-label { display: block; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
-input, select, textarea {
-  width: 100%;
-  background: var(--bg2);
-  border: 1px solid var(--border2);
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  padding: 9px 12px;
-  outline: none;
+label {
+display: block;
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+font-weight: 500;
+letter-spacing: 1px;
+text-transform: uppercase;
+color: var(–muted);
+margin-bottom: 6px;
 }
-input:focus, select:focus { border-color: var(--gold); }
+input, select, textarea {
+width: 100%;
+background: var(–bg2);
+border: 1px solid var(–border2);
+color: var(–text);
+font-family: ‘DM Sans’, sans-serif;
+font-size: 14px;
+padding: 9px 12px;
+outline: none;
+transition: border-color 0.15s;
+}
+input:focus, select:focus, textarea:focus { border-color: var(–gold); box-shadow: 0 0 0 2px rgba(192,57,43,0.1); }
+select option { background: #fff; color: var(–text); }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }
-.rpt-card { background:var(--surface); border:2px solid var(--border); padding:22px 20px; transition:border-color .2s; cursor:pointer; }
-.rpt-card.selected { border-color:var(--gold); background:rgba(181,43,32,.04); }
-.rpt-card-title { font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:700; letter-spacing:1px; }
-.rpt-doc { background:#fff; border:1px solid var(--border); padding:32px; font-family:'DM Sans',sans-serif; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(–border); }
+
+/* QTY input inline */
+.qty-cell {
+background: var(–bg2);
+border: 1px solid var(–border);
+color: var(–text);
+font-family: ‘DM Mono’, monospace;
+font-size: 12px;
+padding: 4px 8px;
+width: 72px;
+outline: none;
+transition: border-color 0.15s;
+}
+.qty-cell:focus { border-color: var(–gold); }
+
+/* ORDER NEEDED pill */
+.need-pill {
+display: inline-block;
+background: rgba(192,57,43,0.1);
+border: 1px solid rgba(181,43,32,0.25);
+color: var(–red2);
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+padding: 2px 8px;
+font-weight: 500;
+}
+
+/* FILTER row */
+.filter-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.fsearch {
+background: #fff;
+border: 1px solid var(–border2);
+color: var(–text);
+font-family: ‘DM Mono’, monospace;
+font-size: 11px;
+padding: 8px 14px;
+outline: none;
+width: 190px;
+}
+.fsearch:focus { border-color: var(–gold); }
+.fsel {
+background: #fff;
+border: 1px solid var(–border2);
+color: var(–text2);
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+padding: 8px 12px;
+outline: none;
+cursor: pointer;
+}
+
+/* INV subtabs */
+.subtabs { display: flex; gap: 0; margin-bottom: 18px; border-bottom: 2px solid var(–border); }
+.subtab {
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+font-weight: 500;
+letter-spacing: 1.5px;
+padding: 10px 18px;
+background: none;
+border: none;
+color: var(–muted);
+cursor: pointer;
+border-bottom: 2px solid transparent;
+margin-bottom: -2px;
+text-transform: uppercase;
+transition: all 0.2s;
+white-space: nowrap;
+}
+.subtab:hover { color: var(–text); }
+.subtab.active { color: var(–gold); border-bottom-color: var(–gold); }
+.subpanel { display: none; } .subpanel.active { display: block; }
+
+/* ANALYTICS */
+.analytics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.an-card {
+background: var(–surface);
+border: 1px solid var(–border);
+padding: 20px;
+box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.an-card.highlight {
+border-color: var(–green2);
+background: rgba(26,70,128,0.04);
+}
+.an-title {
+font-family: ‘DM Mono’, monospace;
+font-size: 9px;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(–muted);
+margin-bottom: 10px;
+}
+.an-big {
+font-family: ‘Barlow Condensed’, sans-serif;
+font-size: 42px;
+font-weight: 700;
+line-height: 1;
+}
+.an-big.gold { color: var(–gold); }
+.an-big.green { color: var(–green2); }
+.an-big.red { color: var(–red2); }
+.an-sub { font-size: 12px; color: var(–text2); margin-top: 6px; }
+
+/* COST BAR */
+.cost-bar-bg { background: var(–border); height: 5px; margin-top: 8px; }
+.cost-bar-fill { height: 100%; background: var(–blue); transition: width 0.4s; }
+.cost-bar-fill.bad { background: var(–red); }
+
+/* INVOICE LIST */
+.invoice-item {
+background: var(–surface);
+border: 1px solid var(–border);
+border-left: 3px solid var(–gold);
+padding: 14px 18px;
+margin-bottom: 8px;
+display: flex;
+align-items: center;
+gap: 16px;
+flex-wrap: wrap;
+box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.inv-sup { font-family: ‘Barlow Condensed’, sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 1px; }
+.inv-meta { font-family: ‘DM Mono’, monospace; font-size: 11px; color: var(–text2); }
+.inv-amount { font-family: ‘Barlow Condensed’, sans-serif; font-size: 28px; font-weight: 700; color: var(–gold); margin-left: auto; }
+
+/* ORDER LIST */
+.order-card {
+background: var(–surface);
+border: 1px solid var(–border);
+padding: 13px 18px;
+display: flex;
+align-items: center;
+gap: 14px;
+margin-bottom: 6px;
+transition: border-color 0.15s;
+box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.order-card:hover { border-color: var(–gold); }
+.order-card input[type=checkbox] { width: 17px; height: 17px; accent-color: var(–gold); flex-shrink: 0; cursor: pointer; }
+.order-card.done { opacity: 0.5; }
+.order-card.done .o-name { text-decoration: line-through; }
+.o-name { font-weight: 500; flex: 1; }
+.o-meta { font-family: ‘DM Mono’, monospace; font-size: 11px; color: var(–muted); }
+
+/* WEEK SELECTOR */
+.week-nav { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.week-nav span { font-family: ‘DM Mono’, monospace; font-size: 12px; color: var(–text2); }
+
+/* ING LIST in recipe */
+.ing-list { list-style: none; margin-top: 10px; }
+.ing-list li { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(–border); font-size: 13px; }
+.ing-list li:last-child { border-bottom: none; }
+.ing-del { background: none; border: none; color: var(–red2); cursor: pointer; font-size: 16px; padding: 0 4px; }
+
+.empty-state { text-align: center; padding: 60px 20px; color: var(–muted); font-family: ‘DM Mono’, monospace; font-size: 12px; }
+.empty-big { font-family: ‘Barlow Condensed’, sans-serif; font-size: 52px; font-weight: 700; color: var(–border2); letter-spacing: 3px; display: block; margin-bottom: 8px; }
+
+/* divider labels */
+.group-label {
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(–muted);
+padding: 10px 14px 6px;
+border-bottom: 1px solid var(–border);
+background: var(–bg2);
+}
+
+.progress-ring { display: inline-flex; align-items: center; gap: 8px; }
+
+/* REPORT CARDS */
+.rpt-card { background:var(–surface); border:2px solid var(–border); padding:22px 20px; transition:border-color .2s,box-shadow .2s; }
+.rpt-card:hover { border-color:var(–gold); box-shadow:0 2px 12px rgba(181,43,32,.1); }
+.rpt-card.selected { border-color:var(–gold); background:rgba(181,43,32,.04); }
+.rpt-icon { font-size:28px; margin-bottom:10px; }
+.rpt-card-title { font-family:‘Barlow Condensed’,sans-serif; font-size:18px; font-weight:700; letter-spacing:1px; color:var(–text); margin-bottom:6px; }
+.rpt-card-sub { font-size:12px; color:var(–text2); line-height:1.5; }
+
+/* PRINT REPORT STYLES */
+.rpt-doc { background:#fff; border:1px solid var(–border); padding:32px; font-family:‘DM Sans’,sans-serif; }
 .rpt-doc-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; padding-bottom:16px; border-bottom:3px solid #1a1612; }
-.rpt-doc-title { font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:#1a1612; }
-.rpt-section-hd { font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:700; letter-spacing:1px; text-transform:uppercase; background:#1a3560; color:#fff; padding:6px 12px; margin:20px 0 0; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.rpt-doc-title { font-family:‘Barlow Condensed’,sans-serif; font-size:28px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:#1a1612; }
+.rpt-doc-subtitle { font-family:‘DM Mono’,monospace; font-size:11px; color:#666; margin-top:4px; }
+.rpt-doc-meta { text-align:right; font-family:‘DM Mono’,monospace; font-size:11px; color:#444; line-height:1.8; }
+.rpt-section-hd { font-family:‘Barlow Condensed’,sans-serif; font-size:15px; font-weight:700; letter-spacing:1px; text-transform:uppercase; background:#1a3560; color:#fff; padding:6px 12px; margin:20px 0 0; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .rpt-table { width:100%; border-collapse:collapse; margin-bottom:4px; }
-.rpt-table th { font-family:'DM Mono',monospace; font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; background:#f0ebe0; color:#444; padding:7px 10px; text-align:left; border-bottom:2px solid #bfb49e; }
+.rpt-table th { font-family:‘DM Mono’,monospace; font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; background:#f0ebe0; color:#444; padding:7px 10px; text-align:left; border-bottom:2px solid #bfb49e; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .rpt-table td { padding:7px 10px; border-bottom:1px solid #e0d8cc; font-size:12px; vertical-align:middle; }
-.rpt-table .num { text-align:right; font-family:'DM Mono',monospace; font-size:11px; }
+.rpt-table tr:nth-child(even) td { background:#faf7f2; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+.rpt-table .num { text-align:right; font-family:‘DM Mono’,monospace; font-size:11px; }
 .rpt-table .blank { border-bottom:1px solid #888; min-width:60px; }
-.rpt-totals td { font-weight:600; background:#e8e0d2; }
+.rpt-totals td { font-weight:600; font-family:‘DM Mono’,monospace; font-size:12px; background:#e8e0d2 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .rpt-summary-box { background:#1a3560; color:#fff; padding:16px 20px; margin:20px 0; display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:16px; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-.rpt-summary-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; opacity:.7; margin-bottom:4px; }
-.rpt-summary-value { font-family:'Barlow Condensed',sans-serif; font-size:26px; font-weight:700; }
+.rpt-summary-label { font-family:‘DM Mono’,monospace; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; opacity:.7; margin-bottom:4px; }
+.rpt-summary-value { font-family:‘Barlow Condensed’,sans-serif; font-size:26px; font-weight:700; }
+.rpt-summary-value.red { color:#ff8080; }
+.rpt-summary-value.grn { color:#80d4a0; }
+.rpt-cat-row td { background:#e8e0d2 !important; font-family:‘DM Mono’,monospace; font-size:10px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:#4a3f32; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .rpt-fc-row { display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid #e0d8cc; font-size:13px; }
 .rpt-fc-row.total-row { border-top:2px solid #1a1612; border-bottom:none; font-weight:700; font-size:15px; padding-top:12px; margin-top:4px; }
+.rpt-fc-row .lbl { color:#4a3f32; }
+.rpt-fc-row .val { font-family:‘DM Mono’,monospace; }
 .rpt-sig { margin-top:36px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px; }
-.rpt-sig-line { border-top:1px solid #888; padding-top:6px; font-family:'DM Mono',monospace; font-size:10px; color:#666; }
+.rpt-sig-line { border-top:1px solid #888; padding-top:6px; font-family:‘DM Mono’,monospace; font-size:10px; color:#666; }
+
 @media print {
-  header,nav,.rpt-card,#rpt-actions,.sec-header,.stat-grid,.subtabs,button,.btn,.filter-row,.week-nav { display:none !important; }
-  main { padding:0 !important; }
-  .section { display:none !important; }
-  #tab-reports { display:block !important; }
-  #rpt-preview { display:block !important; }
-  .rpt-doc { border:none; padding:0; }
-  body { background:#fff; }
+header,nav,.rpt-card,#rpt-actions,.sec-header,.stat-grid,.subtabs,button,.btn,.filter-row,.week-nav,#rpt-week-label { display:none !important; }
+main { padding:0 !important; max-width:100% !important; }
+.section { display:none !important; }
+#tab-reports { display:block !important; }
+#rpt-preview { display:block !important; }
+.rpt-doc { border:none; padding:0; }
+body { background:#fff; }
+thead { display:table-header-group; }
+tr { page-break-inside:avoid; }
 }
-.sync-pull-btn, .sync-pill {
+
+/* CLOUD SYNC */
+.sync-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 5px 12px; background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15); color: #c8d8f0;
+  cursor: pointer; transition: all 0.15s;
+}
+.sync-pill:hover { background: rgba(255,255,255,0.15); }
+#sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #6b7280; display: inline-block; flex-shrink: 0; }
+.sync-pull-btn {
   font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
   letter-spacing: 1px; text-transform: uppercase;
   padding: 5px 10px; background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12); color: #c8d8f0;
-  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.12); color: #a0b8d8;
+  cursor: pointer; transition: all 0.15s;
 }
-.sync-pull-btn:hover, .sync-pill:hover { background: rgba(255,255,255,0.14); color: #fff; }
-#sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #6b7280; display: inline-block; margin-right: 4px; }
+.sync-pull-btn:hover { background: rgba(255,255,255,0.14); color: #fff; }
 </style>
+
 </head>
 <body>
+
 <header>
   <h1>⬡ Deli Pro</h1>
   <span class="header-badge">Manager Dashboard</span>
   <div class="header-right">
     <span class="week-display" id="header-week"></span>
-    <button class="sync-pull-btn" onclick="sbPull(false)">↓ Pull</button>
-    <button class="sync-pill" onclick="openSyncModal()"><span id="sync-dot"></span><span id="sync-txt">Cloud</span></button>
+    <button class="sync-pull-btn" onclick="sbPull()" title="Pull latest data from cloud">↓ Pull</button>
+    <button class="sync-pill" onclick="openSyncModal()" title="Cloud Sync Settings">
+      <span id="sync-dot"></span>
+      <span id="sync-txt">Cloud</span>
+    </button>
   </div>
 </header>
+
 <nav>
-  <button class="active" onclick="showTab('analytics')">📊 Analytics</button>
-  <button onclick="showTab('inventory')">📦 Inventory</button>
-  <button onclick="showTab('invoices')">🧾 Invoices</button>
-  <button onclick="showTab('orders')">📋 Order List</button>
-  <button onclick="showTab('recipes')">🍽 Recipes</button>
-  <button onclick="showTab('suppliers')">🚚 Suppliers</button>
-  <button onclick="showTab('reports')">🖨 Reports</button>
+  <button class="active" onclick="showTab('analytics')"><span class="nav-icon">📊</span> Analytics</button>
+  <button onclick="showTab('inventory')"><span class="nav-icon">📦</span> Inventory</button>
+  <button onclick="showTab('invoices')"><span class="nav-icon">🧾</span> Invoices</button>
+  <button onclick="showTab('orders')"><span class="nav-icon">📋</span> Order List</button>
+  <button onclick="showTab('recipes')"><span class="nav-icon">🍽</span> Recipes</button>
+  <button onclick="showTab('suppliers')"><span class="nav-icon">🚚</span> Suppliers</button>
+  <button onclick="showTab('reports')"><span class="nav-icon">🖨</span> Reports</button>
 </nav>
+
 <main>
+
+<!-- ========== ANALYTICS ========== -->
+
 <div class="section active" id="tab-analytics">
   <div class="week-nav">
     <span class="sec-title">Analytics</span>
@@ -421,124 +568,1763 @@ input:focus, select:focus { border-color: var(--gold); }
     <button class="btn btn-outline btn-sm" onclick="setCurrentWeek()">This Week</button>
     <button class="btn btn-gold btn-sm" onclick="openWeekSetup()">⚙ Set Week Start Counts</button>
   </div>
+
+  <!-- KPI cards -->
+
   <div class="analytics-grid" id="an-kpis"></div>
+
+  <!-- Food cost breakdown -->
+
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
-    <div class="an-card"><div class="an-title">Food Cost Formula</div><div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);line-height:2;">Beginning Inventory + Purchases = Goods Available − Ending Inventory = COGS</div></div>
+    <div class="an-card">
+      <div class="an-title">Food Cost Formula</div>
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);line-height:2;">
+        <div>Beginning Inventory + Purchases</div>
+        <div style="border-top:1px solid var(--border);margin:6px 0;padding-top:6px;">= Cost of Goods Available</div>
+        <div>− Ending Inventory</div>
+        <div style="border-top:1px solid var(--border);margin:6px 0;padding-top:6px;">= <span style="color:var(--gold)">Cost of Goods Used</span></div>
+        <div style="margin-top:8px;">Food Cost % = COGS ÷ Sales × 100</div>
+      </div>
+    </div>
     <div class="an-card" id="an-food-cost-detail"></div>
   </div>
-  <div class="an-card" style="margin-bottom:20px;"><div class="an-title">Weekly Food Cost by Section</div><div id="an-section-breakdown"></div></div>
-  <div class="sec-header"><span class="sec-title">What to Order</span><button class="btn btn-green btn-sm" onclick="sendToOrderList()">→ Push All to Order List</button></div>
-  <div class="table-wrap"><table><thead><tr><th>Item</th><th>Section</th><th>Par</th><th>On Hand</th><th>Need to Order</th><th>Supplier</th></tr></thead><tbody id="an-order-tbody"></tbody></table></div>
+
+  <!-- Per-section breakdown -->
+
+  <div class="an-card" style="margin-bottom:20px;">
+    <div class="an-title">Weekly Food Cost by Section</div>
+    <div id="an-section-breakdown" style="margin-top:12px;"></div>
+  </div>
+
+  <!-- Order needs table -->
+
+  <div class="sec-header">
+    <span class="sec-title">What to Order</span>
+    <button class="btn btn-green btn-sm" onclick="sendToOrderList()">→ Push All to Order List</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Item</th><th>Section</th><th>Par</th><th>On Hand</th><th>Need to Order</th><th>Supplier</th></tr></thead>
+      <tbody id="an-order-tbody"></tbody>
+    </table>
+  </div>
 </div>
+
+<!-- ========== INVENTORY ========== -->
+
 <div class="section" id="tab-inventory">
   <div class="stat-grid" id="inv-stat-cards"></div>
-  <div class="subtabs"><button class="subtab active" onclick="switchSubpanel('deli',this)">🥪 Deli</button><button class="subtab" onclick="switchSubpanel('fountain',this)">🥤 Fountain</button><button class="subtab" onclick="switchSubpanel('branded',this)">🍕 Branded Deli</button></div>
-  <div class="subpanel active" id="sp-deli"><div class="sec-header"><div class="filter-row"><input class="fsearch" id="fs-deli" placeholder="Search deli..." oninput="renderTable('deli')"><select class="fsel" id="fcat-deli" onchange="renderTable('deli')"><option value="">All Categories</option><option>Deli Meat</option><option>Cheese</option><option>Bread</option><option>Produce</option><option>Condiments</option><option>Packaging</option><option>Dairy</option><option>Other</option></select><select class="fsel" id="fsup-deli" onchange="renderTable('deli')"><option value="">All Suppliers</option></select></div><button class="btn btn-gold btn-sm" onclick="openItemModal('deli',null)">+ Add Item</button></div><div class="table-wrap"><table><thead><tr><th>Item</th><th>Category</th><th>On Hand</th><th>Unit</th><th>Cost/Unit</th><th>Par</th><th>Supplier</th><th>Need</th><th>Status</th><th></th></tr></thead><tbody id="tb-deli"></tbody></table></div></div>
-  <div class="subpanel" id="sp-fountain"><div class="sec-header"><div class="filter-row"><input class="fsearch" id="fs-fountain" placeholder="Search fountain..." oninput="renderTable('fountain')"><select class="fsel" id="fcat-fountain" onchange="renderTable('fountain')"><option value="">All Categories</option><option>BIB / CO2</option><option>Cups & Lids</option><option>Coffee</option><option>Creamer & Sweetener</option><option>Other</option></select></div><button class="btn btn-gold btn-sm" onclick="openItemModal('fountain',null)">+ Add Item</button></div><div class="table-wrap"><table><thead><tr><th>Item</th><th>Category</th><th>On Hand</th><th>Unit</th><th>Cost/Unit</th><th>Par</th><th>Value</th><th>Need</th><th>Status</th><th></th></tr></thead><tbody id="tb-fountain"></tbody></table></div></div>
-  <div class="subpanel" id="sp-branded"><div class="sec-header"><div class="filter-row"><input class="fsearch" id="fs-branded" placeholder="Search branded..." oninput="renderTable('branded')"><select class="fsel" id="fcat-branded" onchange="renderTable('branded')"><option value="">All Categories</option><option>Pizza</option><option>Wings</option><option>Toppings</option><option>Packaging</option></select></div><button class="btn btn-gold btn-sm" onclick="openItemModal('branded',null)">+ Add Item</button></div><div class="table-wrap"><table><thead><tr><th>Item</th><th>Category</th><th>On Hand</th><th>Unit</th><th>Cost/Unit</th><th>Par</th><th>Value</th><th>Need</th><th>Status</th><th></th></tr></thead><tbody id="tb-branded"></tbody></table></div></div>
+  <div class="subtabs">
+    <button class="subtab active" onclick="switchSubpanel('deli',this)">🥪 Deli</button>
+    <button class="subtab" onclick="switchSubpanel('fountain',this)">🥤 Fountain</button>
+    <button class="subtab" onclick="switchSubpanel('branded',this)">🍕 Branded Deli</button>
+  </div>
+
+  <div class="subpanel active" id="sp-deli">
+    <div class="sec-header">
+      <div class="filter-row">
+        <input class="fsearch" type="text" id="fs-deli" placeholder="Search deli..." oninput="renderTable('deli')">
+        <select class="fsel" id="fcat-deli" onchange="renderTable('deli')">
+          <option value="">All Categories</option>
+          <option>Deli Meat</option><option>Cheese</option><option>Bread</option><option>Produce</option>
+          <option>Condiments</option><option>Packaging</option><option>Dairy</option><option>Beverages</option><option>Other</option>
+        </select>
+        <select class="fsel" id="fsup-deli" onchange="renderTable('deli')"><option value="">All Suppliers</option></select>
+      </div>
+      <button class="btn btn-gold btn-sm" onclick="openItemModal('deli',null)">+ Add Item</button>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>Item</th><th>Category</th><th>On Hand</th><th>Unit</th><th>Cost/Unit</th><th>Par</th><th>Supplier</th><th>Need</th><th>Status</th><th></th></tr></thead><tbody id="tb-deli"></tbody></table></div>
+  </div>
+
+  <div class="subpanel" id="sp-fountain">
+    <div class="sec-header">
+      <div class="filter-row">
+        <input class="fsearch" type="text" id="fs-fountain" placeholder="Search fountain..." oninput="renderTable('fountain')">
+        <select class="fsel" id="fcat-fountain" onchange="renderTable('fountain')">
+          <option value="">All Categories</option>
+          <option>BIB / CO2</option><option>Cups & Lids</option><option>Coffee</option><option>Cafe Tango</option>
+          <option>Creamer & Sweetener</option><option>Syrups & Sauce</option><option>Coffee Beans</option><option>Other</option>
+        </select>
+      </div>
+      <button class="btn btn-gold btn-sm" onclick="openItemModal('fountain',null)">+ Add Item</button>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>Item</th><th>Category</th><th>On Hand</th><th>Unit</th><th>Cost/Unit</th><th>Par</th><th>Value</th><th>Need</th><th>Status</th><th></th></tr></thead><tbody id="tb-fountain"></tbody></table></div>
+  </div>
+
+  <div class="subpanel" id="sp-branded">
+    <div class="sec-header">
+      <div class="filter-row">
+        <input class="fsearch" type="text" id="fs-branded" placeholder="Search branded deli..." oninput="renderTable('branded')">
+        <select class="fsel" id="fcat-branded" onchange="renderTable('branded')">
+          <option value="">All Categories</option>
+          <option>Pizza</option><option>Wings</option><option>Toppings</option><option>Packaging</option><option>Spices</option><option>Other</option>
+        </select>
+      </div>
+      <button class="btn btn-gold btn-sm" onclick="openItemModal('branded',null)">+ Add Item</button>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>Item</th><th>Category</th><th>On Hand</th><th>Unit</th><th>Cost/Unit</th><th>Par</th><th>Value</th><th>Need</th><th>Status</th><th></th></tr></thead><tbody id="tb-branded"></tbody></table></div>
+  </div>
 </div>
+
+<!-- ========== INVOICES ========== -->
+
 <div class="section" id="tab-invoices">
-  <div class="week-nav"><span class="sec-title">Invoices</span><span id="inv-week-label" style="font-family:'DM Mono',monospace;font-size:12px;"></span></div>
-  <div id="inv-totals-cards" class="analytics-grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr));"></div>
-  <div class="sec-header"><span style="font-size:12px;">Enter invoices received this week</span><button class="btn btn-gold" onclick="openInvoiceModal()">+ Add Invoice</button></div>
+  <div class="week-nav">
+    <span class="sec-title">Invoices</span>
+    <span id="inv-week-label" style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2);"></span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;" id="inv-totals-cards"></div>
+  <div class="sec-header" style="margin-top:8px;">
+    <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);">Enter invoices received this week</span>
+    <button class="btn btn-gold" onclick="openInvoiceModal()">+ Add Invoice</button>
+  </div>
   <div id="invoice-list"></div>
 </div>
-<div class="section" id="tab-orders"><div class="sec-header"><span class="sec-title">Order List</span><div><button class="btn btn-ghost btn-sm" onclick="autoOrders()">⚡ Auto from Low Stock</button><button class="btn btn-gold" onclick="openOrderModal()">+ Add Item</button><button class="btn btn-danger btn-sm" onclick="clearDone()">Clear Checked</button></div></div><div id="order-list"></div></div>
-<div class="section" id="tab-recipes"><div class="sec-header"><span class="sec-title">Recipes & Food Cost</span><button class="btn btn-gold" onclick="openRecipeModal(null)">+ Add Recipe</button></div><div id="recipe-list"></div></div>
-<div class="section" id="tab-suppliers"><div class="sec-header"><span class="sec-title">Suppliers</span><button class="btn btn-gold" onclick="openSupplierModal(null)">+ Add Supplier</button></div><div class="table-wrap"><table><thead><tr><th>Supplier</th><th>Contact</th><th>Phone</th><th>Email</th><th>Lead Time</th><th>Notes</th><th></th></tr></thead><tbody id="tb-suppliers"></tbody></table></div></div>
-<div class="section" id="tab-reports">
-  <div class="sec-header"><span class="sec-title">Reports & Export</span><span id="rpt-week-label" style="font-family:'DM Mono',monospace;font-size:11px;"></span></div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:28px;">
-    <div class="rpt-card" id="rcard-count" onclick="selectReport('count')"><div class="rpt-card-title">📋 Weekly Count Sheet</div><div style="font-size:12px;color:#666;">Blank count sheet with par levels.</div></div>
-    <div class="rpt-card" id="rcard-inv" onclick="selectReport('inv')"><div class="rpt-card-title">📦 Inventory Valuation</div><div style="font-size:12px;color:#666;">Current on-hand values by section.</div></div>
-    <div class="rpt-card" id="rcard-foodcost" onclick="selectReport('foodcost')"><div class="rpt-card-title">💰 Food Cost Report</div><div style="font-size:12px;color:#666;">COGS + food cost % calculation.</div></div>
-    <div class="rpt-card" id="rcard-order" onclick="selectReport('order')"><div class="rpt-card-title">🚚 Order List Report</div><div style="font-size:12px;color:#666;">Items below par grouped by supplier.</div></div>
+
+<!-- ========== ORDERS ========== -->
+
+<div class="section" id="tab-orders">
+  <div class="sec-header">
+    <span class="sec-title">Order List</span>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-ghost btn-sm" onclick="autoOrders()">⚡ Auto from Low Stock</button>
+      <button class="btn btn-gold" onclick="openOrderModal()">+ Add Item</button>
+      <button class="btn btn-danger btn-sm" onclick="clearDone()">Clear Checked</button>
+    </div>
   </div>
+  <div id="order-list"></div>
+</div>
+
+<!-- ========== RECIPES ========== -->
+
+<div class="section" id="tab-recipes">
+  <div class="sec-header">
+    <span class="sec-title">Recipes & Food Cost</span>
+    <button class="btn btn-gold" onclick="openRecipeModal(null)">+ Add Recipe</button>
+  </div>
+  <div id="recipe-list"></div>
+</div>
+
+<!-- ========== SUPPLIERS ========== -->
+
+<div class="section" id="tab-suppliers">
+  <div class="sec-header">
+    <span class="sec-title">Suppliers</span>
+    <button class="btn btn-gold" onclick="openSupplierModal(null)">+ Add Supplier</button>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Supplier</th><th>Contact</th><th>Phone</th><th>Email</th><th>Lead Time</th><th>Notes</th><th></th></tr></thead>
+    <tbody id="tb-suppliers"></tbody>
+  </table></div>
+</div>
+
+<!-- ========== REPORTS ========== -->
+
+<div class="section" id="tab-reports">
+  <div class="sec-header">
+    <span class="sec-title">Reports & Export</span>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);align-self:center;" id="rpt-week-label"></span>
+    </div>
+  </div>
+
+  <!-- Report selector cards -->
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:28px;">
+    <div class="rpt-card" id="rcard-count" onclick="selectReport('count')" style="cursor:pointer;">
+      <div class="rpt-icon">📋</div>
+      <div class="rpt-card-title">Weekly Count Sheet</div>
+      <div class="rpt-card-sub">Blank count sheet with par levels for each inventory section. Print and fill in.</div>
+    </div>
+    <div class="rpt-card" id="rcard-inv" onclick="selectReport('inv')" style="cursor:pointer;">
+      <div class="rpt-icon">📦</div>
+      <div class="rpt-card-title">Inventory Valuation</div>
+      <div class="rpt-card-sub">Current on-hand quantities × cost = total value by section and category.</div>
+    </div>
+    <div class="rpt-card" id="rcard-foodcost" onclick="selectReport('foodcost')" style="cursor:pointer;">
+      <div class="rpt-icon">💰</div>
+      <div class="rpt-card-title">Food Cost Report</div>
+      <div class="rpt-card-sub">Weekly food cost calculation: beginning + purchases − ending = COGS + food cost %.</div>
+    </div>
+    <div class="rpt-card" id="rcard-order" onclick="selectReport('order')" style="cursor:pointer;">
+      <div class="rpt-icon">🚚</div>
+      <div class="rpt-card-title">Order List Report</div>
+      <div class="rpt-card-sub">All items at or below par with quantities needed, grouped by supplier.</div>
+    </div>
+  </div>
+
+  <!-- Action bar -->
+
   <div id="rpt-actions" style="display:none;flex-wrap:wrap;gap:10px;margin-bottom:20px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);align-items:center;">
-    <span id="rpt-selected-label" style="flex:1;font-weight:700;color:var(--gold);"></span>
+    <span id="rpt-selected-label" style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;color:var(--gold);flex:1;"></span>
     <button class="btn btn-gold" onclick="printReport()">🖨 Print / Save PDF</button>
     <button class="btn btn-green" onclick="exportExcel()">📥 Export Excel</button>
   </div>
+
+  <!-- Report preview -->
+
   <div id="rpt-preview"></div>
 </div>
+
 </main>
-<div class="modal-overlay" id="modal-item"><div class="modal"><div class="modal-title" id="item-modal-title">Add Item</div><input type="hidden" id="item-id"><input type="hidden" id="item-section"><div class="form-row"><div class="form-group"><label>Item Name</label><input id="item-name"></div><div class="form-group"><label>Category</label><select id="item-cat"></select></div></div><div class="form-row"><div class="form-group"><label>Qty On Hand</label><input id="item-qty" type="number" min="0" step="0.01"></div><div class="form-group"><label>Unit</label><select id="item-unit"><option>each</option><option>lbs</option><option>oz</option><option>cases</option><option>packs</option></select></div></div><div class="form-row"><div class="form-group"><label>Cost / Unit ($)</label><input id="item-cost" type="number" step="0.01"></div><div class="form-group"><label>Par Level</label><input id="item-par" type="number" step="0.01"></div></div><div class="form-group" id="item-sup-row"><label>Supplier</label><select id="item-supplier"><option value="">— None —</option></select></div><div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-item')">Cancel</button><button class="btn btn-gold" onclick="saveItem()">Save</button></div></div></div>
-<div class="modal-overlay" id="modal-invoice"><div class="modal"><div class="modal-title">Add Invoice</div><div class="form-row"><div class="form-group"><label>Supplier</label><select id="inv-sup-sel"></select></div><div class="form-group"><label>Date</label><input type="date" id="inv-date"></div></div><div class="form-group"><label>Invoice Total ($)</label><input type="number" id="inv-total" step="0.01"></div><div class="form-group"><label>Invoice #</label><input id="inv-num"></div><div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-invoice')">Cancel</button><button class="btn btn-gold" onclick="saveInvoice()">Save</button></div></div></div>
-<div class="modal-overlay" id="modal-week"><div class="modal"><div class="modal-title">Set Week Start Counts</div><div class="form-row"><div class="form-group"><label>Week Start Date</label><input type="date" id="ws-date"></div><div class="form-group"><label>Weekly Sales ($)</label><input type="number" id="ws-sales" step="0.01"></div></div><div class="form-row"><div class="form-group"><label>Beginning Inventory $ (Deli)</label><input type="number" id="ws-deli" step="0.01"></div><div class="form-group"><label>Beginning Inventory $ (Fountain)</label><input type="number" id="ws-fountain" step="0.01"></div></div><div class="form-group"><label>Beginning Inventory $ (Branded)</label><input type="number" id="ws-branded" step="0.01"></div><div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-week')">Cancel</button><button class="btn btn-gold" onclick="saveWeekSetup()">Save</button></div></div></div>
-<div class="modal-overlay" id="modal-supplier"><div class="modal"><div class="modal-title">Add Supplier</div><input type="hidden" id="sup-id"><div class="form-row"><div class="form-group"><label>Name</label><input id="sup-name"></div><div class="form-group"><label>Contact</label><input id="sup-contact"></div></div><div class="form-row"><div class="form-group"><label>Phone</label><input id="sup-phone"></div><div class="form-group"><label>Email</label><input id="sup-email"></div></div><div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-supplier')">Cancel</button><button class="btn btn-gold" onclick="saveSupplier()">Save</button></div></div></div>
-<div class="modal-overlay" id="modal-order"><div class="modal"><div class="modal-title">Add to Order List</div><div class="form-row"><div class="form-group"><label>Item</label><input id="ord-name"></div><div class="form-group"><label>Qty to Order</label><input id="ord-qty" type="number" step="0.01"></div></div><div class="form-row"><div class="form-group"><label>Unit</label><input id="ord-unit"></div><div class="form-group"><label>Supplier</label><select id="ord-sup"></select></div></div><div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-order')">Cancel</button><button class="btn btn-gold" onclick="saveOrder()">Add</button></div></div></div>
-<div class="modal-overlay" id="modal-recipe"><div class="modal"><div class="modal-title">Add Recipe</div><input type="hidden" id="rec-id"><div class="form-row"><div class="form-group"><label>Recipe Name</label><input id="rec-name"></div><div class="form-group"><label>Selling Price</label><input id="rec-price" type="number" step="0.01"></div></div><div class="form-group"><label>Servings</label><input id="rec-servings" type="number" value="1"></div><div class="form-group"><label>Ingredient</label><div style="display:flex;gap:8px;"><select id="rec-ing-item" style="flex:1"></select><input id="rec-ing-qty" type="number" step="0.01" placeholder="Qty" style="width:80px;"><button class="btn btn-ghost btn-sm" onclick="addIng()">+ Add</button></div></div><ul id="rec-ing-list" class="ing-list"></ul><div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modal-recipe')">Cancel</button><button class="btn btn-gold" onclick="saveRecipe()">Save</button></div></div></div>
-<div class="modal-overlay" id="modal-sync"><div class="modal"><div class="modal-title">☁ Cloud Sync</div><p id="sync-status-msg" style="font-size:12px;margin-bottom:14px;">● Not connected</p><div class="form-group"><label>Project URL</label><input id="sb-url" placeholder="https://xxxxx.supabase.co"></div><div class="form-group"><label>Anon Key</label><input id="sb-key" placeholder="eyJ..."></div><div class="form-group"><label>Store Code</label><input id="sb-code" placeholder="keiths-deli"></div><div class="modal-actions"><button class="btn btn-ghost" onclick="clearSyncSetup()">Disconnect</button><button class="btn btn-gold" onclick="saveSyncSetup()">Connect</button></div></div></div>
+
+<!-- ========== MODALS ========== -->
+
+<!-- Item Modal -->
+
+<div class="modal-overlay" id="modal-item">
+  <div class="modal">
+    <div class="modal-title" id="item-modal-title">Add Item</div>
+    <input type="hidden" id="item-id"><input type="hidden" id="item-section">
+    <div class="form-row">
+      <div class="form-group"><label>Item Name</label><input type="text" id="item-name"></div>
+      <div class="form-group"><label>Category</label><select id="item-cat"></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Qty On Hand</label><input type="number" id="item-qty" placeholder="0" min="0" step="0.01"></div>
+      <div class="form-group"><label>Unit</label>
+        <select id="item-unit"><option>each</option><option>lbs</option><option>oz</option><option>kg</option><option>bags</option><option>cases</option><option>packs</option><option>sl</option><option>bx</option><option>case</option><option>bttl</option><option>bag</option><option>can</option><option>jar</option><option>gallon</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Cost / Unit ($)</label><input type="number" id="item-cost" placeholder="0.00" min="0" step="0.01"></div>
+      <div class="form-group"><label>Par Level</label><input type="number" id="item-par" placeholder="0" min="0" step="0.01"></div>
+    </div>
+    <div class="form-group" id="item-sup-row"><label>Supplier</label><select id="item-supplier"><option value="">— None —</option></select></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-item')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveItem()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Invoice Modal -->
+
+<div class="modal-overlay" id="modal-invoice">
+  <div class="modal">
+    <div class="modal-title">Add Invoice</div>
+    <div class="form-row">
+      <div class="form-group"><label>Supplier</label><select id="inv-sup-sel"><option value="">— Select —</option></select></div>
+      <div class="form-group"><label>Date</label><input type="date" id="inv-date"></div>
+    </div>
+    <div class="form-group"><label>Invoice Total ($)</label><input type="number" id="inv-total" placeholder="0.00" min="0" step="0.01"></div>
+    <div class="form-group"><label>Invoice # (optional)</label><input type="text" id="inv-num" placeholder="INV-0000"></div>
+    <div class="form-group"><label>Notes</label><input type="text" id="inv-notes" placeholder="e.g. Deli meat order"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-invoice')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveInvoice()">Save Invoice</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cloud Sync Modal -->
+
+<div class="modal-overlay" id="modal-sync">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-title">☁ Cloud Sync — Supabase</div>
+    <p id="sync-status-msg" style="font-size:12px;font-family:'DM Mono',monospace;margin-bottom:14px;color:var(--muted);">● Not connected</p>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.6;">
+      Connect to <strong>Supabase</strong> (free) to sync all data across devices. One-time setup:
+      create a project at <em>supabase.com</em>, run the SQL below once, then paste your URL and key.
+    </p>
+    <div style="background:#141210;border:1px solid var(--border2);padding:10px 14px;margin-bottom:16px;border-radius:2px;">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:#7bb8e8;margin-bottom:6px;letter-spacing:1px;">SQL EDITOR → RUN ONCE</div>
+      <pre style="font-family:'DM Mono',monospace;font-size:10px;color:#a8e4a0;margin:0;line-height:1.7;white-space:pre-wrap;">CREATE TABLE IF NOT EXISTS deli_stores (
+  store_code TEXT PRIMARY KEY,
+  data       JSONB NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE deli_stores ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "public_access" ON deli_stores
+  FOR ALL USING (true) WITH CHECK (true);</pre>
+    </div>
+    <div class="form-group" style="margin-bottom:12px;">
+      <label>Project URL <span style="font-weight:400;color:var(--muted)">(Settings → API)</span></label>
+      <input type="url" id="sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co" style="font-family:'DM Mono',monospace;font-size:11px;">
+    </div>
+    <div class="form-group" style="margin-bottom:12px;">
+      <label>Anon / Public Key <span style="font-weight:400;color:var(--muted)">(Settings → API → Project API keys)</span></label>
+      <input type="text" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="font-family:'DM Mono',monospace;font-size:11px;">
+    </div>
+    <div class="form-group" style="margin-bottom:6px;">
+      <label>Store Code <span style="font-weight:400;color:var(--muted)">(same short name on every device you want synced)</span></label>
+      <input type="text" id="sb-code" placeholder="e.g. keiths-deli or store-107" style="text-transform:lowercase;">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="clearSyncSetup()" style="color:var(--red);margin-right:auto;">Disconnect</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-sync')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveSyncSetup()">Connect & Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Week Setup Modal -->
+
+<div class="modal-overlay" id="modal-week">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-title">Set Week Start Counts</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:16px;">Enter your inventory value at the START of this week and your sales for the week. This powers the food cost calculation.</p>
+    <div class="form-row">
+      <div class="form-group"><label>Week Start Date</label><input type="date" id="ws-date"></div>
+      <div class="form-group"><label>Weekly Sales ($)</label><input type="number" id="ws-sales" placeholder="0.00" min="0" step="0.01"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Beginning Inventory $ (Deli)</label><input type="number" id="ws-deli" placeholder="0.00" min="0" step="0.01"></div>
+      <div class="form-group"><label>Beginning Inventory $ (Fountain)</label><input type="number" id="ws-fountain" placeholder="0.00" min="0" step="0.01"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Beginning Inventory $ (Branded Deli)</label><input type="number" id="ws-branded" placeholder="0.00" min="0" step="0.01"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-week')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveWeekSetup()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Supplier Modal -->
+
+<div class="modal-overlay" id="modal-supplier">
+  <div class="modal">
+    <div class="modal-title" id="sup-modal-title">Add Supplier</div>
+    <input type="hidden" id="sup-id">
+    <div class="form-row">
+      <div class="form-group"><label>Supplier Name</label><input type="text" id="sup-name"></div>
+      <div class="form-group"><label>Contact Person</label><input type="text" id="sup-contact"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Phone</label><input type="text" id="sup-phone"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="sup-email"></div>
+    </div>
+    <div class="form-group"><label>Lead Time</label><input type="text" id="sup-lead" placeholder="e.g. 2 days"></div>
+    <div class="form-group"><label>Notes</label><textarea id="sup-notes" rows="2"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-supplier')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveSupplier()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Order Modal -->
+
+<div class="modal-overlay" id="modal-order">
+  <div class="modal">
+    <div class="modal-title">Add to Order List</div>
+    <div class="form-row">
+      <div class="form-group"><label>Item</label><input type="text" id="ord-name"></div>
+      <div class="form-group"><label>Qty to Order</label><input type="number" id="ord-qty" placeholder="0" min="0" step="0.01"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Unit</label><input type="text" id="ord-unit"></div>
+      <div class="form-group"><label>Supplier</label><select id="ord-sup"><option value="">— None —</option></select></div>
+    </div>
+    <div class="form-group"><label>Notes</label><input type="text" id="ord-notes"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-order')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveOrder()">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- Recipe Modal -->
+
+<div class="modal-overlay" id="modal-recipe">
+  <div class="modal">
+    <div class="modal-title" id="rec-modal-title">Add Recipe</div>
+    <input type="hidden" id="rec-id">
+    <div class="form-row">
+      <div class="form-group"><label>Recipe Name</label><input type="text" id="rec-name"></div>
+      <div class="form-group"><label>Selling Price ($)</label><input type="number" id="rec-price" placeholder="0.00" min="0" step="0.01"></div>
+    </div>
+    <div class="form-group"><label>Servings / Yield</label><input type="number" id="rec-servings" value="1" min="1"></div>
+    <div class="form-group">
+      <label>Add Ingredient</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <select id="rec-ing-item" style="flex:1;min-width:140px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);padding:8px;outline:none;"></select>
+        <input type="number" id="rec-ing-qty" placeholder="Qty" min="0" step="0.01" style="width:80px;">
+        <button class="btn btn-ghost btn-sm" onclick="addIng()">+ Add</button>
+      </div>
+    </div>
+    <ul class="ing-list" id="rec-ing-list"></ul>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-recipe')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveRecipe()">Save Recipe</button>
+    </div>
+  </div>
+</div>
+
 <script>
+// =============================================================
+// SEED DATA
+// =============================================================
+const SEED_SUP = [
+  {name:"Merchants",contact:"",phone:"",email:"",lead:"",notes:""},
+  {name:"Imperial",contact:"",phone:"",email:"",lead:"",notes:""}
+];
+
+const SD = { // shorthand seed for deli
+  n:'name',c:'cat',u:'unit',p:'par',s:'sup'
+};
+
+const SEED_DELI=[
+  // ---- FROM 107 COUNT SHEET (March 2026) — $5,970.12 total ----
+  // Suppliers: Merchants / Imperial / Boudin / Bavarian Nuts
+  {name:"Appetizer Egg Roll Pork Crispy Frozen",cat:"Other",unit:"cases",qty:1,cost:37.00,par:1,sup:"Merchants"},
+  {name:"Bacon (Double Smoked)",cat:"Deli Meat",unit:"cases",qty:0.25,cost:63.50,par:1,sup:"Merchants"},
+  {name:"Beef Ground Patty 3-1 75/25",cat:"Deli Meat",unit:"cases",qty:1,cost:77.11,par:1,sup:"Merchants"},
+  {name:"Beef Steak Fritter Breaded",cat:"Deli Meat",unit:"cases",qty:0.5,cost:62.52,par:1,sup:"Merchants"},
+  {name:"Bologna Chicken Pork Beef Slices",cat:"Deli Meat",unit:"packs",qty:2,cost:6.80,par:2,sup:"Merchants"},
+  {name:"Brownie Chocolate Chip 24 Slice",cat:"Bread",unit:"cases",qty:3,cost:48.96,par:1,sup:"Merchants"},
+  {name:"Bun Hot Dog 6\" Hinged",cat:"Bread",unit:"packs",qty:9,cost:3.26,par:5,sup:"Merchants"},
+  {name:"Bun Plain 5\"",cat:"Bread",unit:"packs",qty:7,cost:29.01,par:3,sup:"Merchants"},
+  {name:"Burrito Beef And Bean Red Chile",cat:"Other",unit:"cases",qty:0,cost:50.94,par:1,sup:"Merchants"},
+  {name:"Candy Gummy Bear Mini 12 Flavor",cat:"Other",unit:"bags",qty:7,cost:18.42,par:1,sup:"Merchants"},
+  {name:"Cheese American Yellow .5oz",cat:"Dairy",unit:"packs",qty:2.1,cost:13.62,par:2,sup:"Merchants"},
+  {name:"Chicken Breast 4oz Grilled Fully Cooked",cat:"Deli Meat",unit:"bags",qty:2,cost:33.87,par:1,sup:"Merchants"},
+  {name:"Chicken Breast Patty Fritter 3.2oz",cat:"Deli Meat",unit:"cases",qty:1,cost:23.08,par:1,sup:"Merchants"},
+  {name:"Chicken Tender Jumbo Clipped",cat:"Deli Meat",unit:"cases",qty:3,cost:113.27,par:1,sup:"Merchants"},
+  {name:"Cone Cake #30 Dispenser Pack",cat:"Packaging",unit:"boxes",qty:3,cost:12.07,par:1,sup:"Merchants"},
+  {name:"Container Paper 8oz",cat:"Packaging",unit:"packs",qty:1,cost:4.25,par:1,sup:"Merchants"},
+  {name:"Container Paper 12oz",cat:"Packaging",unit:"cases",qty:1,cost:100.18,par:1,sup:"Merchants"},
+  {name:"Cone Waffle Large Bulk",cat:"Packaging",unit:"packs",qty:1.2,cost:5.48,par:1,sup:"Merchants"},
+  {name:"Container Foam 9X6x3 Large Hinged",cat:"Packaging",unit:"packs",qty:3,cost:11.35,par:2,sup:"Merchants"},
+  {name:"Container Foam 7 1/8X3 3/4",cat:"Packaging",unit:"packs",qty:1,cost:2.42,par:1,sup:"Merchants"},
+  {name:"Container Plastic 6X5.75X3 Clear Hinged",cat:"Packaging",unit:"packs",qty:1,cost:11.51,par:1,sup:"Merchants"},
+  {name:"Corn Dog Chicken Honey Crunch On Stick",cat:"Other",unit:"cases",qty:0.75,cost:43.55,par:1,sup:"Merchants"},
+  {name:"Crispito Chicken Cheese Buffalo Style",cat:"Other",unit:"cases",qty:2,cost:56.10,par:1,sup:"Merchants"},
+  {name:"Crumb Cookie Oreo Medium Crunch",cat:"Other",unit:"bags",qty:14,cost:11.09,par:2,sup:"Merchants"},
+  {name:"Donut Apple Fritter",cat:"Bread",unit:"cases",qty:0.75,cost:50.67,par:1,sup:"Merchants"},
+  {name:"Donut Ring Homestyle Fried",cat:"Bread",unit:"cases",qty:5,cost:38.45,par:1,sup:"Merchants"},
+  {name:"Dough Biscuit Southern Style Buttermilk",cat:"Bread",unit:"cases",qty:0,cost:59.61,par:1,sup:"Merchants"},
+  {name:"Dough Cookie Red Velvet",cat:"Bread",unit:"cases",qty:0.5,cost:84.09,par:1,sup:"Merchants"},
+  {name:"Dough Cookie Mac Nut",cat:"Bread",unit:"cases",qty:1,cost:93.49,par:1,sup:"Merchants"},
+  {name:"Dough Cookie Smores",cat:"Bread",unit:"cases",qty:0.5,cost:93.49,par:1,sup:"Merchants"},
+  {name:"Dough Cookie Chocolate Chip",cat:"Bread",unit:"cases",qty:0,cost:62.85,par:1,sup:"Merchants"},
+  {name:"Dough Cookie Peanut Butter",cat:"Bread",unit:"cases",qty:0.5,cost:72.76,par:1,sup:"Merchants"},
+  {name:"Dough Cookie Sugar Preformed",cat:"Bread",unit:"cases",qty:1,cost:67.24,par:1,sup:"Merchants"},
+  {name:"Dough Roll Cinnamon Cinn-Sational",cat:"Bread",unit:"cases",qty:1.5,cost:72.34,par:1,sup:"Merchants"},
+  {name:"Dressing Honey Mustard Portion Cup",cat:"Condiments",unit:"cases",qty:0.47,cost:28.09,par:1,sup:"Merchants"},
+  {name:"Dressing Ranch Portion Control Cup",cat:"Condiments",unit:"cases",qty:0.75,cost:26.35,par:1,sup:"Merchants"},
+  {name:"Eggroll Pork And Vegetable",cat:"Other",unit:"cases",qty:1,cost:53.08,par:1,sup:"Merchants"},
+  {name:"Foil Aluminum Sheet 9X10 Interfold",cat:"Packaging",unit:"boxes",qty:1,cost:12.56,par:1,sup:"Merchants"},
+  {name:"Foil Aluminum Sheet 12X10.75",cat:"Packaging",unit:"boxes",qty:1,cost:14.50,par:1,sup:"Merchants"},
+  {name:"Fork Plastic Heavy Weight Black",cat:"Packaging",unit:"packs",qty:1,cost:4.41,par:1,sup:"Merchants"},
+  {name:"Gravy Mix Biscuit Pepper",cat:"Condiments",unit:"bags",qty:7,cost:7.26,par:2,sup:"Merchants"},
+  {name:"Ham For Biscuit Slice 1.2oz",cat:"Deli Meat",unit:"packs",qty:1,cost:12.16,par:1,sup:"Merchants"},
+  {name:"Jam Strawberry Packet",cat:"Condiments",unit:"cases",qty:1,cost:25.67,par:1,sup:"Merchants"},
+  {name:"Jelly Grape Pouch",cat:"Condiments",unit:"cases",qty:1,cost:20.45,par:1,sup:"Merchants"},
+  {name:"Ketchup Fancy Foil",cat:"Condiments",unit:"cases",qty:1,cost:26.99,par:1,sup:"Merchants"},
+  {name:"Mayonnaise Pouch",cat:"Condiments",unit:"cases",qty:1,cost:32.11,par:1,sup:"Merchants"},
+  {name:"Mix Soft Serve Chocolate",cat:"Dairy",unit:"bags",qty:9.5,cost:18.97,par:2,sup:"Merchants"},
+  {name:"Mustard Yellow Portion Pack",cat:"Condiments",unit:"cases",qty:1,cost:18.45,par:1,sup:"Merchants"},
+  {name:"Onion Granulated (20oz)",cat:"Produce",unit:"each",qty:1,cost:18.50,par:1,sup:"Merchants"},
+  {name:"Onion Powder",cat:"Produce",unit:"each",qty:1,cost:17.25,par:1,sup:"Merchants"},
+  {name:"Onion Yellow Large Fresh",cat:"Produce",unit:"cases",qty:0.75,cost:11.14,par:1,sup:"Merchants"},
+  {name:"Pepper Black Ground .1gm",cat:"Condiments",unit:"bags",qty:0.75,cost:6.68,par:1,sup:"Merchants"},
+  {name:"Pork Chop 4oz Boneless Center Cut",cat:"Deli Meat",unit:"cases",qty:1.25,cost:34.25,par:1,sup:"Merchants"},
+  {name:"Pulled Pork With BBQ Sauce",cat:"Deli Meat",unit:"bags",qty:5.5,cost:19.27,par:3,sup:"Merchants"},
+  {name:"Puff Pastry Taco",cat:"Other",unit:"cases",qty:0.5,cost:73.18,par:1,sup:"Merchants"},
+  {name:"Puff Pastry Pep and Cheese",cat:"Other",unit:"cases",qty:0.25,cost:70.88,par:1,sup:"Merchants"},
+  {name:"Puff Pastry Ham And Cheese",cat:"Other",unit:"cases",qty:1,cost:80.48,par:1,sup:"Merchants"},
+  {name:"Salt Packet .5 Gram",cat:"Condiments",unit:"bags",qty:0.75,cost:3.73,par:1,sup:"Merchants"},
+  {name:"Sauce Barbecue Original Portion Cup",cat:"Condiments",unit:"cases",qty:1,cost:21.90,par:1,sup:"Merchants"},
+  {name:"Sauce Hot Sauce Pouch",cat:"Condiments",unit:"cases",qty:1,cost:34.88,par:1,sup:"Merchants"},
+  {name:"Sausage Patty Special Recipe Fully Cooked",cat:"Deli Meat",unit:"cases",qty:2,cost:49.54,par:1,sup:"Merchants"},
+  {name:"Seasoning Creole Original",cat:"Condiments",unit:"each",qty:1,cost:20.90,par:1,sup:"Merchants"},
+  {name:"Sprinkle Rainbow",cat:"Other",unit:"cases",qty:1,cost:28.46,par:1,sup:"Merchants"},
+  {name:"Syrup Breakfast Maple Imitation 1.4oz",cat:"Condiments",unit:"cases",qty:0.5,cost:16.18,par:1,sup:"Merchants"},
+  {name:"Syrup Chocolate Full Flavor Can",cat:"Condiments",unit:"each",qty:3,cost:12.62,par:1,sup:"Merchants"},
+  {name:"Topping Butterfinger Chopped",cat:"Other",unit:"bags",qty:1,cost:24.51,par:1,sup:"Merchants"},
+  {name:"Topping Candy Rainbow Nerds",cat:"Other",unit:"bags",qty:2,cost:27.28,par:1,sup:"Merchants"},
+  {name:"Topping Caramel",cat:"Other",unit:"each",qty:7,cost:8.00,par:1,sup:"Merchants"},
+  {name:"Topping Marshmallow Ready To Use",cat:"Other",unit:"each",qty:3,cost:7.66,par:1,sup:"Merchants"},
+  {name:"Topping Reeses Pieces Mini Bulk",cat:"Other",unit:"cases",qty:3,cost:122.75,par:1,sup:"Merchants"},
+  {name:"Waffle Stuffed Sausage Egg Cheese",cat:"Deli Meat",unit:"cases",qty:0.25,cost:82.33,par:1,sup:"Merchants"},
+  {name:"Wrap Deli 9X140 Interfolded",cat:"Packaging",unit:"boxes",qty:11,cost:9.72,par:2,sup:"Merchants"},
+  {name:"Wrap Deli 12X10.75 Interfolded",cat:"Packaging",unit:"boxes",qty:7,cost:11.66,par:2,sup:"Merchants"},
+  // Boudin (Imperial)
+  {name:"Boudin Pork",cat:"Other",unit:"packs",qty:9,cost:7.46,par:3,sup:"Imperial"},
+  {name:"Boudin Shrimp",cat:"Other",unit:"packs",qty:14,cost:8.07,par:3,sup:"Imperial"},
+  {name:"Boudin Crawfish",cat:"Other",unit:"packs",qty:12,cost:9.09,par:3,sup:"Imperial"},
+  {name:"Boudin Alligator",cat:"Other",unit:"packs",qty:15,cost:9.88,par:3,sup:"Imperial"},
+  {name:"Peanuts Regular/Cajun",cat:"Other",unit:"each",qty:7,cost:7.74,par:2,sup:"Imperial"},
+  {name:"16oz Peanut Cup",cat:"Packaging",unit:"packs",qty:23,cost:8.01,par:5,sup:"Imperial"},
+  {name:"32oz Peanut Cup",cat:"Packaging",unit:"packs",qty:19.5,cost:10.22,par:5,sup:"Imperial"},
+  {name:"Peanut Cup Lid",cat:"Packaging",unit:"packs",qty:6.3,cost:5.01,par:2,sup:"Imperial"},
+  // Imperial
+  {name:"Brisket",cat:"Deli Meat",unit:"bags",qty:0,cost:29.44,par:1,sup:"Imperial"},
+  {name:"Cream Cheese Icing",cat:"Bread",unit:"packs",qty:11,cost:5.99,par:2,sup:"Imperial"},
+  {name:"Mini Taco Beef",cat:"Other",unit:"cases",qty:0.5,cost:27.91,par:1,sup:"Imperial"},
+  {name:"Mini Taco Chicken",cat:"Other",unit:"cases",qty:0.5,cost:27.91,par:1,sup:"Imperial"},
+  {name:"Stuffed Nachos",cat:"Other",unit:"cases",qty:0,cost:37.28,par:1,sup:"Imperial"},
+  // Bavarian Nuts
+  {name:"Bavarian Almonds",cat:"Other",unit:"bags",qty:20,cost:11.75,par:5,sup:"Merchants"},
+  {name:"Bavarian Cashews",cat:"Other",unit:"bags",qty:15,cost:12.00,par:5,sup:"Merchants"},
+  {name:"Bavarian Pecans",cat:"Other",unit:"bags",qty:18,cost:13.75,par:5,sup:"Merchants"},
+  {name:"Cone Wrap for Nuts",cat:"Packaging",unit:"cases",qty:6,cost:50.00,par:2,sup:"Merchants"},
+  // Jam/Jelly (Wood F supplier — treated as Merchants)
+  {name:"Jam Strawberry (Wood F)",cat:"Condiments",unit:"each",qty:1,cost:25.49,par:1,sup:"Merchants"},
+  {name:"Jelly Grape (Wood F)",cat:"Condiments",unit:"each",qty:1,cost:17.34,par:1,sup:"Merchants"},
+];
+
+const SEED_FOUNTAIN=[
+  {name:"5 Gall. BIB",cat:"BIB / CO2",unit:"each",qty:6,cost:107.90,par:0},
+  {name:"2.5 Gall. BIB",cat:"BIB / CO2",unit:"each",qty:12,cost:56.23,par:0},
+  {name:"CO2",cat:"BIB / CO2",unit:"each",qty:4,cost:150.00,par:0},
+  {name:"Icee 5 Gall. Coke BIB",cat:"BIB / CO2",unit:"each",qty:2,cost:223.88,par:0},
+  {name:"Icee 5 Gall. Flavor BIB",cat:"BIB / CO2",unit:"each",qty:4,cost:223.88,par:0},
+  {name:"32oz Cups (Fountain)",cat:"Cups & Lids",unit:"sl",qty:6,cost:3.25,par:0},
+  {name:"32oz Lids (Fountain)",cat:"Cups & Lids",unit:"sl",qty:10,cost:5.89,par:0},
+  {name:"24oz Cups",cat:"Cups & Lids",unit:"sl",qty:24,cost:5.60,par:0},
+  {name:"24oz Lids",cat:"Cups & Lids",unit:"sl",qty:10,cost:5.61,par:0},
+  {name:"16oz Cups",cat:"Cups & Lids",unit:"sl",qty:9,cost:4.75,par:0},
+  {name:"16oz Lids",cat:"Cups & Lids",unit:"sl",qty:10,cost:5.61,par:0},
+  {name:"Straws",cat:"Cups & Lids",unit:"sl",qty:4,cost:8.63,par:0},
+  {name:"16oz Coffee Cups",cat:"Coffee",unit:"sl",qty:14,cost:6.60,par:0},
+  {name:"24oz Coffee Cups",cat:"Coffee",unit:"sl",qty:25,cost:5.20,par:0},
+  {name:"Coffee Lids",cat:"Coffee",unit:"sl",qty:10,cost:7.55,par:0},
+  {name:"32oz Cups (Hot)",cat:"Cups & Lids",unit:"sl",qty:42,cost:4.22,par:0},
+  {name:"32oz Lids (Hot)",cat:"Cups & Lids",unit:"sl",qty:9,cost:2.88,par:0},
+  {name:"20oz Cups",cat:"Cups & Lids",unit:"sl",qty:34,cost:2.58,par:0},
+  {name:"20oz Lids",cat:"Cups & Lids",unit:"sl",qty:11,cost:1.07,par:0},
+  {name:"Cafe Tango Lids",cat:"Cafe Tango",unit:"case",qty:0.05,cost:25.30,par:0},
+  {name:"Cafe Tango 24oz Cups",cat:"Cafe Tango",unit:"sl",qty:11,cost:8.43,par:0},
+  {name:"Cafe Tango 16oz Cups",cat:"Cafe Tango",unit:"sl",qty:4,cost:6.78,par:0},
+  {name:"Cafe Tango Mocha",cat:"Cafe Tango",unit:"bag",qty:16,cost:13.64,par:0},
+  {name:"Cafe Tango Vanilla",cat:"Cafe Tango",unit:"bag",qty:22,cost:13.64,par:0},
+  {name:"16oz Clear Cups",cat:"Cups & Lids",unit:"case",qty:1,cost:34.98,par:0},
+  {name:"Clear Lids",cat:"Cups & Lids",unit:"case",qty:1,cost:93.34,par:0},
+  {name:"Freal Lids",cat:"Other",unit:"case",qty:7,cost:51.51,par:0},
+  {name:"Freal Straws",cat:"Other",unit:"bx",qty:1,cost:4.65,par:0},
+  {name:"Caramel Creamer Cups",cat:"Creamer & Sweetener",unit:"bx",qty:2,cost:20.27,par:0},
+  {name:"Irish Cups Creamer",cat:"Creamer & Sweetener",unit:"bx",qty:1,cost:30.40,par:0},
+  {name:"Hazelnut Cups Creamer",cat:"Creamer & Sweetener",unit:"bx",qty:2,cost:20.27,par:0},
+  {name:"French Vanilla Cups Creamer",cat:"Creamer & Sweetener",unit:"bx",qty:2,cost:20.27,par:0},
+  {name:"½ & ½ Creamer Cups",cat:"Creamer & Sweetener",unit:"bx",qty:2,cost:16.00,par:0},
+  {name:"Original Creamer Cups",cat:"Creamer & Sweetener",unit:"bx",qty:2,cost:16.00,par:0},
+  {name:"Filters",cat:"Coffee",unit:"each",qty:1,cost:12.85,par:0},
+  {name:"Stir Straws",cat:"Coffee",unit:"bx",qty:1,cost:12.45,par:0},
+  {name:"Sweet Cream",cat:"Creamer & Sweetener",unit:"each",qty:1,cost:30.40,par:0},
+  {name:"Hot Chocolate",cat:"Coffee",unit:"bag",qty:9,cost:7.44,par:0},
+  {name:"French Vanilla Capp.",cat:"Coffee",unit:"bag",qty:3,cost:7.44,par:0},
+  {name:"Sugar Packs",cat:"Creamer & Sweetener",unit:"case",qty:1,cost:18.45,par:0},
+  {name:"Creamer Packs",cat:"Creamer & Sweetener",unit:"case",qty:1,cost:16.00,par:0},
+  {name:"Yellow Sweetener",cat:"Creamer & Sweetener",unit:"case",qty:0,cost:72.65,par:0},
+  {name:"Blue Sweetener",cat:"Creamer & Sweetener",unit:"case",qty:1,cost:50.60,par:0},
+  {name:"Pink Sweetener",cat:"Creamer & Sweetener",unit:"case",qty:1,cost:72.65,par:0},
+  {name:"Sugar Canister",cat:"Creamer & Sweetener",unit:"each",qty:36,cost:2.40,par:0},
+  {name:"Creamer Canister",cat:"Creamer & Sweetener",unit:"each",qty:26,cost:2.10,par:0},
+  {name:"Chocolate Sauce",cat:"Syrups & Sauce",unit:"each",qty:0,cost:18.00,par:0},
+  {name:"Caramel Sauce",cat:"Syrups & Sauce",unit:"each",qty:0,cost:18.00,par:0},
+  {name:"French Vanilla Syrup",cat:"Syrups & Sauce",unit:"bttl",qty:2,cost:7.65,par:0},
+  {name:"Caramel Syrup",cat:"Syrups & Sauce",unit:"bttl",qty:2,cost:7.65,par:0},
+  {name:"Hazelnut Syrup",cat:"Syrups & Sauce",unit:"bttl",qty:2,cost:7.65,par:0},
+  {name:"Pumps",cat:"Other",unit:"each",qty:3,cost:4.00,par:0},
+  {name:"American Classic Coffee",cat:"Coffee Beans",unit:"case",qty:6,cost:30.76,par:0},
+  {name:"Whole Bean Coffee",cat:"Coffee Beans",unit:"case",qty:5,cost:71.04,par:0},
+  {name:"Intense Blend Coffee",cat:"Coffee Beans",unit:"case",qty:4,cost:34.76,par:0},
+  {name:"Pecan Praline Coffee",cat:"Coffee Beans",unit:"case",qty:2,cost:35.76,par:0},
+  {name:"Mardi Gras Coffee",cat:"Coffee Beans",unit:"case",qty:0,cost:36.76,par:0},
+  {name:"Sugar Cookie Coffee",cat:"Coffee Beans",unit:"case",qty:0,cost:37.76,par:0},
+  {name:"9oz Squat Clear Cups",cat:"Cups & Lids",unit:"each",qty:1,cost:0,par:0}
+];
+
+const SEED_BRANDED=[
+  // From branded_deli_count_hunts__3_.xls — counted by Shaun D. 03/25/26 — Total: $2,641.52
+  {name:"Breakfast Pizza",cat:"Pizza",unit:"each",qty:22,cost:5.87,par:0},
+  {name:"Regular / Thin Pizza",cat:"Pizza",unit:"each",qty:172,cost:4.64,par:0},
+  {name:"Specialty Pizza",cat:"Pizza",unit:"each",qty:12,cost:5.93,par:0},
+  {name:"Wings",cat:"Wings",unit:"bag",qty:19,cost:31.58,par:0},
+  {name:"Wing Bites",cat:"Wings",unit:"bag",qty:12,cost:25.64,par:0},
+  {name:"Moz Cheese",cat:"Toppings",unit:"bag",qty:5,cost:19.23,par:0},
+  {name:"Sausage (Pizza)",cat:"Toppings",unit:"bag",qty:3,cost:13.93,par:0},
+  {name:"Pepperoni",cat:"Toppings",unit:"bag",qty:5,cost:20.68,par:0},
+  {name:"Beef (Pizza)",cat:"Toppings",unit:"bag",qty:3,cost:13.60,par:0},
+  {name:"Bacon (Pizza)",cat:"Toppings",unit:"bag",qty:2,cost:31.36,par:0},
+  {name:"Just Rite Spice",cat:"Spices",unit:"can",qty:10,cost:3.40,par:0},
+  {name:"Red Pepper",cat:"Spices",unit:"can",qty:3,cost:3.41,par:0},
+  {name:"Mushroom",cat:"Toppings",unit:"can",qty:3,cost:9.83,par:0},
+  {name:"Black Olives",cat:"Toppings",unit:"can",qty:3,cost:9.69,par:0},
+  {name:"Banana Peppers",cat:"Toppings",unit:"jar",qty:3,cost:9.10,par:0},
+  {name:"Jalapeno Peppers",cat:"Toppings",unit:"jar",qty:3,cost:5.58,par:0},
+  {name:"Hunk Boxes",cat:"Packaging",unit:"case",qty:4,cost:22.50,par:0},
+  {name:"Pizza Boxes",cat:"Packaging",unit:"case",qty:4,cost:22.50,par:0},
+  {name:"Wing Boxes",cat:"Packaging",unit:"case",qty:3,cost:21.25,par:0}
+];
+
+const CATS = {
+  deli: ["Deli Meat","Cheese","Bread","Produce","Condiments","Packaging","Dairy","Beverages","Other"],
+  fountain: ["BIB / CO2","Cups & Lids","Coffee","Cafe Tango","Creamer & Sweetener","Syrups & Sauce","Coffee Beans","Other"],
+  branded: ["Pizza","Wings","Toppings","Packaging","Spices","Other"]
+};
+
+// =============================================================
+// STATE
+// =============================================================
+let deliInv=[], fountainInv=[], brandedInv=[], suppliers=[], orders=[], recipes=[], invoices=[];
+let weekData = {}; // keyed by week start "YYYY-MM-DD"
+let currentWeek = ''; // "YYYY-MM-DD" of Monday
+let editRecipeIngs=[];
+
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
 const $=id=>document.getElementById(id);
+
+function getMonday(d){
+  const dt=new Date(d);
+  const day=dt.getDay();
+  const diff=dt.getDate()-day+(day===0?-6:1);
+  dt.setDate(diff);
+  dt.setHours(0,0,0,0);
+  return dt.toISOString().slice(0,10);
+}
+
+function weekLabel(mon){
+  const start=new Date(mon+'T00:00:00');
+  const end=new Date(start);end.setDate(end.getDate()+6);
+  return `${fmtDate(start)} – ${fmtDate(end)}`;
+}
+
+function fmtDate(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
 function fmtMoney(n){return '$'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
-function getMonday(d){let dt=new Date(d);let day=dt.getDay();let diff=dt.getDate()-day+(day===0?-6:1);dt.setDate(diff);dt.setHours(0,0,0,0);return dt.toISOString().slice(0,10);}
-let deliInv=[],fountainInv=[],brandedInv=[],suppliers=[],orders=[],recipes=[],invoices=[],weekData={},currentWeek=getMonday(new Date());
-function sv(w){if(w==='sup')localStorage.setItem('dp7_sup',JSON.stringify(suppliers));if(w==='deli')localStorage.setItem('dp7_deli',JSON.stringify(deliInv));if(w==='fountain')localStorage.setItem('dp7_fountain',JSON.stringify(fountainInv));if(w==='branded')localStorage.setItem('dp7_branded',JSON.stringify(brandedInv));if(w==='rec')localStorage.setItem('dp7_rec',JSON.stringify(recipes));if(w==='ord')localStorage.setItem('dp7_ord',JSON.stringify(orders));if(w==='inv')localStorage.setItem('dp7_inv',JSON.stringify(invoices));if(w==='week')localStorage.setItem('dp7_week',JSON.stringify(weekData));sbPush();}
-function allInv(){return[...deliInv,...fountainInv,...brandedInv];}
-function invVal(arr){return arr.reduce((s,i)=>s+i.qty*i.cost,0);}
-function supName(id){let s=suppliers.find(x=>x.id===id);return s?s.name:'—';}
+
+function load(){
+  suppliers   = JSON.parse(localStorage.getItem('dp7_sup')||'null');
+  deliInv     = JSON.parse(localStorage.getItem('dp7_deli')||'null');
+  fountainInv = JSON.parse(localStorage.getItem('dp7_fountain')||'null');
+  brandedInv  = JSON.parse(localStorage.getItem('dp7_branded')||'null');
+  recipes     = JSON.parse(localStorage.getItem('dp7_rec')||'[]');
+  orders      = JSON.parse(localStorage.getItem('dp7_ord')||'[]');
+  invoices    = JSON.parse(localStorage.getItem('dp7_inv')||'[]');
+  weekData    = JSON.parse(localStorage.getItem('dp7_week')||'{}');
+  currentWeek = getMonday(new Date());
+
+  if(!suppliers){ suppliers=SEED_SUP.map(s=>({...s,id:uid()})); sv('sup'); }
+  if(!deliInv){
+    deliInv=SEED_DELI.map(d=>{
+      const s=suppliers.find(x=>x.name===d.sup);
+      return {id:uid(),name:d.name,cat:d.cat,qty:d.qty||0,unit:d.unit,cost:d.cost||0,par:d.par,supplier:s?s.id:''};
+    }); sv('deli');
+  }
+  if(!fountainInv){ fountainInv=SEED_FOUNTAIN.map(d=>({id:uid(),name:d.name,cat:d.cat,qty:d.qty,unit:d.unit,cost:d.cost,par:d.par,supplier:''})); sv('fountain'); }
+  if(!brandedInv){ brandedInv=SEED_BRANDED.map(d=>({id:uid(),name:d.name,cat:d.cat,qty:d.qty,unit:d.unit,cost:d.cost,par:d.par,supplier:''})); sv('branded'); }
+  // Apply any pending one-time invoice patches
+  applyBEK56553783();
+  // Connect to Supabase if previously configured (async; will re-apply patches after pull)
+  loadSbSetup();
+}
+
+function sv(w){
+  if(!w||w==='sup')     localStorage.setItem('dp7_sup',JSON.stringify(suppliers));
+  if(!w||w==='deli')    localStorage.setItem('dp7_deli',JSON.stringify(deliInv));
+  if(!w||w==='fountain')localStorage.setItem('dp7_fountain',JSON.stringify(fountainInv));
+  if(!w||w==='branded') localStorage.setItem('dp7_branded',JSON.stringify(brandedInv));
+  if(!w||w==='rec')     localStorage.setItem('dp7_rec',JSON.stringify(recipes));
+  if(!w||w==='ord')     localStorage.setItem('dp7_ord',JSON.stringify(orders));
+  if(!w||w==='inv')     localStorage.setItem('dp7_inv',JSON.stringify(invoices));
+  if(!w||w==='week')    localStorage.setItem('dp7_week',JSON.stringify(weekData));
+  sbPush(); // sync to cloud if configured
+}
+
+function allInv(){return [...deliInv,...fountainInv,...brandedInv];}
 function getInv(sec){return sec==='deli'?deliInv:sec==='fountain'?fountainInv:brandedInv;}
-function getWeekInvoices(){let start=new Date(currentWeek+'T00:00:00'),end=new Date(start);end.setDate(end.getDate()+7);return invoices.filter(i=>{let d=new Date(i.date+'T00:00:00');return d>=start&&d<end;});}
-function renderAnalytics(){let wk=weekData[currentWeek]||{},wInv=getWeekInvoices(),purchases=wInv.reduce((s,i)=>s+i.total,0),sales=Number(wk.sales||0),begDeli=Number(wk.begDeli||invVal(deliInv)),begFountain=Number(wk.begFountain||invVal(fountainInv)),begBranded=Number(wk.begBranded||invVal(brandedInv)),begTotal=begDeli+begFountain+begBranded,endTotal=invVal(allInv()),cogs=begTotal+purchases-endTotal,fcPct=sales>0?(cogs/sales*100):null; $('#week-label').innerText=currentWeek; $('#header-week').innerText='Week of '+currentWeek; let low=allInv().filter(i=>i.par>0&&i.qty<=i.par).length; $('#an-kpis').innerHTML=`<div class="stat-card"><div class="stat-label">Weekly Sales</div><div class="stat-value">${fmtMoney(sales)}</div></div><div class="stat-card"><div class="stat-label">Purchases</div><div class="stat-value">${fmtMoney(purchases)}</div></div><div class="stat-card"><div class="stat-label">Beginning Inv</div><div class="stat-value">${fmtMoney(begTotal)}</div></div><div class="stat-card"><div class="stat-label">Ending Inv</div><div class="stat-value">${fmtMoney(endTotal)}</div></div><div class="stat-card"><div class="stat-label">COGS</div><div class="stat-value ${cogs<0?'red':'green'}">${fmtMoney(cogs)}</div></div><div class="stat-card"><div class="stat-label">Food Cost %</div><div class="stat-value ${fcPct>35?'red':'green'}">${fcPct!==null?fcPct.toFixed(1)+'%':'—'}</div></div><div class="stat-card"><div class="stat-label">Low Stock</div><div class="stat-value ${low>0?'red':'green'}">${low}</div></div><div class="stat-card"><div class="stat-label">Total Value</div><div class="stat-value">${fmtMoney(endTotal)}</div></div>`; $('#an-food-cost-detail').innerHTML=`<div class="an-title">This Week</div><div>Beg Inv: ${fmtMoney(begTotal)}<br>+ Purchases: ${fmtMoney(purchases)}<br>= Avail: ${fmtMoney(begTotal+purchases)}<br>− Ending: ${fmtMoney(endTotal)}<br><strong>= COGS: ${fmtMoney(cogs)}</strong><br>${sales>0?`Sales: ${fmtMoney(sales)}<br>Food Cost %: ${fcPct.toFixed(2)}%`:''}</div>`; $('#an-section-breakdown').innerHTML=`<div>Deli Beg ${fmtMoney(begDeli)} End ${fmtMoney(invVal(deliInv))} Used ${fmtMoney(begDeli-invVal(deliInv))}</div><div>Fountain Beg ${fmtMoney(begFountain)} End ${fmtMoney(invVal(fountainInv))} Used ${fmtMoney(begFountain-invVal(fountainInv))}</div><div>Branded Beg ${fmtMoney(begBranded)} End ${fmtMoney(invVal(brandedInv))} Used ${fmtMoney(begBranded-invVal(brandedInv))}</div>`; let needItems=allInv().filter(i=>i.par>0&&i.qty<i.par); $('#an-order-tbody').innerHTML=needItems.map(i=>`<tr><td><strong>${i.name}</strong></td><td>${deliInv.find(x=>x.id===i.id)?'Deli':fountainInv.find(x=>x.id===i.id)?'Fountain':'Branded'}</td><td>${i.par}</td><td>${i.qty}</td><td><span class="need-pill">+${(i.par-i.qty).toFixed(2)}</span></td><td>${supName(i.supplier)}</td></tr>`).join('')||'<tr><td colspan="6">✅ All items at par</td></tr>';}
+function supName(id){const s=suppliers.find(x=>x.id===id);return s?s.name:'—';}
+function invVal(arr){return arr.reduce((s,i)=>s+i.qty*i.cost,0);}
+
+// =============================================================
+// TABS
+// =============================================================
+function showTab(name){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  $('tab-'+name).classList.add('active');
+  document.querySelector(`nav button[onclick="showTab('${name}')"]`).classList.add('active');
+  const fns={analytics:renderAnalytics,inventory:renderInvPage,invoices:renderInvoices,orders:renderOrders,recipes:renderRecipes,suppliers:renderSuppliers,reports:renderReports};
+  fns[name]();
+}
+
+function switchSubpanel(name, btn){
+  document.querySelectorAll('.subtab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.subpanel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  $('sp-'+name).classList.add('active');
+  renderTable(name);
+}
+
+function openModal(id){$(id).classList.add('open');}
+function closeModal(id){$(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+// =============================================================
+// WEEK NAV
+// =============================================================
 function prevWeek(){currentWeek=getMonday(new Date(currentWeek+'T00:00:00').setDate(new Date(currentWeek+'T00:00:00').getDate()-7));renderAnalytics();}
 function nextWeek(){currentWeek=getMonday(new Date(currentWeek+'T00:00:00').setDate(new Date(currentWeek+'T00:00:00').getDate()+7));renderAnalytics();}
 function setCurrentWeek(){currentWeek=getMonday(new Date());renderAnalytics();}
-function openWeekSetup(){let wk=weekData[currentWeek]||{};$('ws-date').value=currentWeek;$('ws-sales').value=wk.sales||'';$('ws-deli').value=wk.begDeli||invVal(deliInv);$('ws-fountain').value=wk.begFountain||invVal(fountainInv);$('ws-branded').value=wk.begBranded||invVal(brandedInv);openModal('modal-week');}
-function saveWeekSetup(){let wd=getMonday($('ws-date').value);weekData[wd]={sales:parseFloat($('ws-sales').value)||0,begDeli:parseFloat($('ws-deli').value)||0,begFountain:parseFloat($('ws-fountain').value)||0,begBranded:parseFloat($('ws-branded').value)||0};currentWeek=wd;sv('week');closeModal('modal-week');renderAnalytics();}
-function sendToOrderList(){let need=allInv().filter(i=>i.par>0&&i.qty<i.par);if(!need.length)return alert('Nothing below par');let added=0;need.forEach(i=>{if(!orders.find(o=>o.name===i.name&&!o.done)){orders.push({id:uid(),name:i.name,qty:(i.par-i.qty).toFixed(2),unit:i.unit,supplier:i.supplier,notes:'Auto',done:false});added++;}});if(added)sv('ord');renderOrders();alert(`Added ${added} items`);}
-function renderInvPage(){let low=allInv().filter(i=>i.par>0&&i.qty<=i.par).length; $('#inv-stat-cards').innerHTML=`<div class="stat-card"><div class="stat-label">Total Items</div><div class="stat-value">${allInv().length}</div></div><div class="stat-card"><div class="stat-label">Low Stock</div><div class="stat-value ${low>0?'red':'green'}">${low}</div></div><div class="stat-card"><div class="stat-label">Total Value</div><div class="stat-value">${fmtMoney(invVal(allInv()))}</div></div>`; let sf=$('fsup-deli');sf.innerHTML='<option value="">All Suppliers</option>'+suppliers.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');renderTable('deli');}
-function renderTable(sec){let inv=getInv(sec),search=($('fs-'+sec).value||'').toLowerCase(),cat=$('fcat-'+sec).value,supF=sec==='deli'?$('fsup-deli').value:'',rows=inv.filter(i=>i.name.toLowerCase().includes(search)&&(!cat||i.cat===cat)&&(!supF||i.supplier===supF));let tb=$('tb-'+sec);tb.innerHTML=rows.map(i=>{let st=i.par?i.qty<=i.par?'<span class="badge b-low">Low</span>':i.qty<=i.par*1.5?'<span class="badge b-warn">Watch</span>':'<span class="badge b-ok">OK</span>':'<span class="badge b-nopar">No Par</span>';let need=i.par>0&&i.qty<i.par?`<span class="need-pill">+${(i.par-i.qty).toFixed(1)}</span>`:'—';return `<tr><td><strong>${i.name}</strong></td><td><span class="badge b-cat">${i.cat}</span></td><td><input class="qty-cell" type="number" value="${i.qty}" min="0" step="0.01" onchange="setQty('${sec}','${i.id}',this.value)"></td><td class="mono">${i.unit}</td><td class="mono">${fmtMoney(i.cost)}</td><td class="mono">${i.par||'—'}</td><td>${supName(i.supplier)}</td><td>${need}</td><td>${st}</td><td><button class="btn btn-ghost btn-sm" onclick="openItemModal('${sec}','${i.id}')">Edit</button> <button class="btn btn-danger btn-sm" onclick="delItem('${sec}','${i.id}')">✕</button></td></tr>`;}).join('');}
-function setQty(sec,id,val){let i=getInv(sec).find(x=>x.id===id);if(i){i.qty=parseFloat(val)||0;sv(sec);renderTable(sec);renderAnalytics();}}
-function openItemModal(sec,id){let inv=getInv(sec);let item=id?inv.find(x=>x.id===id):null;$('item-section').value=sec;$('item-cat').innerHTML=(sec==='deli'?['Deli Meat','Cheese','Bread','Produce','Condiments','Packaging','Dairy','Other']:sec==='fountain'?['BIB / CO2','Cups & Lids','Coffee','Creamer & Sweetener','Other']:['Pizza','Wings','Toppings','Packaging']).map(c=>`<option>${c}</option>`).join('');$('item-sup-row').style.display=sec==='deli'?'block':'none';if(sec==='deli')$('item-supplier').innerHTML='<option value="">— None —</option>'+suppliers.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');if(item){$('item-id').value=item.id;$('item-name').value=item.name;$('item-cat').value=item.cat;$('item-qty').value=item.qty;$('item-unit').value=item.unit;$('item-cost').value=item.cost;$('item-par').value=item.par;if(sec==='deli')$('item-supplier').value=item.supplier||'';}else{$('item-id').value='';$('item-name').value='';$('item-qty').value='';$('item-cost').value='';$('item-par').value='';$('item-unit').value='each';}openModal('modal-item');}
-function saveItem(){let sec=$('item-section').value,id=$('item-id').value,inv=getInv(sec);let item={id:id||uid(),name:$('item-name').value.trim(),cat:$('item-cat').value,qty:parseFloat($('item-qty').value)||0,unit:$('item-unit').value,cost:parseFloat($('item-cost').value)||0,par:parseFloat($('item-par').value)||0,supplier:sec==='deli'?$('item-supplier').value:''};if(!item.name)return alert('Name required');if(id){let idx=inv.findIndex(x=>x.id===id);inv[idx]=item;}else inv.push(item);sv(sec);closeModal('modal-item');renderTable(sec);renderAnalytics();}
-function delItem(sec,id){if(!confirm('Delete?'))return;let arr=getInv(sec);arr.splice(arr.findIndex(x=>x.id===id),1);sv(sec);renderTable(sec);renderAnalytics();}
-function openInvoiceModal(){$('inv-date').value=new Date().toISOString().slice(0,10);$('inv-total').value='';$('inv-num').value='';$('inv-sup-sel').innerHTML='<option value="">— Select —</option>'+suppliers.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');openModal('modal-invoice');}
-function saveInvoice(){let inv={id:uid(),supplier:$('inv-sup-sel').value,date:$('inv-date').value,total:parseFloat($('inv-total').value)||0,num:$('inv-num').value.trim()};if(!inv.total)return alert('Enter total');invoices.push(inv);sv('inv');closeModal('modal-invoice');renderInvoices();}
-function delInvoice(id){if(!confirm('Delete?'))return;invoices=invoices.filter(i=>i.id!==id);sv('inv');renderInvoices();}
-function renderInvoices(){let wInv=getWeekInvoices();let total=wInv.reduce((s,i)=>s+i.total,0);$('inv-week-label').innerText='Week of '+currentWeek;$('inv-totals-cards').innerHTML=`<div class="an-card"><div class="an-title">Total Purchases</div><div class="an-big gold">${fmtMoney(total)}</div></div>`;let sorted=[...invoices].sort((a,b)=>b.date.localeCompare(a.date));$('invoice-list').innerHTML=sorted.map(i=>`<div class="invoice-item"><div><div class="inv-sup">${supName(i.supplier)}</div><div class="inv-meta">${i.date}${i.num?' · '+i.num:''}</div></div><div class="inv-amount">${fmtMoney(i.total)}</div><button class="btn btn-danger btn-sm" onclick="delInvoice('${i.id}')">✕</button></div>`).join('')||'<div class="empty-state">No invoices</div>';}
-function autoOrders(){let low=allInv().filter(i=>i.par>0&&i.qty<i.par);if(!low.length)return alert('No low stock');let added=0;low.forEach(i=>{if(!orders.find(o=>o.name===i.name&&!o.done)){orders.push({id:uid(),name:i.name,qty:(i.par-i.qty).toFixed(2),unit:i.unit,supplier:i.supplier,notes:'Auto',done:false});added++;}});if(added)sv('ord');renderOrders();alert(`Added ${added}`);}
-function openOrderModal(){$('ord-sup').innerHTML='<option value="">— None —</option>'+suppliers.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');$('ord-name').value='';$('ord-qty').value='';$('ord-unit').value='';$('ord-notes').value='';openModal('modal-order');}
-function saveOrder(){let o={id:uid(),name:$('ord-name').value.trim(),qty:$('ord-qty').value,unit:$('ord-unit').value.trim(),supplier:$('ord-sup').value,notes:$('ord-notes').value.trim(),done:false};if(!o.name)return alert('Name required');orders.push(o);sv('ord');closeModal('modal-order');renderOrders();}
-function toggleOrder(id){let o=orders.find(x=>x.id===id);if(o){o.done=!o.done;sv('ord');renderOrders();}}
+
+// =============================================================
+// ANALYTICS
+// =============================================================
+function getWeekInvoices(){
+  const wstart=new Date(currentWeek+'T00:00:00');
+  const wend=new Date(wstart);wend.setDate(wend.getDate()+7);
+  return invoices.filter(inv=>{const d=new Date(inv.date+'T00:00:00');return d>=wstart&&d<wend;});
+}
+
+function renderAnalytics(){
+  const wk = weekData[currentWeek]||{};
+  const wInv = getWeekInvoices();
+  const purchases = wInv.reduce((s,i)=>s+Number(i.total),0);
+  const sales = Number(wk.sales||0);
+
+  // beginning inventory from week setup OR live current
+  const begDeli     = Number(wk.begDeli    || invVal(deliInv));
+  const begFountain = Number(wk.begFountain|| invVal(fountainInv));
+  const begBranded  = Number(wk.begBranded || invVal(brandedInv));
+  const begTotal    = begDeli+begFountain+begBranded;
+
+  // ending = current on-hand value
+  const endDeli     = invVal(deliInv);
+  const endFountain = invVal(fountainInv);
+  const endBranded  = invVal(brandedInv);
+  const endTotal    = endDeli+endFountain+endBranded;
+
+  const cogs  = begTotal + purchases - endTotal;
+  const fcPct = sales>0?(cogs/sales*100):null;
+
+  $('week-label').textContent = weekLabel(currentWeek);
+  $('header-week').textContent = 'Week of '+currentWeek;
+
+  // KPI cards
+  const low = allInv().filter(i=>i.par>0&&i.qty<=i.par).length;
+  $('an-kpis').innerHTML=`
+    <div class="stat-card"><div class="stat-label">Weekly Sales</div><div class="stat-value white">${fmtMoney(sales)}</div><div class="stat-sub">Enter via ⚙ Week Setup</div></div>
+    <div class="stat-card"><div class="stat-label">Purchases (Invoices)</div><div class="stat-value white">${fmtMoney(purchases)}</div><div class="stat-sub">${wInv.length} invoice${wInv.length!==1?'s':''} this week</div></div>
+    <div class="stat-card"><div class="stat-label">Beginning Inventory</div><div class="stat-value white">${fmtMoney(begTotal)}</div><div class="stat-sub">Start of week value</div></div>
+    <div class="stat-card"><div class="stat-label">Ending Inventory</div><div class="stat-value white">${fmtMoney(endTotal)}</div><div class="stat-sub">Current on-hand value</div></div>
+    <div class="stat-card ${fcPct!==null&&fcPct>35?'':''}"><div class="stat-label">Cost of Goods Used</div><div class="stat-value ${cogs<0?'red':'green'}">${fmtMoney(cogs)}</div><div class="stat-sub">Beg + Purchases − End</div></div>
+    <div class="stat-card highlight"><div class="stat-label">Food Cost %</div><div class="stat-value ${fcPct===null?'white':fcPct>35?'red':'green'}">${fcPct!==null?fcPct.toFixed(1)+'%':'—'}</div><div class="stat-sub">${fcPct!==null?(fcPct<=28?'✅ Excellent':fcPct<=32?'✅ Good':fcPct<=35?'⚠ Watch':fcPct<=40?'🔴 High':'🔴 Critical'):'Set sales & invoices'}</div></div>
+    <div class="stat-card"><div class="stat-label">Items Low / At Par</div><div class="stat-value ${low>0?'red':'green'}">${low}</div><div class="stat-sub">Need to reorder</div></div>
+    <div class="stat-card"><div class="stat-label">Total Inventory Value</div><div class="stat-value white">${fmtMoney(endTotal)}</div><div class="stat-sub">All sections combined</div></div>`;
+
+  // Food cost detail card
+  $('an-food-cost-detail').innerHTML=`
+    <div class="an-title">This Week Calculation</div>
+    <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2);line-height:2.2;">
+      <div style="display:flex;justify-content:space-between"><span>Beginning Inventory</span><span style="color:var(--text)">${fmtMoney(begTotal)}</span></div>
+      <div style="display:flex;justify-content:space-between"><span>+ Purchases</span><span style="color:var(--text)">${fmtMoney(purchases)}</span></div>
+      <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:6px;"><span>= Available</span><span style="color:var(--gold)">${fmtMoney(begTotal+purchases)}</span></div>
+      <div style="display:flex;justify-content:space-between"><span>− Ending Inventory</span><span style="color:var(--text)">${fmtMoney(endTotal)}</span></div>
+      <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:6px;"><span>= COGS</span><span style="color:${cogs<0?'var(--red2)':'var(--green2)'}">${fmtMoney(cogs)}</span></div>
+      ${sales>0?`<div style="display:flex;justify-content:space-between"><span>÷ Sales</span><span>${fmtMoney(sales)}</span></div>
+      <div style="display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:6px;"><span><strong>Food Cost %</strong></span><span style="color:${fcPct>35?'var(--red2)':'var(--green2)'}"><strong>${fcPct!==null?fcPct.toFixed(2)+'%':'—'}</strong></span></div>`:'<div style="color:var(--muted);margin-top:8px">Enter weekly sales in ⚙ Week Setup</div>'}
+    </div>`;
+
+  // Section breakdown
+  const secData=[
+    {label:'Deli', beg:begDeli, end:endDeli, color:'var(--gold)'},
+    {label:'Fountain', beg:begFountain, end:endFountain, color:'var(--blue)'},
+    {label:'Branded Deli', beg:begBranded, end:endBranded, color:'var(--green2)'}
+  ];
+  $('an-section-breakdown').innerHTML=secData.map(s=>{
+    const used=s.beg-s.end;
+    const pct=sales>0?(used/sales*100):null;
+    return `<div style="display:flex;align-items:center;gap:16px;padding:10px 0;border-bottom:1px solid var(--border);">
+      <div style="width:110px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)">${s.label}</div>
+      <div style="width:100px;font-family:'DM Mono',monospace;font-size:12px">Beg: <span style="color:var(--text)">${fmtMoney(s.beg)}</span></div>
+      <div style="width:100px;font-family:'DM Mono',monospace;font-size:12px">End: <span style="color:var(--text)">${fmtMoney(s.end)}</span></div>
+      <div style="width:100px;font-family:'DM Mono',monospace;font-size:12px">Used: <span style="color:${s.color}">${fmtMoney(used)}</span></div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:4px"><span>Food cost contribution</span><span>${pct!==null?pct.toFixed(1)+'%':'—'}</span></div>
+        <div class="cost-bar-bg"><div class="cost-bar-fill ${pct!==null&&pct>15?'bad':''}" style="width:${pct!==null?Math.min(pct*3,100):0}%"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Order needs table
+  const needItems=allInv().filter(i=>i.par>0&&i.qty<i.par).sort((a,b)=>(a.qty/a.par)-(b.qty/b.par));
+  const aTb=$('an-order-tbody');
+  if(!needItems.length){aTb.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted);font-family:'DM Mono',monospace;font-size:12px">✅ All items are at or above par</td></tr>`;return;}
+  aTb.innerHTML=needItems.map(i=>{
+    const need=i.par-i.qty;
+    const sec=deliInv.find(x=>x.id===i.id)?'Deli':fountainInv.find(x=>x.id===i.id)?'Fountain':'Branded';
+    return `<tr>
+      <td><strong>${i.name}</strong></td>
+      <td><span class="badge b-cat">${sec}</span></td>
+      <td class="mono">${i.par}</td>
+      <td class="mono">${i.qty}</td>
+      <td><span class="need-pill">+${need.toFixed(2)} ${i.unit}</span></td>
+      <td style="font-size:12px">${supName(i.supplier)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function sendToOrderList(){
+  const needItems=allInv().filter(i=>i.par>0&&i.qty<i.par);
+  if(!needItems.length){alert('No items below par.');return;}
+  let added=0;
+  needItems.forEach(i=>{
+    if(!orders.find(o=>o.name===i.name&&!o.done)){
+      const need=i.par-i.qty;
+      orders.push({id:uid(),name:i.name,qty:need.toFixed(2),unit:i.unit,supplier:i.supplier||'',notes:'Auto — below par',done:false});
+      added++;
+    }
+  });
+  if(!added){alert('All items already on order list.');return;}
+  sv('ord');alert(`Added ${added} item${added>1?'s':''} to order list.`);
+}
+
+// Week setup modal
+function openWeekSetup(){
+  const wk=weekData[currentWeek]||{};
+  $('ws-date').value=currentWeek;
+  $('ws-sales').value=wk.sales||'';
+  $('ws-deli').value=wk.begDeli||invVal(deliInv).toFixed(2);
+  $('ws-fountain').value=wk.begFountain||invVal(fountainInv).toFixed(2);
+  $('ws-branded').value=wk.begBranded||invVal(brandedInv).toFixed(2);
+  openModal('modal-week');
+}
+
+function saveWeekSetup(){
+  const wd=getMonday($('ws-date').value||currentWeek);
+  weekData[wd]={sales:parseFloat($('ws-sales').value)||0,begDeli:parseFloat($('ws-deli').value)||0,begFountain:parseFloat($('ws-fountain').value)||0,begBranded:parseFloat($('ws-branded').value)||0};
+  currentWeek=wd;
+  sv('week');closeModal('modal-week');renderAnalytics();
+}
+
+// =============================================================
+// INVENTORY PAGE
+// =============================================================
+function renderInvPage(){
+  // stat cards
+  const low=allInv().filter(i=>i.par>0&&i.qty<=i.par).length;
+  const val=invVal(allInv());
+  $('inv-stat-cards').innerHTML=`
+    <div class="stat-card"><div class="stat-label">Total Items</div><div class="stat-value">${allInv().length}</div></div>
+    <div class="stat-card"><div class="stat-label">Low / At Par</div><div class="stat-value ${low>0?'red':'green'}">${low}</div><div class="stat-sub">need reorder</div></div>
+    <div class="stat-card"><div class="stat-label">Total Value</div><div class="stat-value white">${fmtMoney(val)}</div></div>
+    <div class="stat-card"><div class="stat-label">Deli Value</div><div class="stat-value white">${fmtMoney(invVal(deliInv))}</div></div>
+    <div class="stat-card"><div class="stat-label">Fountain Value</div><div class="stat-value white">${fmtMoney(invVal(fountainInv))}</div></div>
+    <div class="stat-card"><div class="stat-label">Branded Value</div><div class="stat-value white">${fmtMoney(invVal(brandedInv))}</div></div>`;
+  // populate sup filter for deli
+  const sf=$('fsup-deli');const sv2=sf.value;
+  sf.innerHTML='<option value="">All Suppliers</option>'+suppliers.map(s=>`<option value="${s.id}"${sv2===s.id?' selected':''}>${s.name}</option>`).join('');
+  renderTable('deli');
+}
+
+function renderTable(sec){
+  const inv=getInv(sec);
+  const search=($('fs-'+sec).value||'').toLowerCase();
+  const cat=$('fcat-'+sec).value;
+  const supF=sec==='deli'?$('fsup-deli').value:'';
+  const showSup=sec==='deli';
+  const rows=inv.filter(i=>(i.name.toLowerCase().includes(search)||i.cat.toLowerCase().includes(search))&&(!cat||i.cat===cat)&&(!supF||i.supplier===supF));
+  const tb=$('tb-'+sec);
+  if(!rows.length){tb.innerHTML=`<tr><td colspan="10"><div class="empty-state"><span class="empty-big">EMPTY</span>No items match.</div></td></tr>`;return;}
+  tb.innerHTML=rows.map(i=>{
+    let st;
+    if(!i.par) st=`<span class="badge b-nopar">No Par</span>`;
+    else if(i.qty<=i.par) st=`<span class="badge b-low">Low</span>`;
+    else if(i.qty<=i.par*1.5) st=`<span class="badge b-warn">Watch</span>`;
+    else st=`<span class="badge b-ok">OK</span>`;
+    const need=i.par>0&&i.qty<i.par?`<span class="need-pill">+${(i.par-i.qty).toFixed(1)}</span>`:`<span style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px">—</span>`;
+    const midCol=showSup?`<td style="font-size:12px">${supName(i.supplier)}</td>`:`<td class="mono">${fmtMoney(i.qty*i.cost)}</td>`;
+    return `<tr>
+      <td><strong style="font-size:13px">${i.name}</strong></td>
+      <td><span class="badge b-cat">${i.cat}</span></td>
+      <td><input class="qty-cell" type="number" value="${i.qty}" min="0" step="0.01" onchange="setQty('${sec}','${i.id}',this.value)"></td>
+      <td class="mono">${i.unit}</td>
+      <td class="mono">${fmtMoney(i.cost)}</td>
+      <td class="mono">${i.par||'—'}</td>
+      ${midCol}
+      <td>${need}</td>
+      <td>${st}</td>
+      <td><div style="display:flex;gap:4px">
+        <button class="btn btn-ghost btn-sm" onclick="openItemModal('${sec}','${i.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="delItem('${sec}','${i.id}')">✕</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function setQty(sec,id,val){
+  const inv=getInv(sec);const i=inv.find(x=>x.id===id);
+  if(i){i.qty=parseFloat(val)||0;sv(sec);}
+}
+
+// Item Modal
+function openItemModal(sec,id){
+  $('item-section').value=sec;
+  $('item-cat').innerHTML=CATS[sec].map(c=>`<option>${c}</option>`).join('');
+  $('item-sup-row').style.display=sec==='deli'?'block':'none';
+  if(sec==='deli'){$('item-supplier').innerHTML='<option value="">— None —</option>'+suppliers.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');}
+  if(!id){
+    $('item-modal-title').textContent='Add Item';
+    $('item-id').value='';
+    ['item-name','item-qty','item-cost','item-par'].forEach(x=>$(x).value='');
+    $('item-unit').value='each';
+  } else {
+    const i=getInv(sec).find(x=>x.id===id);if(!i)return;
+    $('item-modal-title').textContent='Edit Item';
+    $('item-id').value=id;
+    $('item-name').value=i.name;
+    $('item-cat').value=i.cat;
+    $('item-qty').value=i.qty;
+    $('item-unit').value=i.unit;
+    $('item-cost').value=i.cost;
+    $('item-par').value=i.par;
+    if(sec==='deli')$('item-supplier').value=i.supplier||'';
+  }
+  openModal('modal-item');
+}
+
+function saveItem(){
+  const sec=$('item-section').value;
+  const id=$('item-id').value;
+  const inv=getInv(sec);
+  const item={id:id||uid(),name:$('item-name').value.trim(),cat:$('item-cat').value,qty:parseFloat($('item-qty').value)||0,unit:$('item-unit').value,cost:parseFloat($('item-cost').value)||0,par:parseFloat($('item-par').value)||0,supplier:sec==='deli'?$('item-supplier').value:''};
+  if(!item.name){alert('Enter item name.');return;}
+  if(id){const idx=inv.findIndex(x=>x.id===id);inv[idx]=item;}else inv.push(item);
+  sv(sec);closeModal('modal-item');renderTable(sec);renderInvStatCards();
+}
+function renderInvStatCards(){if($('inv-stat-cards'))renderInvPage();}
+
+function delItem(sec,id){
+  if(!confirm('Delete this item?'))return;
+  if(sec==='deli') deliInv=deliInv.filter(x=>x.id!==id);
+  else if(sec==='fountain') fountainInv=fountainInv.filter(x=>x.id!==id);
+  else brandedInv=brandedInv.filter(x=>x.id!==id);
+  sv(sec);renderTable(sec);
+}
+
+// =============================================================
+// INVOICES
+// =============================================================
+function openInvoiceModal(){
+  const today=new Date().toISOString().slice(0,10);
+  $('inv-date').value=today;
+  $('inv-total').value='';$('inv-num').value='';$('inv-notes').value='';
+  $('inv-sup-sel').innerHTML='<option value="">— Select Supplier —</option>'+suppliers.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  openModal('modal-invoice');
+}
+
+function saveInvoice(){
+  const sup=$('inv-sup-sel').value;
+  const total=parseFloat($('inv-total').value)||0;
+  const date=$('inv-date').value;
+  if(!total){alert('Enter invoice total.');return;}
+  invoices.push({id:uid(),supplier:sup,date,total,num:$('inv-num').value.trim(),notes:$('inv-notes').value.trim()});
+  sv('inv');closeModal('modal-invoice');renderInvoices();
+}
+
+function delInvoice(id){if(!confirm('Delete?'))return;invoices=invoices.filter(x=>x.id!==id);sv('inv');renderInvoices();}
+
+function renderInvoices(){
+  const wInv=getWeekInvoices();
+  const total=wInv.reduce((s,i)=>s+Number(i.total),0);
+  $('inv-week-label').textContent='Week of '+currentWeek+' — '+weekLabel(currentWeek);
+  // totals by supplier
+  const bySup={};
+  wInv.forEach(i=>{const n=supName(i.supplier);bySup[n]=(bySup[n]||0)+Number(i.total);});
+  $('inv-totals-cards').innerHTML=Object.entries(bySup).map(([name,amt])=>`
+    <div class="an-card"><div class="an-title">Purchases — ${name}</div><div class="an-big gold">${fmtMoney(amt)}</div></div>`).join('')+
+    `<div class="an-card highlight"><div class="an-title">Total Purchases This Week</div><div class="an-big gold">${fmtMoney(total)}</div><div class="an-sub">${wInv.length} invoice${wInv.length!==1?'s':''}</div></div>`;
+  // all invoices sorted newest first
+  const sorted=[...invoices].sort((a,b)=>b.date.localeCompare(a.date));
+  const el=$('invoice-list');
+  if(!sorted.length){el.innerHTML=`<div class="empty-state"><span class="empty-big">NONE</span>No invoices yet. Add your first invoice.</div>`;return;}
+  el.innerHTML=sorted.map(inv=>{
+    const isThisWeek=wInv.find(x=>x.id===inv.id);
+    return `<div class="invoice-item" style="${isThisWeek?'':'opacity:0.55;border-left-color:var(--border2)'}">
+      <div>
+        <div class="inv-sup">${supName(inv.supplier)}</div>
+        <div class="inv-meta">${inv.date}${inv.num?' · '+inv.num:''}${inv.notes?' · '+inv.notes:''}</div>
+        ${isThisWeek?'<span class="badge b-ok" style="margin-top:4px">This Week</span>':''}
+      </div>
+      <div class="inv-amount">${fmtMoney(inv.total)}</div>
+      <button class="btn btn-danger btn-sm" onclick="delInvoice('${inv.id}')">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// =============================================================
+// ORDERS
+// =============================================================
+function autoOrders(){
+  const low=allInv().filter(i=>i.par>0&&i.qty<i.par);
+  if(!low.length){alert('No items below par.');return;}
+  let added=0;
+  low.forEach(i=>{
+    if(!orders.find(o=>o.name===i.name&&!o.done)){
+      orders.push({id:uid(),name:i.name,qty:(i.par-i.qty).toFixed(2),unit:i.unit,supplier:i.supplier||'',notes:'Auto — below par',done:false});added++;
+    }
+  });
+  if(!added){alert('Already on list.');return;}
+  sv('ord');renderOrders();alert(`Added ${added} item${added>1?'s':''}.`);
+}
+
+function openOrderModal(){
+  $('ord-sup').innerHTML='<option value="">— None —</option>'+suppliers.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  ['ord-name','ord-qty','ord-unit','ord-notes'].forEach(x=>$(x).value='');
+  openModal('modal-order');
+}
+
+function saveOrder(){
+  const o={id:uid(),name:$('ord-name').value.trim(),qty:$('ord-qty').value,unit:$('ord-unit').value.trim(),supplier:$('ord-sup').value,notes:$('ord-notes').value.trim(),done:false};
+  if(!o.name){alert('Enter item name.');return;}
+  orders.push(o);sv('ord');closeModal('modal-order');renderOrders();
+}
+
+function toggleOrder(id){const o=orders.find(x=>x.id===id);if(o){o.done=!o.done;sv('ord');renderOrders();}}
 function delOrder(id){orders=orders.filter(x=>x.id!==id);sv('ord');renderOrders();}
 function clearDone(){orders=orders.filter(o=>!o.done);sv('ord');renderOrders();}
-function renderOrders(){$('order-list').innerHTML=orders.length?orders.map(o=>`<div class="order-card ${o.done?'done':''}"><input type="checkbox" ${o.done?'checked':''} onchange="toggleOrder('${o.id}')"><div class="o-name">${o.name}</div><div class="o-meta">${o.qty?o.qty+' '+o.unit:''} ${supName(o.supplier)} ${o.notes}</div><button class="btn btn-danger btn-sm" onclick="delOrder('${o.id}')">✕</button></div>`).join(''):'<div class="empty-state">Empty order list</div>';}
-let editRecipeIngs=[];
-function openRecipeModal(id){$('rec-ing-item').innerHTML=allInv().map(i=>`<option value="${i.id}">${i.name} (${i.unit})</option>`).join('');editRecipeIngs=[];if(id){let r=recipes.find(x=>x.id===id);if(r){$('rec-id').value=r.id;$('rec-name').value=r.name;$('rec-price').value=r.price;$('rec-servings').value=r.servings;editRecipeIngs=[...r.ingredients];}}else{$('rec-id').value='';$('rec-name').value='';$('rec-price').value='';$('rec-servings').value='1';}renderIngList();openModal('modal-recipe');}
-function addIng(){let invId=$('rec-ing-item').value,qty=parseFloat($('rec-ing-qty').value);if(!invId||!qty)return alert('Select ingredient and qty');let ex=editRecipeIngs.findIndex(x=>x.invId===invId);if(ex>=0)editRecipeIngs[ex].qty+=qty;else editRecipeIngs.push({invId,qty});$('rec-ing-qty').value='';renderIngList();}
-function renderIngList(){let ul=$('rec-ing-list');if(!editRecipeIngs.length){ul.innerHTML='<li>No ingredients</li>';return;}ul.innerHTML=editRecipeIngs.map((ing,idx)=>{let item=allInv().find(i=>i.id===ing.invId);return `<li><span>${item?item.name:'?'} — ${ing.qty} ${item?item.unit:''}</span><button class="ing-del" onclick="editRecipeIngs.splice(${idx},1);renderIngList()">×</button></li>`;}).join('');}
-function saveRecipe(){let id=$('rec-id').value;let r={id:id||uid(),name:$('rec-name').value.trim(),price:parseFloat($('rec-price').value)||0,servings:parseInt($('rec-servings').value)||1,ingredients:editRecipeIngs};if(!r.name)return alert('Name required');if(id){let idx=recipes.findIndex(x=>x.id===id);recipes[idx]=r;}else recipes.push(r);sv('rec');closeModal('modal-recipe');renderRecipes();}
-function delRecipe(id){if(confirm('Delete?')){recipes=recipes.filter(r=>r.id!==id);sv('rec');renderRecipes();}}
-function renderRecipes(){$('recipe-list').innerHTML=recipes.map(r=>{let cost=r.ingredients.reduce((s,ing)=>{let it=allInv().find(i=>i.id===ing.invId);return s+(it?it.cost*ing.qty:0);},0);let cps=cost/r.servings;let margin=r.price>0?((r.price-cps)/r.price*100):null;return `<div style="background:var(--surface);border:1px solid var(--border);padding:16px;margin-bottom:12px"><div><strong>${r.name}</strong> (${r.servings} servings)</div><div>Cost: ${fmtMoney(cost)} | Cost/serving: ${fmtMoney(cps)} | Sell: ${fmtMoney(r.price)} | Margin: ${margin!==null?margin.toFixed(1)+'%':'—'}</div><div><button class="btn btn-ghost btn-sm" onclick="openRecipeModal('${r.id}')">Edit</button> <button class="btn btn-danger btn-sm" onclick="delRecipe('${r.id}')">Delete</button></div></div>`;}).join('')||'<div class="empty-state">No recipes</div>';}
-function openSupplierModal(id){let s=id?suppliers.find(x=>x.id===id):null;$('sup-id').value=s?s.id:'';$('sup-name').value=s?s.name:'';$('sup-contact').value=s?s.contact||'':'';$('sup-phone').value=s?s.phone||'':'';$('sup-email').value=s?s.email||'':'';openModal('modal-supplier');}
-function saveSupplier(){let id=$('sup-id').value;let s={id:id||uid(),name:$('sup-name').value.trim(),contact:$('sup-contact').value,phone:$('sup-phone').value,email:$('sup-email').value,lead:'',notes:''};if(!s.name)return alert('Name required');if(id){let idx=suppliers.findIndex(x=>x.id===id);suppliers[idx]=s;}else suppliers.push(s);sv('sup');closeModal('modal-supplier');renderSuppliers();}
-function renderSuppliers(){$('tb-suppliers').innerHTML=suppliers.map(s=>`<tr><td>${s.name}</td><td>${s.contact||'—'}</td><td>${s.phone||'—'}</td><td>${s.email||'—'}</td><td>—</td><td>—</td><td><button class="btn btn-ghost btn-sm" onclick="openSupplierModal('${s.id}')">Edit</button> <button class="btn btn-danger btn-sm" onclick="delSupplier('${s.id}')">✕</button></td></tr>`).join('');}
-function delSupplier(id){if(confirm('Delete?')){suppliers=suppliers.filter(s=>s.id!==id);sv('sup');renderSuppliers();}}
-let currentReport=null;
-function selectReport(type){currentReport=type;document.querySelectorAll('.rpt-card').forEach(c=>c.classList.remove('selected'));$('rcard-'+type).classList.add('selected');$('rpt-actions').style.display='flex';$('rpt-selected-label').innerText={count:'Count Sheet',inv:'Inventory Valuation',foodcost:'Food Cost Report',order:'Order List'}[type];buildReport(type);}
-function buildReport(type){if(type==='count')$('rpt-preview').innerHTML=buildCountSheet();else if(type==='inv')$('rpt-preview').innerHTML=buildInvValuation();else if(type==='foodcost')$('rpt-preview').innerHTML=buildFoodCost();else if(type==='order')$('rpt-preview').innerHTML=buildOrderReport();}
-function buildCountSheet(){let html=`<div class="rpt-doc"><div class="rpt-doc-header"><div><div class="rpt-doc-title">Weekly Count Sheet</div><div>Week of ${currentWeek}</div></div></div>`; let secs=[{label:'Deli',inv:deliInv},{label:'Fountain',inv:fountainInv},{label:'Branded',inv:brandedInv}];secs.forEach(s=>{html+=`<div class="rpt-section-hd">${s.label}</div><table class="rpt-table"><thead><tr><th>Item</th><th>Cat</th><th>Par</th><th>On Hand</th><th>Count</th><th>Unit</th></tr></thead><tbody>`; s.inv.forEach(i=>{html+=`<tr><td>${i.name}</td><td>${i.cat}</td><td>${i.par||'—'}</td><td>${i.qty}</td><td class="blank"></td><td>${i.unit}</td></tr>`;});html+=`</tbody></table>`;});html+=`</div>`;return html;}
-function buildInvValuation(){let total=invVal(allInv());return `<div class="rpt-doc"><div class="rpt-doc-header"><div><div class="rpt-doc-title">Inventory Valuation</div><div>Total: ${fmtMoney(total)}</div></div></div><table class="rpt-table"><thead><tr><th>Item</th><th>Section</th><th>Qty</th><th>Cost</th><th>Value</th></tr></thead><tbody>${allInv().map(i=>`<tr><td>${i.name}</td><td>${deliInv.find(x=>x.id===i.id)?'Deli':fountainInv.find(x=>x.id===i.id)?'Fountain':'Branded'}</td><td>${i.qty}</td><td>${fmtMoney(i.cost)}</td><td>${fmtMoney(i.qty*i.cost)}</td></tr>`).join('')}</tbody></table></div>`;}
-function buildFoodCost(){let wk=weekData[currentWeek]||{},wInv=getWeekInvoices(),purchases=wInv.reduce((s,i)=>s+i.total,0),sales=Number(wk.sales||0),begTotal=Number(wk.begDeli||0)+Number(wk.begFountain||0)+Number(wk.begBranded||0),endTotal=invVal(allInv()),cogs=begTotal+purchases-endTotal,fcPct=sales>0?(cogs/sales*100):null;return `<div class="rpt-doc"><div class="rpt-doc-header"><div><div class="rpt-doc-title">Food Cost Report</div><div>Week ${currentWeek}</div></div></div><div class="rpt-summary-box"><div>Sales: ${fmtMoney(sales)}</div><div>Purchases: ${fmtMoney(purchases)}</div><div>COGS: ${fmtMoney(cogs)}</div><div>Food Cost %: ${fcPct!==null?fcPct.toFixed(1)+'%':'—'}</div></div><div>Beg Inv: ${fmtMoney(begTotal)} + Purchases = Available ${fmtMoney(begTotal+purchases)} - End Inv ${fmtMoney(endTotal)} = COGS ${fmtMoney(cogs)}</div></div>`;}
-function buildOrderReport(){let need=allInv().filter(i=>i.par>0&&i.qty<i.par);return `<div class="rpt-doc"><div class="rpt-doc-header"><div><div class="rpt-doc-title">Order List</div><div>${need.length} items to order</div></div></div><table class="rpt-table"><thead><tr><th>Item</th><th>Need</th><th>Unit</th><th>Supplier</th></tr></thead><tbody>${need.map(i=>`<tr><td>${i.name}</td><td>${(i.par-i.qty).toFixed(2)}</td><td>${i.unit}</td><td>${supName(i.supplier)}</td></tr>`).join('')}</tbody></table></div>`;}
-function printReport(){if(!currentReport)return alert('Select report');window.print();}
-function exportExcel(){if(!currentReport)return alert('Select report');let rows=[];if(currentReport==='count')rows=[['Item','Category','Par','On Hand','Count','Unit']];else if(currentReport==='inv')rows=[['Item','Section','Qty','Cost','Value']];else if(currentReport==='order')rows=[['Item','Need','Unit','Supplier']];let need=allInv().filter(i=>i.par>0&&i.qty<i.par);if(currentReport==='order')need.forEach(i=>rows.push([i.name,(i.par-i.qty).toFixed(2),i.unit,supName(i.supplier)]));else allInv().forEach(i=>rows.push([i.name,deliInv.find(x=>x.id===i.id)?'Deli':'Other',i.qty,i.cost,i.qty*i.cost]));let csv=rows.map(r=>r.join(',')).join('\n');let blob=new Blob([csv],{type:'text/csv'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='report.csv';a.click();}
-let _sbReady=false;
-function sbPush(){if(!_sbReady)return;fetch(sbUrl+'/rest/v1/deli_stores',{method:'POST',headers:{'apikey':sbKey,'Authorization':'Bearer '+sbKey,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},body:JSON.stringify({store_code:sbStoreCode,data:{sup:suppliers,deli:deliInv,fountain:fountainInv,branded:brandedInv,rec:recipes,ord:orders,inv:invoices,week:weekData},updated_at:new Date().toISOString()})}).catch(e=>console.log);}
-async function sbPull(silent){if(!_sbReady){if(!silent)alert('Cloud not configured');return;}try{let res=await fetch(sbUrl+'/rest/v1/deli_stores?store_code=eq.'+encodeURIComponent(sbStoreCode)+'&select=data',{headers:{'apikey':sbKey,'Authorization':'Bearer '+sbKey}});let rows=await res.json();if(rows.length){let d=rows[0].data;if(d.sup){suppliers=d.sup;localStorage.setItem('dp7_sup',JSON.stringify(d.sup));}if(d.deli){deliInv=d.deli;localStorage.setItem('dp7_deli',JSON.stringify(d.deli));}if(d.fountain){fountainInv=d.fountain;localStorage.setItem('dp7_fountain',JSON.stringify(d.fountain));}if(d.branded){brandedInv=d.branded;localStorage.setItem('dp7_branded',JSON.stringify(d.branded));}if(d.rec){recipes=d.rec;localStorage.setItem('dp7_rec',JSON.stringify(d.rec));}if(d.ord){orders=d.ord;localStorage.setItem('dp7_ord',JSON.stringify(d.ord));}if(d.inv){invoices=d.inv;localStorage.setItem('dp7_inv',JSON.stringify(d.inv));}if(d.week){weekData=d.week;localStorage.setItem('dp7_week',JSON.stringify(d.week));}renderAnalytics();if(!silent)alert('Data pulled from cloud');}}catch(e){console.log(e);}}
-function openSyncModal(){let url=localStorage.getItem('dp7_sb_url')||'',key=localStorage.getItem('dp7_sb_key')||'',code=localStorage.getItem('dp7_sb_store')||'';$('sb-url').value=url;$('sb-key').value=key;$('sb-code').value=code;openModal('modal-sync');}
-function saveSyncSetup(){let url=$('sb-url').value.trim(),key=$('sb-key').value.trim(),code=$('sb-code').value.trim().toLowerCase();if(!url||!key||!code)return alert('All fields required');localStorage.setItem('dp7_sb_url',url);localStorage.setItem('dp7_sb_key',key);localStorage.setItem('dp7_sb_store',code);sbUrl=url;sbKey=key;sbStoreCode=code;_sbReady=true;closeModal('modal-sync');sbPull(false);}
-function clearSyncSetup(){if(confirm('Disconnect?')){localStorage.removeItem('dp7_sb_url');localStorage.removeItem('dp7_sb_key');localStorage.removeItem('dp7_sb_store');_sbReady=false;closeModal('modal-sync');}}
-function loadInitialData(){suppliers=JSON.parse(localStorage.getItem('dp7_sup'))||[{id:uid(),name:'Merchants',contact:'',phone:'',email:'',lead:'',notes:''},{id:uid(),name:'Imperial',contact:'',phone:'',email:'',lead:'',notes:''}];deliInv=JSON.parse(localStorage.getItem('dp7_deli'))||[];fountainInv=JSON.parse(localStorage.getItem('dp7_fountain'))||[];brandedInv=JSON.parse(localStorage.getItem('dp7_branded'))||[];recipes=JSON.parse(localStorage.getItem('dp7_rec'))||[];orders=JSON.parse(localStorage.getItem('dp7_ord'))||[];invoices=JSON.parse(localStorage.getItem('dp7_inv'))||[];weekData=JSON.parse(localStorage.getItem('dp7_week'))||{};if(!deliInv.length){deliInv=[{id:uid(),name:'Chicken Breast Hot N Spicy',cat:'Deli Meat',qty:0,unit:'cases',cost:40.84,par:1,supplier:suppliers[0].id},{id:uid(),name:'Pizza Stick Pepperoni',cat:'Pizza',qty:0,unit:'cases',cost:32.00,par:1,supplier:suppliers[0].id}];sv('deli');}renderAnalytics();renderInvPage();renderInvoices();renderOrders();renderRecipes();renderSuppliers();}
-function showTab(name){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');if(name==='analytics')renderAnalytics();if(name==='inventory')renderInvPage();if(name==='invoices')renderInvoices();if(name==='orders')renderOrders();if(name==='recipes')renderRecipes();if(name==='suppliers')renderSuppliers();if(name==='reports')selectReport(currentReport||'count');}
-function switchSubpanel(name,btn){document.querySelectorAll('.subtab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.subpanel').forEach(p=>p.classList.remove('active'));btn.classList.add('active');document.getElementById('sp-'+name).classList.add('active');renderTable(name);}
-function openModal(id){document.getElementById(id).classList.add('open');}
-function closeModal(id){document.getElementById(id).classList.remove('open');}
-document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
-loadInitialData();
-let sbUrl=localStorage.getItem('dp7_sb_url')||'',sbKey=localStorage.getItem('dp7_sb_key')||'',sbStoreCode=localStorage.getItem('dp7_sb_store')||'';if(sbUrl&&sbKey&&sbStoreCode){_sbReady=true;sbPull(true);}
+
+function renderOrders(){
+  const el=$('order-list');
+  if(!orders.length){el.innerHTML=`<div class="empty-state"><span class="empty-big">CLEAR</span>Order list is empty.</div>`;return;}
+  el.innerHTML=[...orders].sort((a,b)=>a.done-b.done).map(o=>`
+    <div class="order-card ${o.done?'done':''}">
+      <input type="checkbox" ${o.done?'checked':''} onchange="toggleOrder('${o.id}')">
+      <div style="flex:1">
+        <div class="o-name">${o.name}</div>
+        <div class="o-meta">${o.qty?o.qty+' '+o.unit:''}${supName(o.supplier)!=='—'?' · '+supName(o.supplier):''}${o.notes?' · '+o.notes:''}</div>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="delOrder('${o.id}')">✕</button>
+    </div>`).join('');
+}
+
+// =============================================================
+// RECIPES
+// =============================================================
+function openRecipeModal(id){
+  $('rec-ing-item').innerHTML=[...allInv()].sort((a,b)=>a.name.localeCompare(b.name)).map(i=>`<option value="${i.id}">${i.name} (${i.unit})</option>`).join('');
+  editRecipeIngs=[];
+  if(!id){
+    $('rec-modal-title').textContent='Add Recipe';
+    $('rec-id').value='';
+    ['rec-name','rec-price'].forEach(x=>$(x).value='');
+    $('rec-servings').value='1';
+  } else {
+    const r=recipes.find(x=>x.id===id);if(!r)return;
+    $('rec-modal-title').textContent='Edit Recipe';
+    $('rec-id').value=id;
+    $('rec-name').value=r.name;
+    $('rec-price').value=r.price;
+    $('rec-servings').value=r.servings;
+    editRecipeIngs=[...r.ingredients];
+  }
+  renderIngList();openModal('modal-recipe');
+}
+
+function addIng(){
+  const invId=$('rec-ing-item').value;
+  const qty=parseFloat($('rec-ing-qty').value);
+  if(!invId||!qty){alert('Select ingredient and enter qty.');return;}
+  const ex=editRecipeIngs.findIndex(x=>x.invId===invId);
+  if(ex>=0)editRecipeIngs[ex].qty+=qty;else editRecipeIngs.push({invId,qty});
+  $('rec-ing-qty').value='';renderIngList();
+}
+
+function renderIngList(){
+  const ul=$('rec-ing-list');
+  if(!editRecipeIngs.length){ul.innerHTML=`<li style="color:var(--muted);font-size:13px;list-style:none">No ingredients yet.</li>`;return;}
+  ul.innerHTML=editRecipeIngs.map((ing,idx)=>{
+    const item=allInv().find(i=>i.id===ing.invId);
+    const cost=item?(item.cost*ing.qty).toFixed(2):'?';
+    return `<li><span>${item?item.name:'Unknown'} — <span class="mono">${ing.qty} ${item?item.unit:''}</span></span><span style="display:flex;align-items:center;gap:10px"><span class="mono" style="color:var(--gold)">${fmtMoney(cost)}</span><button class="ing-del" onclick="editRecipeIngs.splice(${idx},1);renderIngList()">×</button></span></li>`;
+  }).join('');
+}
+
+function saveRecipe(){
+  const id=$('rec-id').value;
+  const r={id:id||uid(),name:$('rec-name').value.trim(),price:parseFloat($('rec-price').value)||0,servings:parseInt($('rec-servings').value)||1,ingredients:[...editRecipeIngs]};
+  if(!r.name){alert('Enter recipe name.');return;}
+  if(id){const idx=recipes.findIndex(x=>x.id===id);recipes[idx]=r;}else recipes.push(r);
+  sv('rec');closeModal('modal-recipe');renderRecipes();
+}
+
+function delRecipe(id){if(!confirm('Delete?'))return;recipes=recipes.filter(r=>r.id!==id);sv('rec');renderRecipes();}
+
+function calcCost(r){return r.ingredients.reduce((s,ing)=>{const item=allInv().find(i=>i.id===ing.invId);return s+(item?item.cost*ing.qty:0);},0);}
+
+function renderRecipes(){
+  const el=$('recipe-list');
+  if(!recipes.length){el.innerHTML=`<div class="empty-state"><span class="empty-big">EMPTY</span>No recipes yet.</div>`;return;}
+  el.innerHTML=recipes.map(r=>{
+    const cost=calcCost(r);const cps=cost/r.servings;
+    const margin=r.price>0?((r.price-cps)/r.price*100):null;
+    const pct=r.price>0?(cps/r.price*100):0;
+    const mc=margin===null?'var(--text2)':margin<50?'var(--red2)':margin<65?'var(--gold)':'var(--green2)';
+    return `<div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);padding:20px;margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+        <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;letter-spacing:1px">${r.name}</div><div style="font-size:12px;color:var(--text2);margin-top:2px">Yield: ${r.servings} serving${r.servings>1?'s':''}</div></div>
+        <div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" onclick="openRecipeModal('${r.id}')">Edit</button><button class="btn btn-danger btn-sm" onclick="delRecipe('${r.id}')">Delete</button></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-top:16px">
+        <div><div class="stat-label">Total Cost</div><div class="mono" style="font-size:18px">${fmtMoney(cost)}</div></div>
+        <div><div class="stat-label">Cost/Serving</div><div class="mono" style="font-size:18px">${fmtMoney(cps)}</div></div>
+        <div><div class="stat-label">Sell Price</div><div class="mono" style="font-size:18px;color:var(--gold)">${fmtMoney(r.price)}</div></div>
+        <div><div class="stat-label">Gross Margin</div><div class="mono" style="font-size:18px;color:${mc}">${margin!==null?margin.toFixed(1)+'%':'—'}</div></div>
+        <div><div class="stat-label">Food Cost %</div><div class="mono" style="font-size:18px;color:${pct>35?'var(--red2)':'var(--text)'}">${r.price>0?pct.toFixed(1)+'%':'—'}</div>${r.price>0?`<div class="cost-bar-bg"><div class="cost-bar-fill ${pct>35?'bad':''}" style="width:${Math.min(pct,100)}%"></div></div>`:''}</div>
+      </div>
+      <div style="margin-top:14px"><div class="stat-label" style="margin-bottom:6px">Ingredients</div>
+        <ul class="ing-list" style="list-style:none">${r.ingredients.map(ing=>{const item=allInv().find(i=>i.id===ing.invId);const c=item?(item.cost*ing.qty).toFixed(2):'?';return `<li><span>${item?item.name:'<em style="color:var(--muted)">Deleted</em>'} · <span class="mono">${ing.qty} ${item?item.unit:''}</span></span><span class="mono" style="color:var(--text2)">${fmtMoney(c)}</span></li>`;}).join('')}</ul>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// =============================================================
+// SUPPLIERS
+// =============================================================
+function openSupplierModal(id){
+  ['sup-name','sup-contact','sup-phone','sup-email','sup-lead','sup-notes'].forEach(x=>$(x).value='');
+  $('sup-id').value='';
+  $('sup-modal-title').textContent='Add Supplier';
+  if(id){
+    const s=suppliers.find(x=>x.id===id);if(!s)return;
+    $('sup-modal-title').textContent='Edit Supplier';
+    $('sup-id').value=id;
+    $('sup-name').value=s.name;$('sup-contact').value=s.contact||'';$('sup-phone').value=s.phone||'';
+    $('sup-email').value=s.email||'';$('sup-lead').value=s.lead||'';$('sup-notes').value=s.notes||'';
+  }
+  openModal('modal-supplier');
+}
+
+function saveSupplier(){
+  const id=$('sup-id').value;
+  const s={id:id||uid(),name:$('sup-name').value.trim(),contact:$('sup-contact').value.trim(),phone:$('sup-phone').value.trim(),email:$('sup-email').value.trim(),lead:$('sup-lead').value.trim(),notes:$('sup-notes').value.trim()};
+  if(!s.name){alert('Enter supplier name.');return;}
+  if(id){const idx=suppliers.findIndex(x=>x.id===id);suppliers[idx]=s;}else suppliers.push(s);
+  sv('sup');closeModal('modal-supplier');renderSuppliers();
+}
+
+function delSupplier(id){if(!confirm('Delete?'))return;suppliers=suppliers.filter(x=>x.id!==id);sv('sup');renderSuppliers();}
+
+function renderSuppliers(){
+  const tb=$('tb-suppliers');
+  if(!suppliers.length){tb.innerHTML=`<tr><td colspan="7"><div class="empty-state"><span class="empty-big">EMPTY</span>No suppliers.</div></td></tr>`;return;}
+  tb.innerHTML=suppliers.map(s=>{
+    const cnt=deliInv.filter(i=>i.supplier===s.id).length;
+    const wTotal=getWeekInvoices().filter(i=>i.supplier===s.id).reduce((sum,i)=>sum+Number(i.total),0);
+    return `<tr>
+      <td><strong>${s.name}</strong><div style="font-size:11px;color:var(--text2);margin-top:2px">${cnt} deli item${cnt!==1?'s':''} · <span style="color:var(--gold)">${fmtMoney(wTotal)} this week</span></div></td>
+      <td>${s.contact||'—'}</td><td class="mono">${s.phone||'—'}</td><td>${s.email||'—'}</td><td>${s.lead||'—'}</td>
+      <td style="max-width:200px;font-size:12px;color:var(--text2)">${s.notes||'—'}</td>
+      <td><div style="display:flex;gap:6px"><button class="btn btn-ghost btn-sm" onclick="openSupplierModal('${s.id}')">Edit</button><button class="btn btn-danger btn-sm" onclick="delSupplier('${s.id}')">✕</button></div></td>
+    </tr>`;
+  }).join('');
+}
+
+// =============================================================
+// REPORTS
+// =============================================================
+let currentReport = null;
+
+function renderReports(){
+  $('rpt-week-label').textContent = 'Week of ' + weekLabel(currentWeek);
+  if(currentReport) buildReport(currentReport);
+}
+
+function selectReport(type){
+  document.querySelectorAll('.rpt-card').forEach(c=>c.classList.remove('selected'));
+  $('rcard-'+type).classList.add('selected');
+  currentReport = type;
+  $('rpt-actions').style.display = 'flex';
+  const labels = {count:'Weekly Count Sheet', inv:'Inventory Valuation', foodcost:'Food Cost Report', order:'Order List Report'};
+  $('rpt-selected-label').textContent = labels[type];
+  buildReport(type);
+}
+
+function buildReport(type){
+  if(type==='count')    $('rpt-preview').innerHTML = buildCountSheet();
+  else if(type==='inv') $('rpt-preview').innerHTML = buildInvValuation();
+  else if(type==='foodcost') $('rpt-preview').innerHTML = buildFoodCost();
+  else if(type==='order')    $('rpt-preview').innerHTML = buildOrderReport();
+}
+
+function rptHeader(title, subtitle){
+  const now = new Date();
+  return `<div class="rpt-doc-header">
+    <div>
+      <div class="rpt-doc-title">⬡ Deli Pro — ${title}</div>
+      <div class="rpt-doc-subtitle">${subtitle}</div>
+    </div>
+    <div class="rpt-doc-meta">
+      <div><strong>Hunt's Convenience Store</strong></div>
+      <div>Week of: ${weekLabel(currentWeek)}</div>
+      <div>Printed: ${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div>
+    </div>
+  </div>`;
+}
+
+// --- COUNT SHEET ---
+function buildCountSheet(){
+  const sections = [
+    {label:'Deli (Merchants / Imperial)', inv:deliInv, cols:['Item','Category','Unit','Par','On Hand','Count','Variance']},
+    {label:'Fountain', inv:fountainInv, cols:['Item','Category','Unit','Par','On Hand','Count','Variance']},
+    {label:'Branded Deli', inv:brandedInv, cols:['Item','Category','Unit','Par','On Hand','Count','Variance']}
+  ];
+  let html = `<div class="rpt-doc">${rptHeader('Weekly Count Sheet','Record physical counts below. Leave blank to fill by hand.')}<br>`;
+  sections.forEach(sec=>{
+    html += `<div class="rpt-section-hd">${sec.label}</div>
+    <table class="rpt-table">
+      <thead><tr>
+        <th>Item</th><th>Category</th><th>Unit</th><th class="num">Par</th><th class="num">On Hand</th><th class="num">Count</th><th class="num">Variance</th><th class="num">Cost/Unit</th><th class="num">Total Value</th>
+      </tr></thead><tbody>`;
+    // group by category
+    const cats = [...new Set(sec.inv.map(i=>i.cat))].sort();
+    cats.forEach(cat=>{
+      const items = sec.inv.filter(i=>i.cat===cat);
+      html += `<tr class="rpt-cat-row"><td colspan="9">${cat}</td></tr>`;
+      items.forEach(i=>{
+        const val = i.qty*i.cost;
+        html += `<tr>
+          <td>${i.name}</td>
+          <td style="font-size:11px;color:#666">${i.cat}</td>
+          <td style="font-family:'DM Mono',monospace;font-size:11px">${i.unit}</td>
+          <td class="num">${i.par||'—'}</td>
+          <td class="num">${i.qty}</td>
+          <td class="num blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+          <td class="num blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+          <td class="num">${i.cost>0?'$'+i.cost.toFixed(2):'—'}</td>
+          <td class="num">${val>0?'$'+val.toFixed(2):'—'}</td>
+        </tr>`;
+      });
+      const catVal = items.reduce((s,i)=>s+i.qty*i.cost,0);
+      html += `<tr class="rpt-totals"><td colspan="4">${cat} Total</td><td colspan="3"></td><td></td><td class="num">$${catVal.toFixed(2)}</td></tr>`;
+    });
+    const secVal = sec.inv.reduce((s,i)=>s+i.qty*i.cost,0);
+    html += `<tr class="rpt-totals" style="font-size:13px;"><td colspan="8"><strong>${sec.label} TOTAL</strong></td><td class="num"><strong>$${secVal.toFixed(2)}</strong></td></tr>`;
+    html += `</tbody></table>`;
+  });
+  html += `<div class="rpt-sig">
+    <div class="rpt-sig-line">Counted By</div>
+    <div class="rpt-sig-line">Date</div>
+    <div class="rpt-sig-line">Manager Approval</div>
+  </div></div>`;
+  return html;
+}
+
+// --- INVENTORY VALUATION ---
+function buildInvValuation(){
+  const sections = [
+    {label:'Deli (Merchants / Imperial)', inv:deliInv},
+    {label:'Fountain', inv:fountainInv},
+    {label:'Branded Deli', inv:brandedInv}
+  ];
+  const grandTotal = invVal(allInv());
+  let html = `<div class="rpt-doc">${rptHeader('Inventory Valuation Report','Current on-hand values by section and category.')}`;
+  html += `<div class="rpt-summary-box">
+    <div><div class="rpt-summary-label">Grand Total</div><div class="rpt-summary-value">$${grandTotal.toFixed(2)}</div></div>
+    <div><div class="rpt-summary-label">Deli Value</div><div class="rpt-summary-value">$${invVal(deliInv).toFixed(2)}</div></div>
+    <div><div class="rpt-summary-label">Fountain Value</div><div class="rpt-summary-value">$${invVal(fountainInv).toFixed(2)}</div></div>
+    <div><div class="rpt-summary-label">Branded Deli Value</div><div class="rpt-summary-value">$${invVal(brandedInv).toFixed(2)}</div></div>
+    <div><div class="rpt-summary-label">Total Items</div><div class="rpt-summary-value">${allInv().length}</div></div>
+    <div><div class="rpt-summary-label">Low Stock Items</div><div class="rpt-summary-value red">${allInv().filter(i=>i.par>0&&i.qty<=i.par).length}</div></div>
+  </div>`;
+  sections.forEach(sec=>{
+    const secVal = invVal(sec.inv);
+    html += `<div class="rpt-section-hd">${sec.label} — $${secVal.toFixed(2)}</div>
+    <table class="rpt-table"><thead><tr>
+      <th>Item</th><th>Category</th><th>On Hand</th><th>Unit</th><th class="num">Cost/Unit</th><th class="num">Total Value</th><th>Par</th><th>Status</th>
+    </tr></thead><tbody>`;
+    const cats=[...new Set(sec.inv.map(i=>i.cat))].sort();
+    cats.forEach(cat=>{
+      const items=sec.inv.filter(i=>i.cat===cat);
+      const catVal=items.reduce((s,i)=>s+i.qty*i.cost,0);
+      html+=`<tr class="rpt-cat-row"><td colspan="8">${cat} — $${catVal.toFixed(2)}</td></tr>`;
+      items.forEach(i=>{
+        const val=i.qty*i.cost;
+        const st=!i.par?'No Par':i.qty<=i.par?'⚠ LOW':i.qty<=i.par*1.5?'Watch':'OK';
+        html+=`<tr>
+          <td>${i.name}</td><td style="font-size:11px;color:#666">${i.cat}</td>
+          <td class="num">${i.qty}</td><td style="font-family:'DM Mono',monospace;font-size:11px">${i.unit}</td>
+          <td class="num">${i.cost>0?'$'+i.cost.toFixed(2):'—'}</td>
+          <td class="num"><strong>${val>0?'$'+val.toFixed(2):'—'}</strong></td>
+          <td class="num">${i.par||'—'}</td>
+          <td style="font-size:11px;color:${i.par&&i.qty<=i.par?'#b52b20':i.par&&i.qty<=i.par*1.5?'#b07020':'#1a4a80'}">${st}</td>
+        </tr>`;
+      });
+    });
+    html+=`<tr class="rpt-totals"><td colspan="5"><strong>${sec.label} TOTAL</strong></td><td class="num"><strong>$${secVal.toFixed(2)}</strong></td><td colspan="2"></td></tr>`;
+    html+=`</tbody></table>`;
+  });
+  html+=`<div class="rpt-sig"><div class="rpt-sig-line">Prepared By</div><div class="rpt-sig-line">Date</div><div class="rpt-sig-line">Manager Approval</div></div></div>`;
+  return html;
+}
+
+// --- FOOD COST REPORT ---
+function buildFoodCost(){
+  const wk = weekData[currentWeek]||{};
+  const wInv = getWeekInvoices();
+  const purchases = wInv.reduce((s,i)=>s+Number(i.total),0);
+  const sales = Number(wk.sales||0);
+  const begDeli     = Number(wk.begDeli    ||0);
+  const begFountain = Number(wk.begFountain||0);
+  const begBranded  = Number(wk.begBranded ||0);
+  const begTotal    = begDeli+begFountain+begBranded;
+  const endDeli     = invVal(deliInv);
+  const endFountain = invVal(fountainInv);
+  const endBranded  = invVal(brandedInv);
+  const endTotal    = endDeli+endFountain+endBranded;
+  const cogs        = begTotal+purchases-endTotal;
+  const fcPct       = sales>0?(cogs/sales*100):null;
+  const rating      = fcPct===null?'N/A':fcPct<=28?'Excellent':fcPct<=32?'Good':fcPct<=35?'Acceptable':fcPct<=40?'High':'Critical';
+
+  // invoices by supplier
+  const bySup = {};
+  wInv.forEach(i=>{const n=supName(i.supplier);bySup[n]=(bySup[n]||0)+Number(i.total);});
+
+  let html = `<div class="rpt-doc">${rptHeader('Weekly Food Cost Report','Beginning Inventory + Purchases − Ending Inventory = COGS')}`;
+  html += `<div class="rpt-summary-box">
+    <div><div class="rpt-summary-label">Weekly Sales</div><div class="rpt-summary-value ${sales?'':'red'}">${sales?'$'+sales.toFixed(2):'Not Set'}</div></div>
+    <div><div class="rpt-summary-label">Total Purchases</div><div class="rpt-summary-value">$${purchases.toFixed(2)}</div></div>
+    <div><div class="rpt-summary-label">COGS</div><div class="rpt-summary-value ${cogs<0?'red':'grn'}">$${cogs.toFixed(2)}</div></div>
+    <div><div class="rpt-summary-label">Food Cost %</div><div class="rpt-summary-value ${fcPct===null?'':fcPct>35?'red':'grn'}">${fcPct!==null?fcPct.toFixed(1)+'%':'—'}</div></div>
+    <div><div class="rpt-summary-label">Rating</div><div class="rpt-summary-value" style="font-size:18px">${rating}</div></div>
+  </div>`;
+
+  // calculation breakdown
+  html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+  <div>
+    <div class="rpt-section-hd">Food Cost Calculation</div>
+    <div style="padding:16px;background:#faf7f2;border:1px solid #ddd;">
+      <div class="rpt-fc-row"><span class="lbl">Beginning Inventory (Deli)</span><span class="val">$${begDeli.toFixed(2)}</span></div>
+      <div class="rpt-fc-row"><span class="lbl">Beginning Inventory (Fountain)</span><span class="val">$${begFountain.toFixed(2)}</span></div>
+      <div class="rpt-fc-row"><span class="lbl">Beginning Inventory (Branded)</span><span class="val">$${begBranded.toFixed(2)}</span></div>
+      <div class="rpt-fc-row" style="font-weight:600"><span class="lbl">= Total Beginning Inventory</span><span class="val">$${begTotal.toFixed(2)}</span></div>
+      <div class="rpt-fc-row" style="margin-top:8px"><span class="lbl">+ Total Purchases (Invoices)</span><span class="val">$${purchases.toFixed(2)}</span></div>
+      <div class="rpt-fc-row" style="font-weight:600"><span class="lbl">= Goods Available</span><span class="val">$${(begTotal+purchases).toFixed(2)}</span></div>
+      <div class="rpt-fc-row" style="margin-top:8px"><span class="lbl">− Ending Inventory (Deli)</span><span class="val">$${endDeli.toFixed(2)}</span></div>
+      <div class="rpt-fc-row"><span class="lbl">− Ending Inventory (Fountain)</span><span class="val">$${endFountain.toFixed(2)}</span></div>
+      <div class="rpt-fc-row"><span class="lbl">− Ending Inventory (Branded)</span><span class="val">$${endBranded.toFixed(2)}</span></div>
+      <div class="rpt-fc-row total-row"><span class="lbl">= Cost of Goods Used (COGS)</span><span class="val" style="color:${cogs<0?'#b52b20':'#1a4a80'}">$${cogs.toFixed(2)}</span></div>
+      ${sales>0?`<div class="rpt-fc-row" style="margin-top:8px"><span class="lbl">÷ Weekly Sales</span><span class="val">$${sales.toFixed(2)}</span></div>
+      <div class="rpt-fc-row total-row"><span class="lbl" style="font-size:16px">Food Cost %</span><span class="val" style="font-size:18px;color:${fcPct>35?'#b52b20':'#1a4a80'}">${fcPct.toFixed(2)}%</span></div>`:'<div style="color:#b52b20;font-size:12px;margin-top:12px;font-style:italic">Set weekly sales in Analytics → ⚙ Week Setup to calculate Food Cost %.</div>'}
+    </div>
+  </div>
+  <div>
+    <div class="rpt-section-hd">Purchases by Supplier</div>
+    <div style="padding:16px;background:#faf7f2;border:1px solid #ddd;">
+      ${Object.keys(bySup).length?Object.entries(bySup).map(([n,a])=>`
+        <div class="rpt-fc-row"><span class="lbl">${n}</span><span class="val">$${a.toFixed(2)}</span></div>`).join('')+'<div class="rpt-fc-row total-row"><span class="lbl">Total Purchases</span><span class="val">$'+purchases.toFixed(2)+'</span></div>':'<div style="color:#888;font-style:italic;font-size:12px">No invoices entered for this week.</div>'}
+    </div>
+    <div class="rpt-section-hd" style="margin-top:16px">Invoices This Week</div>
+    <table class="rpt-table"><thead><tr><th>Date</th><th>Supplier</th><th>Invoice #</th><th class="num">Amount</th></tr></thead><tbody>
+      ${wInv.length?wInv.map(i=>`<tr><td>${i.date}</td><td>${supName(i.supplier)}</td><td>${i.num||'—'}</td><td class="num">$${Number(i.total).toFixed(2)}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;color:#888;font-style:italic">No invoices this week</td></tr>'}
+    </tbody></table>
+  </div></div>`;
+
+  // Section breakdown
+  const secData=[
+    {label:'Deli',beg:begDeli,end:endDeli},
+    {label:'Fountain',beg:begFountain,end:endFountain},
+    {label:'Branded Deli',beg:begBranded,end:endBranded}
+  ];
+  html+=`<div class="rpt-section-hd">Food Cost by Section</div>
+  <table class="rpt-table"><thead><tr>
+    <th>Section</th><th class="num">Beg. Inventory</th><th class="num">Ending Inventory</th><th class="num">Used</th><th class="num">% of Sales</th>
+  </tr></thead><tbody>
+  ${secData.map(s=>{
+    const used=s.beg-s.end;
+    const pct=sales>0?(used/sales*100):null;
+    return `<tr><td><strong>${s.label}</strong></td><td class="num">$${s.beg.toFixed(2)}</td><td class="num">$${s.end.toFixed(2)}</td><td class="num">$${used.toFixed(2)}</td><td class="num">${pct!==null?pct.toFixed(1)+'%':'—'}</td></tr>`;
+  }).join('')}
+  <tr class="rpt-totals"><td><strong>TOTAL</strong></td><td class="num"><strong>$${begTotal.toFixed(2)}</strong></td><td class="num"><strong>$${endTotal.toFixed(2)}</strong></td><td class="num"><strong>$${cogs.toFixed(2)}</strong></td><td class="num"><strong>${fcPct!==null?fcPct.toFixed(1)+'%':'—'}</strong></td></tr>
+  </tbody></table>`;
+
+  html+=`<div class="rpt-sig"><div class="rpt-sig-line">Prepared By</div><div class="rpt-sig-line">Date</div><div class="rpt-sig-line">Manager Approval</div></div></div>`;
+  return html;
+}
+
+// --- ORDER LIST REPORT ---
+function buildOrderReport(){
+  const needItems = allInv().filter(i=>i.par>0&&i.qty<i.par).sort((a,b)=>(a.qty/a.par)-(b.qty/b.par));
+  const bySup = {};
+  needItems.forEach(i=>{
+    const sn = supName(i.supplier);
+    if(!bySup[sn]) bySup[sn]=[];
+    bySup[sn].push(i);
+  });
+  let html = `<div class="rpt-doc">${rptHeader('Order List Report','Items at or below par — order quantities needed.')}`;
+  html += `<div class="rpt-summary-box">
+    <div><div class="rpt-summary-label">Items to Order</div><div class="rpt-summary-value red">${needItems.length}</div></div>
+    <div><div class="rpt-summary-label">Suppliers</div><div class="rpt-summary-value">${Object.keys(bySup).length}</div></div>
+    <div><div class="rpt-summary-label">Week Of</div><div class="rpt-summary-value" style="font-size:16px">${currentWeek}</div></div>
+  </div>`;
+  if(!needItems.length){
+    html += `<div style="text-align:center;padding:40px;color:#666;font-style:italic">✅ All items are at or above par. No orders needed.</div>`;
+  } else {
+    Object.entries(bySup).forEach(([supN, items])=>{
+      html += `<div class="rpt-section-hd">${supN}</div>
+      <table class="rpt-table"><thead><tr>
+        <th>Item</th><th>Section</th><th class="num">Par</th><th class="num">On Hand</th><th class="num">Need to Order</th><th>Unit</th><th>Notes</th>
+      </tr></thead><tbody>`;
+      items.forEach(i=>{
+        const sec = deliInv.find(x=>x.id===i.id)?'Deli':fountainInv.find(x=>x.id===i.id)?'Fountain':'Branded';
+        const need = i.par-i.qty;
+        html+=`<tr>
+          <td><strong>${i.name}</strong></td>
+          <td style="font-size:11px">${sec}</td>
+          <td class="num">${i.par}</td>
+          <td class="num" style="color:${i.qty===0?'#b52b20':'inherit'}">${i.qty}</td>
+          <td class="num" style="color:#b52b20;font-weight:700">+${need.toFixed(2)}</td>
+          <td style="font-family:'DM Mono',monospace;font-size:11px">${i.unit}</td>
+          <td class="blank" style="min-width:100px">&nbsp;</td>
+        </tr>`;
+      });
+      html+=`</tbody></table>`;
+    });
+  }
+  html+=`<div class="rpt-sig"><div class="rpt-sig-line">Ordered By</div><div class="rpt-sig-line">Date Ordered</div><div class="rpt-sig-line">Manager Approval</div></div></div>`;
+  return html;
+}
+
+// --- PRINT ---
+function printReport(){
+  if(!currentReport){alert('Select a report first.');return;}
+  window.print();
+}
+
+// --- EXCEL EXPORT ---
+function exportExcel(){
+  if(!currentReport){alert('Select a report first.');return;}
+  let rows=[], title='';
+  if(currentReport==='count') { rows=buildExcelCount(); title='Weekly_Count_Sheet'; }
+  else if(currentReport==='inv') { rows=buildExcelInv(); title='Inventory_Valuation'; }
+  else if(currentReport==='foodcost') { rows=buildExcelFoodCost(); title='Food_Cost_Report'; }
+  else if(currentReport==='order') { rows=buildExcelOrder(); title='Order_List'; }
+
+  // Build CSV (universal Excel compatible)
+  const csv = rows.map(r=>r.map(cell=>{
+    const s = String(cell===null||cell===undefined?'':cell);
+    return s.includes(',')||s.includes('"')||s.includes('\n') ? '"'+s.replace(/"/g,'""')+'"' : s;
+  }).join(',')).join('\n');
+
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=title+'_'+currentWeek+'.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function buildExcelCount(){
+  const rows=[['DELI PRO — WEEKLY COUNT SHEET'],['Week Of:', weekLabel(currentWeek)],['Printed:', new Date().toLocaleDateString()],[]];
+  const sections=[{label:'DELI (Merchants/Imperial)',inv:deliInv},{label:'FOUNTAIN',inv:fountainInv},{label:'BRANDED DELI',inv:brandedInv}];
+  sections.forEach(sec=>{
+    rows.push([sec.label]);
+    rows.push(['Item','Category','Unit','Par','On Hand','Physical Count','Variance','Cost/Unit','Total Value']);
+    const cats=[...new Set(sec.inv.map(i=>i.cat))].sort();
+    cats.forEach(cat=>{
+      rows.push([`-- ${cat} --`]);
+      sec.inv.filter(i=>i.cat===cat).forEach(i=>{
+        rows.push([i.name,i.cat,i.unit,i.par,i.qty,'','',i.cost>0?i.cost.toFixed(2):'',i.cost>0?(i.qty*i.cost).toFixed(2):'']);
+      });
+    });
+    rows.push([sec.label+' TOTAL','','','','','','','',sec.inv.reduce((s,i)=>s+i.qty*i.cost,0).toFixed(2)]);
+    rows.push([]);
+  });
+  rows.push(['','','','','','Counted By:','','Date:','']);
+  return rows;
+}
+
+function buildExcelInv(){
+  const rows=[['DELI PRO — INVENTORY VALUATION'],['Week Of:', weekLabel(currentWeek)],['Grand Total:', '$'+invVal(allInv()).toFixed(2)],[]];
+  const sections=[{label:'DELI',inv:deliInv},{label:'FOUNTAIN',inv:fountainInv},{label:'BRANDED DELI',inv:brandedInv}];
+  sections.forEach(sec=>{
+    rows.push([sec.label,'Total: $'+invVal(sec.inv).toFixed(2)]);
+    rows.push(['Item','Category','On Hand','Unit','Cost/Unit','Total Value','Par','Status']);
+    sec.inv.forEach(i=>{
+      const st=!i.par?'No Par':i.qty<=i.par?'LOW':i.qty<=i.par*1.5?'Watch':'OK';
+      rows.push([i.name,i.cat,i.qty,i.unit,i.cost>0?i.cost.toFixed(2):'0.00',i.cost>0?(i.qty*i.cost).toFixed(2):'0.00',i.par||0,st]);
+    });
+    rows.push([sec.label+' TOTAL','','','','','$'+invVal(sec.inv).toFixed(2),'','']);
+    rows.push([]);
+  });
+  return rows;
+}
+
+function buildExcelFoodCost(){
+  const wk=weekData[currentWeek]||{};
+  const wInv=getWeekInvoices();
+  const purchases=wInv.reduce((s,i)=>s+Number(i.total),0);
+  const sales=Number(wk.sales||0);
+  const begTotal=Number(wk.begDeli||0)+Number(wk.begFountain||0)+Number(wk.begBranded||0);
+  const endTotal=invVal(allInv());
+  const cogs=begTotal+purchases-endTotal;
+  const fcPct=sales>0?(cogs/sales*100):null;
+  const rows=[
+    ['DELI PRO — FOOD COST REPORT'],['Week Of:',weekLabel(currentWeek)],[],
+    ['FOOD COST CALCULATION'],
+    ['Beginning Inventory (Deli)','$'+(Number(wk.begDeli||0)).toFixed(2)],
+    ['Beginning Inventory (Fountain)','$'+(Number(wk.begFountain||0)).toFixed(2)],
+    ['Beginning Inventory (Branded)','$'+(Number(wk.begBranded||0)).toFixed(2)],
+    ['Total Beginning Inventory','$'+begTotal.toFixed(2)],
+    ['+  Total Purchases','$'+purchases.toFixed(2)],
+    ['=  Goods Available','$'+(begTotal+purchases).toFixed(2)],
+    ['-  Ending Inventory','$'+endTotal.toFixed(2)],
+    ['=  COGS','$'+cogs.toFixed(2)],
+    ['Weekly Sales','$'+sales.toFixed(2)],
+    ['Food Cost %',fcPct!==null?fcPct.toFixed(2)+'%':'N/A (set sales)'],
+    [],['INVOICES THIS WEEK'],
+    ['Date','Supplier','Invoice #','Amount'],
+    ...wInv.map(i=>[i.date,supName(i.supplier),i.num||'',Number(i.total).toFixed(2)]),
+    ['TOTAL','','','$'+purchases.toFixed(2)],
+    [],['SECTION BREAKDOWN'],
+    ['Section','Beginning','Ending','Used','% of Sales'],
+    ['Deli',Number(wk.begDeli||0).toFixed(2),invVal(deliInv).toFixed(2),(Number(wk.begDeli||0)-invVal(deliInv)).toFixed(2),sales>0?((Number(wk.begDeli||0)-invVal(deliInv))/sales*100).toFixed(1)+'%':'—'],
+    ['Fountain',Number(wk.begFountain||0).toFixed(2),invVal(fountainInv).toFixed(2),(Number(wk.begFountain||0)-invVal(fountainInv)).toFixed(2),sales>0?((Number(wk.begFountain||0)-invVal(fountainInv))/sales*100).toFixed(1)+'%':'—'],
+    ['Branded Deli',Number(wk.begBranded||0).toFixed(2),invVal(brandedInv).toFixed(2),(Number(wk.begBranded||0)-invVal(brandedInv)).toFixed(2),sales>0?((Number(wk.begBranded||0)-invVal(brandedInv))/sales*100).toFixed(1)+'%':'—'],
+  ];
+  return rows;
+}
+
+function buildExcelOrder(){
+  const needItems=allInv().filter(i=>i.par>0&&i.qty<i.par).sort((a,b)=>(a.qty/a.par)-(b.qty/b.par));
+  const rows=[['DELI PRO — ORDER LIST REPORT'],['Week Of:',weekLabel(currentWeek)],['Items to Order:',needItems.length],[],
+    ['Item','Section','Supplier','Par','On Hand','Need to Order','Unit']];
+  needItems.forEach(i=>{
+    const sec=deliInv.find(x=>x.id===i.id)?'Deli':fountainInv.find(x=>x.id===i.id)?'Fountain':'Branded';
+    rows.push([i.name,sec,supName(i.supplier),i.par,i.qty,(i.par-i.qty).toFixed(2),i.unit]);
+  });
+  if(!needItems.length) rows.push(['All items at or above par — no orders needed.']);
+  return rows;
+}
+
+// =============================================================
+// ONE-TIME INVOICE PATCHES
+// =============================================================
+
+// BEK Invoice #56553783 — 04/05/2026 — $1,992.21
+// Adds/updates items and logs the invoice. Idempotent: skips if invoice already present.
+function applyBEK56553783() {
+  if (invoices.find(i => i.num === '56553783')) return;
+
+  // Ensure Ben E. Keith Foods supplier exists
+  let bek = suppliers.find(s => s.name === 'Ben E. Keith Foods');
+  if (!bek) {
+    bek = {id:uid(), name:'Ben E. Keith Foods', contact:'', phone:'', email:'', lead:'', notes:''};
+    suppliers.push(bek);
+  }
+
+  const items = [
+    // BREAD
+    {name:'Bun Hamburger White 4 In',         cat:'Bread',      cases:1, cost:24.89},
+    {name:'Dough Biscuit 3 In Sliced',         cat:'Bread',      cases:3, cost:62.38},
+    {name:'Dough Apple Turnover',              cat:'Bread',      cases:1, cost:59.30},
+    {name:'Glaze Honey Dip Heat & Ice',        cat:'Bread',      cases:1, cost:58.84},
+    {name:'Brownie Blondie',                   cat:'Bread',      cases:1, cost:46.31},
+    // CONDIMENTS
+    {name:'Dressing Pc Honey Mustard Cup',     cat:'Condiments', cases:1, cost:28.23},
+    {name:'Dressing Pc Ranch Cup',             cat:'Condiments', cases:1, cost:26.60},
+    // DAIRY
+    {name:'Soft Serve Chocolate 6/6 LB',       cat:'Dairy',      cases:1, cost:78.02},
+    // DELI MEAT
+    {name:'Bacon Layout 18/22',                cat:'Deli Meat',  cases:2, cost:57.62},
+    {name:'Beef Patty 3/1 Thick N Tender',     cat:'Deli Meat',  cases:1, cost:84.52},
+    {name:'Beef Steak Fritter Raw Breaded',    cat:'Deli Meat',  cases:1, cost:65.87},
+    {name:'Chicken Breast Flame Grilled 4oz',  cat:'Deli Meat',  cases:1, cost:64.46},
+    {name:'Chicken Breast Fritter Cn 4/1',     cat:'Deli Meat',  cases:1, cost:40.84},
+    {name:'Chicken Breast Hot N Spicy Ckd',    cat:'Deli Meat',  cases:1, cost:40.84},
+    {name:'Sausage Patty 2 Oz Cooked',         cat:'Deli Meat',  cases:3, cost:47.18},
+    {name:'Waffle Stuffed Sausage Egg Cheese', cat:'Deli Meat',  cases:1, cost:83.08},
+    {name:'Egg Patty Homestyle Fried',         cat:'Deli Meat',  cases:2, cost:50.00},
+    // OTHER
+    {name:'Corn Dog Chili Cheese',             cat:'Other',      cases:1, cost:27.50},
+    {name:'Crispito Chicken & Cheese',         cat:'Other',      cases:1, cost:56.11},
+    {name:'Burrito Breakfast Bacon',           cat:'Other',      cases:1, cost:37.33},
+    {name:'Burrito Breakfast Sausage',         cat:'Other',      cases:1, cost:37.33},
+    {name:'Empanada Beef And Cheese',          cat:'Other',      cases:1, cost:31.17},
+    {name:'Empanada Chicken And Cheese',       cat:'Other',      cases:1, cost:31.17},
+    {name:'Meat Pie Original Beef & Pork',     cat:'Other',      cases:1, cost:54.04},
+    {name:'Meat Pie Spicy Bulk',               cat:'Other',      cases:1, cost:54.49},
+    {name:'Nacho Cheese Triangles Breaded',    cat:'Other',      cases:1, cost:58.16},
+    // PACKAGING
+    {name:'Bag Reclosable 2 Gal 13x15.5',     cat:'Packaging',  cases:1, cost:14.55},
+    {name:'Label 2x3 Dissolvable',             cat:'Packaging',  cases:1, cost:27.21},
+    {name:'Tape Register Roll Thermal',        cat:'Packaging',  cases:1, cost:78.24},
+    {name:'Toilet Tissue 2 Ply Jumbo Jr',      cat:'Packaging',  cases:2, cost:44.12},
+    // PRODUCE
+    {name:'Onion Yellow Jumbo Fresh 5lb',      cat:'Produce',    cases:1, cost:10.09},
+    {name:'Pepper Bell Green',                 cat:'Produce',    cases:1, cost:16.83},
+  ];
+
+  items.forEach(item => {
+    const existing = deliInv.find(i => i.name.toLowerCase() === item.name.toLowerCase());
+    if (existing) {
+      existing.qty  = +(existing.qty + item.cases).toFixed(2);
+      existing.cost = item.cost;
+    } else {
+      deliInv.push({id:uid(), name:item.name, cat:item.cat, qty:item.cases, unit:'cases', cost:item.cost, par:1, supplier:bek.id});
+    }
+  });
+
+  invoices.push({
+    id: uid(), supplier: bek.id, date: '2026-04-05', total: 1992.21, num: '56553783',
+    notes: 'BEK — Cooler $81.75 / Dry $369.99 / Frozen $1,525.89 / Tax $14.58'
+  });
+
+  // persist immediately (sbPush() is a no-op until Supabase is initialized)
+  localStorage.setItem('dp7_sup', JSON.stringify(suppliers));
+  localStorage.setItem('dp7_deli', JSON.stringify(deliInv));
+  localStorage.setItem('dp7_inv', JSON.stringify(invoices));
+}
+
+// =============================================================
+// CLOUD SYNC (Supabase)
+// =============================================================
+const SB_DEFAULT_URL   = 'https://zdbaymktrzsmzimwdeua.supabase.co';
+const SB_DEFAULT_KEY   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpkYmF5bWt0cnpzbXppbXdkZXVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NDAxNTQsImV4cCI6MjA5MTQxNjE1NH0.-NONMuk3lkeL0HTiJtPBNEU3F33Y4dOIb1Iv7_K2Ykw';
+const SB_DEFAULT_STORE = 'keiths-deli';
+
+let sbUrl = '';
+let sbKey = '';
+let sbStoreCode = '';
+let _sbReady = false;
+
+function setSyncStatus(state) {
+  const dot = $('sync-dot');
+  const txt = $('sync-txt');
+  if (!dot) return;
+  const colors = { ok:'#22c55e', syncing:'#f59e0b', err:'#ef4444', off:'#6b7280' };
+  const labels = { ok:'Synced',  syncing:'Syncing…', err:'Error',   off:'Cloud'   };
+  dot.style.background = colors[state] || colors.off;
+  if (txt) txt.textContent = labels[state] || 'Cloud';
+}
+
+function loadSbSetup() {
+  // Use stored values if present, otherwise fall back to hardcoded defaults
+  const url  = localStorage.getItem('dp7_sb_url')   || SB_DEFAULT_URL;
+  const key  = localStorage.getItem('dp7_sb_key')   || SB_DEFAULT_KEY;
+  const code = localStorage.getItem('dp7_sb_store') || SB_DEFAULT_STORE;
+  // Persist defaults so the modal shows them pre-filled
+  if (!localStorage.getItem('dp7_sb_url')) {
+    localStorage.setItem('dp7_sb_url',   url);
+    localStorage.setItem('dp7_sb_key',   key);
+    localStorage.setItem('dp7_sb_store', code);
+  }
+  sbUrl = url; sbKey = key; sbStoreCode = code;
+  _sbReady = true;
+  setSyncStatus('ok');
+  sbPull(true); // auto-pull on load so every device starts with the latest data
+}
+
+async function sbPush() {
+  if (!_sbReady) return;
+  setSyncStatus('syncing');
+  try {
+    const res = await fetch(sbUrl + '/rest/v1/deli_stores', {
+      method: 'POST',
+      headers: {
+        'apikey': sbKey,
+        'Authorization': 'Bearer ' + sbKey,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({
+        store_code: sbStoreCode,
+        data: { sup: suppliers, deli: deliInv, fountain: fountainInv, branded: brandedInv,
+                rec: recipes, ord: orders, inv: invoices, week: weekData, _ts: Date.now() },
+        updated_at: new Date().toISOString()
+      })
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + await res.text());
+    setSyncStatus('ok');
+  } catch(e) {
+    setSyncStatus('err');
+    console.error('Cloud push failed:', e);
+  }
+}
+
+async function sbPull(silent) {
+  if (!_sbReady) {
+    if (!silent) alert('Cloud sync not configured. Click ☁ Cloud to set up.');
+    return;
+  }
+  setSyncStatus('syncing');
+  try {
+    const res = await fetch(
+      sbUrl + '/rest/v1/deli_stores?store_code=eq.' + encodeURIComponent(sbStoreCode) + '&select=data',
+      { headers: { 'apikey': sbKey, 'Authorization': 'Bearer ' + sbKey } }
+    );
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + await res.text());
+    const rows = await res.json();
+    if (!rows.length) {
+      setSyncStatus('ok');
+      if (!silent) alert('No cloud data found for store "' + sbStoreCode + '".\nSave some data from your primary device first.');
+      return;
+    }
+    const d = rows[0].data;
+    if (d.sup)      { suppliers   = d.sup;      localStorage.setItem('dp7_sup',      JSON.stringify(d.sup)); }
+    if (d.deli)     { deliInv     = d.deli;     localStorage.setItem('dp7_deli',     JSON.stringify(d.deli)); }
+    if (d.fountain) { fountainInv = d.fountain; localStorage.setItem('dp7_fountain', JSON.stringify(d.fountain)); }
+    if (d.branded)  { brandedInv  = d.branded;  localStorage.setItem('dp7_branded',  JSON.stringify(d.branded)); }
+    if (d.rec)      { recipes     = d.rec;      localStorage.setItem('dp7_rec',      JSON.stringify(d.rec)); }
+    if (d.ord)      { orders      = d.ord;      localStorage.setItem('dp7_ord',      JSON.stringify(d.ord)); }
+    if (d.inv)      { invoices    = d.inv;      localStorage.setItem('dp7_inv',      JSON.stringify(d.inv)); }
+    if (d.week)     { weekData    = d.week;     localStorage.setItem('dp7_week',     JSON.stringify(d.week)); }
+    applyBEK56553783(); // ensure invoice patches are present after pull
+    setSyncStatus('ok');
+    renderAnalytics();
+    if (!silent) alert('Pulled latest data from cloud.');
+  } catch(e) {
+    setSyncStatus('err');
+    console.error('Cloud pull failed:', e);
+    if (!silent) alert('Sync error: ' + e.message);
+  }
+}
+
+function openSyncModal() {
+  $('sb-url').value  = localStorage.getItem('dp7_sb_url')   || '';
+  $('sb-key').value  = localStorage.getItem('dp7_sb_key')   || '';
+  $('sb-code').value = localStorage.getItem('dp7_sb_store') || '';
+  const msg = $('sync-status-msg');
+  if (_sbReady) {
+    msg.textContent = '● Connected — store: ' + sbStoreCode;
+    msg.style.color = '#22c55e';
+  } else {
+    msg.textContent = '● Not connected';
+    msg.style.color = 'var(--muted)';
+  }
+  openModal('modal-sync');
+}
+
+function saveSyncSetup() {
+  const url  = $('sb-url').value.trim().replace(/\/$/, '');
+  const key  = $('sb-key').value.trim();
+  const code = $('sb-code').value.trim().toLowerCase().replace(/\s+/g, '-');
+  if (!url || !key || !code) { alert('All three fields are required.'); return; }
+  if (!url.startsWith('https://')) { alert('Project URL must start with https://'); return; }
+  localStorage.setItem('dp7_sb_url',   url);
+  localStorage.setItem('dp7_sb_key',   key);
+  localStorage.setItem('dp7_sb_store', code);
+  sbUrl = url; sbKey = key; sbStoreCode = code;
+  _sbReady = true;
+  setSyncStatus('ok');
+  closeModal('modal-sync');
+  if (confirm('Connected to "' + code + '"!\n\nPull latest data from the cloud now?\n(Choose Pull on a new/secondary device, Push to upload existing local data.)')) {
+    sbPull(false);
+  } else {
+    sbPush();
+  }
+}
+
+function clearSyncSetup() {
+  if (!confirm('Disconnect from cloud sync?\n\nYour local data will not be affected.')) return;
+  localStorage.removeItem('dp7_sb_url');
+  localStorage.removeItem('dp7_sb_key');
+  localStorage.removeItem('dp7_sb_store');
+  sbUrl = ''; sbKey = ''; sbStoreCode = ''; _sbReady = false;
+  setSyncStatus('off');
+  closeModal('modal-sync');
+}
+
+// =============================================================
+// INIT
+// =============================================================
+load();
+renderAnalytics();
 </script>
+
 </body>
 </html>
